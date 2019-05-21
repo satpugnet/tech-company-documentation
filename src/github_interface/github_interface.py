@@ -1,23 +1,19 @@
-from github import Github, UnknownObjectException
-import base64
+from github import Github
+
+from github_interface.types.github_repository import GithubRepository
+
 
 class GithubInterface:
 
     def __init__(self, access_token):
-        self.github_account = Github(access_token)
+        self.__github_account = Github(access_token)
 
-    def get_repo_file(self, repo_name, file_name):
-        repo = self.github_account.get_repo(repo_name)
-
-        try:
-            encoded_contents = repo.get_contents(file_name)
-        except UnknownObjectException:
-            print("File " + file_name + " not found in " + repo_name)
-            return
-
-        contents = base64.b64decode(encoded_contents.content).decode("utf-8")
-        return contents
+    def get_repo(self, repo_name):
+        return GithubRepository(self.__github_account.get_repo(repo_name))
 
     def get_repos(self):
-        return self.github_account.get_user().get_repos()
+        repos = []
+        for repo in self.__github_account.get_user().get_repos():
+            repos.append(GithubRepository(repo))
+        return repos
 
