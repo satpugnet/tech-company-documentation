@@ -17,8 +17,8 @@ class GithubFile:
 
     def get_lines(self, start=None, stop=None):
         start = start if start else 0
-        stop = stop if stop else len(self.__lines) - 1
-        return self.__lines[start:stop+1]
+        stop = stop if stop else len(self.__lines)
+        return self.__lines[start-1:stop]
 
     def __decode_content(self, encoded_content):
         try:

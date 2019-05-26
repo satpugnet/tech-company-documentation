@@ -1,3 +1,4 @@
+import json
 from urllib import parse
 
 import requests
@@ -43,6 +44,30 @@ def access_token():
     # TODO: store or do whatever we want with the access token here
 
     return Response("Access token is: " + str(access_token))
+
+
+@app.route("/webhook", methods=['POST'])
+def webhook():
+    data = request.get_json()
+    type = data.get("action")
+
+    print(type)
+
+    if type != "opened":
+        return None
+
+    pr = data.get("pull_request")
+    issue_number = pr.get("number")
+
+    requests.post(
+        "https://api.github.com/repos/paulvidal/1-week-1-tool/issues/{}/comments".format(issue_number),
+        data=json.dumps({
+            "body": "Well done for creating that commit",
+        }),
+        headers={'Authorization': 'token {}'.format("fc08d7d54a93e264c94b6c0f87e0f5a56e3b198f")}
+    )
+
+    return Response()
 
 
 if __name__ == '__main__':
