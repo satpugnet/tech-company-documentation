@@ -4,12 +4,25 @@ from github_interface.git.git_diff_parser import GitDiffParser
 from github_interface.github_interface import GithubInterface
 
 g = GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
+repo = g.get_repo("saturnin13/tech-company-documentation")
+
+print(repo.get_root_files().get_subfiles()["github"])
+
+print(repo.get_root_files().get_subfiles()["website"].get_subfiles()["README.md"].get_content())
+
+for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().items():
+        print(file.get_path())
+
+# print(g.get_repos()[18].get_directory_or_file("api").get_content())
+
+# for file in g.get_repos()[18].get_root_files():
+#         print(file.get_path())
+
 # for repo in g.get_repos():
 #     print(repo.get_full_name())
 #     print(repo.get_root_files()[0].get_type())
-    # print(g.get_repo_file(repo.full_name, "README.md"))
+#     print(g.get_repo(repo.get_full_name()))
 
-repo = g.get_repo("saturnin13/tech-company-documentation")
 
 # print(repo
 #       .get_file("github/github_interface/github_interface.py")

@@ -1,10 +1,10 @@
 from github import UnknownObjectException
 
 from github_interface.github_types.github_commit_file import GithubCommitFile
+from github_interface.github_types.github_directory import GithubDirectory
 from github_interface.github_types.github_file import GithubFile
 
 
-# TODO: make it a @data class by giving all parameter in constructor
 class GithubRepository:
     def __init__(self, repo_object):
         self.__repo_object = repo_object
@@ -13,15 +13,7 @@ class GithubRepository:
         return self.__repo_object.full_name
 
     def get_root_files(self):
-        files = []
-        contents = self.__repo_object.get_contents("")
-        for content_file in contents:
-            files.append(GithubFile(content_file))
-        return files
-
-    def get_file(self, file_name):
-        file_object = self.__get_file_object(file_name)
-        return GithubFile(file_object)
+        return GithubDirectory(self.__repo_object, "")
 
     def get_commit_files(self, branch_name="master", sha=None):
         if sha:
