@@ -1,6 +1,7 @@
 from github import UnknownObjectException
 
-from github_interface.types.github_file import GithubFile
+from github_interface.github_types.github_commit_file import GithubCommitFile
+from github_interface.github_types.github_file import GithubFile
 
 
 # TODO: make it a @data class by giving all parameter in constructor
@@ -19,23 +20,26 @@ class GithubRepository:
         return files
 
     def get_file(self, file_name):
-        try:
-            return GithubFile(self.__repo_object.get_contents(file_name))
-        except UnknownObjectException:
-            print("File " + file_name + " not found in " + self.get_full_name())
+        file_object = self.__get_file_object(file_name)
+        return GithubFile(file_object)
 
     def get_commit_files(self, branch_name="master", sha=None):
         if sha:
             commit = self.__repo_object.get_commit(sha)
         else:
             commit = self.__repo_object.get_branch(branch_name).commit
-        commit_filenames = [file.filename for file in commit.files]
 
         files = []
-        for filename in commit_filenames:
-            files.append(self.get_file(filename))
+        for file in commit.files:
+            files.append(GithubCommitFile(self.__get_file_object(file.filename), file.patch))
 
         return files
+
+    def __get_file_object(self, file_name):
+        try:
+            return self.__repo_object.get_contents(file_name)
+        except UnknownObjectException:
+            print("File " + file_name + " not found in " + self.get_full_name())
 
 
 

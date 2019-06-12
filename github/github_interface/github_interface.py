@@ -1,6 +1,6 @@
 from github import Github
 
-from github_interface.types.github_repository import GithubRepository
+from github_interface.github_types.github_repository import GithubRepository
 
 
 class GithubInterface:
