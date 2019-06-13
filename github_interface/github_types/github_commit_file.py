@@ -1,5 +1,5 @@
-from github_interface.git.git_diff_parser import GitDiffParser
-from github_interface.github_types.github_file import GithubFile
+from git.git_diff_parser import GitDiffParser
+from github_types.github_file import GithubFile
 
 
 class GithubCommitFile(GithubFile):

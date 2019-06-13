@@ -1,7 +1,7 @@
 from github import UnknownObjectException
 
-from github_interface.github_types.abstract_github_file import AbstractGithubFile
-from github_interface.github_types.github_file import GithubFile
+from github_types.abstract_github_file import AbstractGithubFile
+from github_types.github_file import GithubFile
 
 
 class GithubDirectory(AbstractGithubFile):

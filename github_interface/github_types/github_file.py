@@ -2,7 +2,7 @@ import base64
 
 from github import GithubException
 
-from github_interface.github_types.abstract_github_file import AbstractGithubFile
+from github_types.abstract_github_file import AbstractGithubFile
 
 
 class GithubFile(AbstractGithubFile):

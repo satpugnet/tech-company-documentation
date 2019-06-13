@@ -1,7 +1,7 @@
 import re
 
-from github_interface.git.git_diff_types.git_diff_constant import GitDiffConstant
-from github_interface.git.git_diff_types.git_diff_hunk import GitDiffHunk
+from git.git_diff_types.git_diff_constant import GitDiffConstant
+from git.git_diff_types.git_diff_hunk import GitDiffHunk
 
 
 class GitDiffParser:

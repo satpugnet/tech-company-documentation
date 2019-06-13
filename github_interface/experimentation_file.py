@@ -1,7 +1,5 @@
-import re
-
-from github_interface.git.git_diff_parser import GitDiffParser
-from github_interface.github_interface import GithubInterface
+from git.git_diff_parser import GitDiffParser
+from interface import GithubInterface
 
 g = GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
 repo = g.get_repo("saturnin13/tech-company-documentation")
@@ -24,14 +22,13 @@ for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().
 #     print(g.get_repo(repo.get_full_name()))
 
 
-# print(repo
-#       .get_file("github/github_interface/github_interface.py")
-#       .get_lines(start=3, stop=5))
+print(repo
+      .get_file("website/src/App.vue")
+      .get_lines())
 
 
 ## Getting last commit file change
 # self.__repo_object.get_commit(sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
-
 
 commit_files = repo.get_commit_files("master", sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
 

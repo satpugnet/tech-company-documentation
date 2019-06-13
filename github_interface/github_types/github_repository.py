@@ -1,8 +1,7 @@
 from github import UnknownObjectException
 
-from github_interface.github_types.github_commit_file import GithubCommitFile
-from github_interface.github_types.github_directory import GithubDirectory
-from github_interface.github_types.github_file import GithubFile
+from github_types.github_commit_file import GithubCommitFile
+from github_types.github_directory import GithubDirectory
 
 
 class GithubRepository:

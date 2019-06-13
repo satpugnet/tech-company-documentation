@@ -1,9 +1,16 @@
 certifi==2019.3.9
 chardet==3.0.4
+Click==7.0
 Deprecated==1.2.5
+Flask==1.0.3
 idna==2.8
+itsdangerous==1.1.0
+Jinja2==2.10.1
+MarkupSafe==1.1.1
 PyGithub==1.43.7
+Pygments==2.4.2
 PyJWT==1.7.1
 requests==2.22.0
-urllib3==1.25.2
+urllib3==1.25.3
+Werkzeug==0.15.4
 wrapt==1.11.1
