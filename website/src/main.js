@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from "./App.vue"
 import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
+import VueResource from 'vue-resource'
 
 Vue.config.productionTip = false;
 
@@ -20,7 +21,15 @@ Vue.use(VueShowdown, {
   },
 });
 
+// Import Vue resource
+Vue.use(VueResource);
+
 // Render the app
 new Vue({
   render: h => h(App),
+
+  http: {
+    root: 'http://localhost:5000',
+    headers: {}
+  }
 }).$mount('#app');
