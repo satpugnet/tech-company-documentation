@@ -6,11 +6,7 @@ class GithubCommitFile(GithubFile):
     def __init__(self, content_file, previous_path, patch):
         GithubFile.__init__(self, content_file)
         self.__previous_path = previous_path
-        self.patch = patch
         self.git_diff_parser = GitDiffParser(patch)
-
-    def get_patch(self):
-        return self.patch
 
     def calculate_updated_line_range(self, start_line, end_line):
         return self.git_diff_parser.calculate_updated_line_range(start_line, end_line)
