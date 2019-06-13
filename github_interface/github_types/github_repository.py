@@ -22,15 +22,15 @@ class GithubRepository:
 
         files = []
         for file in commit.files:
-            files.append(GithubCommitFile(self.__get_file_object(file.filename), file.patch))
+            files.append(GithubCommitFile(self.__get_file_object(file.filename), file.previous_filename, file.patch))
 
         return files
 
-    def __get_file_object(self, file_name):
+    def __get_file_object(self, filename):
         try:
-            return self.__repo_object.get_contents(file_name)
+            return self.__repo_object.get_contents(filename)
         except UnknownObjectException:
-            print("File " + file_name + " not found in " + self.get_full_name())
+            print("File " + filename + " not found in " + self.get_full_name())
 
 
 

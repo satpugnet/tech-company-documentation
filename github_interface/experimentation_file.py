@@ -4,12 +4,12 @@ from interface import GithubInterface
 g = GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
 repo = g.get_repo("saturnin13/tech-company-documentation")
 
-print(repo.get_root_files().get_subfiles()["github"])
-
-print(repo.get_root_files().get_subfiles()["website"].get_subfiles()["README.md"].get_content())
-
-for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().items():
-        print(file.get_path())
+print(repo.get_root_files().get_subfiles())
+#
+# print(repo.get_root_files().get_subfiles()["website"].get_subfiles()["README.md"].get_content())
+#
+# for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().items():
+#         print(file.get_path())
 
 # print(g.get_repos()[18].get_directory_or_file("api").get_content())
 
@@ -22,17 +22,23 @@ for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().
 #     print(g.get_repo(repo.get_full_name()))
 
 
-print(repo
-      .get_file("website/src/App.vue")
-      .get_lines())
+# print(repo
+#       .get_file("website/src/App.vue")
+#       .get_lines())
 
 
 ## Getting last commit file change
 # self.__repo_object.get_commit(sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
 
-commit_files = repo.get_commit_files("master", sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
 
-# print(commit_files[0].calculate_updated_line_range(3, 7))
+commit_files = repo.get_commit_files("master", sha="bcad5a2bead18712d441a9963b70db86edeec2b6")
+
+for commit_file in commit_files:
+        print()
+        print(commit_file.calculate_updated_line_range(3, 50))
+        print(commit_file.has_path_changed())
+        print(commit_file.get_previous_path())
+        print(commit_file.get_path())
 
 
 
