@@ -1,7 +1,7 @@
 from github import UnknownObjectException
 
-from github_types.github_commit_file import GithubCommitFile
-from github_types.github_directory import GithubDirectory
+from github_interface.github_types.github_commit_file import GithubCommitFile
+from github_interface.github_types.github_directory import GithubDirectory
 
 
 class GithubRepository:
@@ -13,6 +13,9 @@ class GithubRepository:
 
     def get_root_files(self):
         return GithubDirectory(self.__repo_object, "")
+
+    def get_file(self, path):
+        return self.get_root_files().get_subfile(path)
 
     def get_commit_files(self, branch_name="master", sha=None):
         if sha:

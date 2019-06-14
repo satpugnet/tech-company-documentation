@@ -1,16 +1,16 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_for_filename
 
-from github_interface.interface import GithubInterface
+from github_interface import interface
 
 app = Flask(__name__)
 
 
 @app.route("/github")
 def github():
-    g = GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
+    g = interface.GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
     repo = g.get_repo("saturnin13/tech-company-documentation")
     lines = repo.get_file("website/src/main.js").get_content()
 
@@ -21,6 +21,26 @@ def github():
 
     result = '# This is awesome\n## This is also cool\n Here is some highlighted code using the library [pigments](http://pygments.org/docs/quickstart/)\n\n' \
              + result
+
+    resp = jsonify(result)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+
+@app.route("/files")
+def files():
+    g = interface.GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
+    repo = g.get_repo("saturnin13/tech-company-documentation")
+
+    path = request.args.get('path')
+
+    if not path:
+        result = repo.get_root_files()
+    else:
+        result = repo.get_file(path)
+
+    result = [i.get_path() for i in result]
 
     resp = jsonify(result)
     resp.headers['Access-Control-Allow-Origin'] = '*'

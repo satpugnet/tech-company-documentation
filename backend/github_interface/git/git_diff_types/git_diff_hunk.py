@@ -1,8 +1,8 @@
 import re
 
-from git.git_diff_types.git_diff_code_line import GitDiffCodeLine
-from git.git_diff_types.git_diff_code_line_state import GitDiffCodeLineState
-from git.git_diff_types.git_diff_constant import GitDiffConstant
+from github_interface.git.git_diff_types.git_diff_code_line import GitDiffCodeLine
+from github_interface.git.git_diff_types.git_diff_code_line_state import GitDiffCodeLineState
+from github_interface.git.git_diff_types.git_diff_constant import GitDiffConstant
 
 
 class GitDiffHunk:

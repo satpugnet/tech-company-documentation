@@ -36,5 +36,5 @@
 
 <style>
   .highlight .k { color: #AA22FF; font-weight: bold }
-.highlight .s { color: #BB4444 }
+  .highlight .s { color: #BB4444 }
 </style>

@@ -3,6 +3,7 @@ import App from "./App.vue"
 import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
 import VueResource from 'vue-resource'
+import router from './router'
 
 Vue.config.productionTip = false;
 
@@ -13,10 +14,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Import Showdown
 Vue.use(VueShowdown, {
-  // set default flavor of showdown
-  flavor: 'github',
-  // set default options of showdown (will override the flavor options)
-  options: {
+  flavor: 'github', // set default flavor of showdown
+  options: { // set default options of showdown (will override the flavor options)
     emoji: true,
   },
 });
@@ -27,7 +26,7 @@ Vue.use(VueResource);
 // Render the app
 new Vue({
   render: h => h(App),
-
+  router: router,
   http: {
     root: 'http://localhost:5000',
     headers: {}

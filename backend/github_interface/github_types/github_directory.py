@@ -1,7 +1,7 @@
 from github import UnknownObjectException
 
-from github_types.abstract_github_file import AbstractGithubFile
-from github_types.github_file import GithubFile
+from github_interface.github_types.abstract_github_file import AbstractGithubFile
+from github_interface.github_types.github_file import GithubFile
 
 
 class GithubDirectory(AbstractGithubFile):
@@ -21,6 +21,22 @@ class GithubDirectory(AbstractGithubFile):
             else:
                 files[content_file.name] = GithubFile(content_file)
         return files
+
+    def get_subfile(self, path):
+        subfiles = self.get_subfiles()
+
+        for file in subfiles:
+            if path.startswith(subfiles[file].get_path()):
+                if path == subfiles[file].get_path() and subfiles[file].get_type() == GithubDirectory.DIRECTORY:
+                    return subfiles[file].get_subfiles()
+                elif path == subfiles[file].get_path():
+                    return {path: subfiles[file]}
+                elif subfiles[file].get_type() == GithubDirectory.DIRECTORY:
+                    return subfiles[file].get_subfile(path)
+                else:
+                    return subfiles
+
+        raise FileNotFoundError("GithubFile does not exist")
 
     def __get_file_object(self, file_name):
         try:
