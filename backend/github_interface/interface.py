@@ -17,3 +17,6 @@ class GithubInterface:
             repos.append(GithubRepository(repo))
         return repos
 
+    def get_repo_names(self):
+        return [r.get_full_name() for r in self.get_repos()]
+

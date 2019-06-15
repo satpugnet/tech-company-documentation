@@ -1,6 +1,6 @@
 import base64
 
-from github import GithubException
+from github.GithubException import GithubException
 
 from github_interface.github_types.abstract_github_file import AbstractGithubFile
 
@@ -8,7 +8,7 @@ from github_interface.github_types.abstract_github_file import AbstractGithubFil
 class GithubFile(AbstractGithubFile):
     def __init__(self, file_object):
         AbstractGithubFile.__init__(self, file_object.path, file_object.type)
-        self.__content = self.__decode_content(file_object) if self.__decode_content(file_object) else ""
+        self.__content = self.__get_decoded_content(file_object)
         self.__lines = self.__content.splitlines()
 
     def get_content(self):
@@ -19,9 +19,8 @@ class GithubFile(AbstractGithubFile):
         stop = stop if stop else len(self.__lines)
         return self.__lines[start - 1:stop]
 
-    def __decode_content(self, encoded_content):
+    def __get_decoded_content(self, file_object):
         try:
-            if (encoded_content.content):
-                return base64.b64decode(encoded_content.content)
-        except GithubException as e:
-            print("Encoded content " + str(encoded_content) + " faced exception: " + str(e))
+            return file_object.decoded_content
+        except GithubException:
+            return "File is too large to be displayed (>1 MB in size)"

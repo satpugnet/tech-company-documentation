@@ -12,10 +12,10 @@ class GithubRepository:
         return self.__repo_object.full_name
 
     def get_root_files(self):
-        return GithubDirectory(self.__repo_object, "")
+        return GithubDirectory(self.__repo_object)
 
-    def get_file(self, path):
-        return self.get_root_files().get_subfile(path)
+    def get_content_at_path(self, path=""):
+        return GithubDirectory(self.__repo_object).get_content_at_path(path)
 
     def get_commit_files(self, branch_name="master", sha=None):
         if sha:
