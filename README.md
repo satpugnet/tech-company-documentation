@@ -11,7 +11,7 @@ Both frontend and backend need to run simultaneously
 ```bash
 pip install -r requirements.txt
 cd backend/
-python3 webserver.py
+python3 web_server.py
 ```
 
 #### Running the frontend server
