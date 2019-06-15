@@ -1,0 +1,25 @@
+<template>
+  <div id="app">
+    <div class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <router-link to="/" class="nav-link">Home</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/markdown" class="nav-link">Markdown</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/browser" class="nav-link">Browser</router-link>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <router-view></router-view>
+  </div>
+</template>
+
+<style>
+  .highlight .k { color: #AA22FF; font-weight: bold }
+  .highlight .s { color: #BB4444 }
+</style>
