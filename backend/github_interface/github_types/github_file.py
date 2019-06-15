@@ -6,9 +6,9 @@ from github_interface.github_types.abstract_github_file import AbstractGithubFil
 
 
 class GithubFile(AbstractGithubFile):
-    def __init__(self, file_object):
-        AbstractGithubFile.__init__(self, file_object.path, file_object.type)
-        self.__content = self.__get_decoded_content(file_object)
+    def __init__(self, content_file):
+        AbstractGithubFile.__init__(self, content_file)
+        self.__content = self.__get_decoded_content(content_file)
         self.__lines = self.__content.splitlines()
 
     def get_content(self):

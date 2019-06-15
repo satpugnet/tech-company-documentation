@@ -29,9 +29,14 @@ for key, file in repo.get_root_files().get_subfiles()["website"].get_subfiles().
 ## Getting last commit file change
 # self.__repo_object.get_commit(sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
 
-# commit_files = repo.get_commit_files("master", sha="ba419d2c64f3c813aa1823705e50f22a2fd94cbb")
+commit_files = repo.get_commit_files("master", sha="bcad5a2bead18712d441a9963b70db86edeec2b6")
 
-# print(commit_files[0].calculate_updated_line_range(3, 7))
+for commit_file in commit_files:
+        print()
+        print(commit_file.calculate_updated_line_range(3, 50))
+        print(commit_file.has_path_changed())
+        print(commit_file.get_previous_path())
+        print(commit_file.get_path())
 
 
 
