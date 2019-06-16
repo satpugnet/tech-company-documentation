@@ -70,7 +70,7 @@ def files():
         except ClassNotFound:
             lexer = TextLexer()  # use a generic lexer if we can't find anything
 
-        formatter = HtmlFormatter(noclasses=True, cssclass='card card-body')
+        formatter = HtmlFormatter(noclasses=True, linenos='table', linespans='code-line')
         content['content'] = highlight(content['content'], lexer, formatter)
 
     # Return the response
