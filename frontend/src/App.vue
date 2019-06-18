@@ -12,6 +12,9 @@
           <li class="nav-item">
             <router-link to="/browser" class="nav-link">Browser</router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/docs" class="nav-link">Documents</router-link>
+          </li>
         </ul>
       </div>
     </div>

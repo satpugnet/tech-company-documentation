@@ -24,6 +24,15 @@
         <!-- Spinner -->
         <Spinner
           :show="loading" />
+
+        <!-- Modal -->
+        <Modal
+          v-show="showModal"
+          @close="showModal=false"
+          @ok="save($event)">
+        </Modal>
+
+        <button type="button" class="btn btn-success" v-if="startLine && endLine" @click="showModal=true">Save</button>
       </div>
     </div>
   </div>
@@ -32,12 +41,14 @@
 <script>
   import FilepathBreadcrumb from "./elements/FilepathBreadcrumb";
   import Spinner from "./elements/Spinner";
+  import Modal from "./elements/Modal";
 
   export default {
 
     components: {
       FilepathBreadcrumb,
-      Spinner
+      Spinner,
+      Modal
     },
     created() {
       this.$http.get('http://localhost:5000/repos').then(response => {
@@ -62,7 +73,8 @@
         loading: true,
         startLine: null,
         endLine: null,
-        hoverLine: null
+        hoverLine: null,
+        showModal: false
       }
     },
     methods: {
@@ -179,6 +191,37 @@
         for (let i = start; i <= end; i++) {
           $("#code-line-" + i).removeClass("code-highlight");
         }
+      },
+      save(description) {
+        let body = {
+          'name': description.filename,
+          'content': description.content,
+          'references': [
+            {
+              'ref_id': 'blah',
+              'repo': this.repo,
+              'path': this.currentPath.join('/'),
+              'start_line': this.startLine,
+              'end_line': this.endLine
+            }
+          ]
+        };
+
+        this.$http.post('http://localhost:5000/save', body).then(response => {
+          this.$bvToast.toast("File saved successfully", {
+            title: 'Success',
+            autoHideDelay: 2000,
+            variant: 'success',
+          });
+          this.showModal = false;
+
+        }, error => {
+          this.$bvToast.toast("An error has occurred while saving", {
+            title: 'Error',
+            autoHideDelay: 2000,
+            variant: 'danger',
+          });
+        });
       }
     }
   }
