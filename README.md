@@ -43,13 +43,13 @@ Visit http://localhost:8081/
 ### Saving python resources 
 
 ```bash
-pip freeze > requirements.txt
+pip freeze > backend/requirements.txt
 ```
 
 ### Installing python resources
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ## Miscallaneous 

@@ -6,8 +6,6 @@ from github_interface.github_types.github_file import GithubFile
 
 class GithubDirectory(AbstractGithubFile):
 
-    DIRECTORY = "dir"
-
     def __init__(self, repo_object, content_file=""):
         AbstractGithubFile.__init__(self, content_file)
         self.__repo_object = repo_object

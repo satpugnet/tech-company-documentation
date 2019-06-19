@@ -1,4 +1,7 @@
 class AbstractGithubFile:
+
+    DIRECTORY = "dir"
+
     def __init__(self, content_file):
         self.__path = content_file.path if content_file else ""
         self.__type = content_file.type if content_file else None
