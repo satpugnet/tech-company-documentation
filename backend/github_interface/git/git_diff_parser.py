@@ -6,16 +6,17 @@ from github_interface.git.git_diff_types.git_diff_constant import GitDiffConstan
 
 class GitDiffParser:
     def __init__(self, file_raw_patch):
-        self.hunks = self.__extract_hunks(file_raw_patch)
+        self._hunks = self.__extract_hunks(file_raw_patch)
 
-    def get_hunk(self):
-        return self.hunks
+    @property
+    def hunk(self):
+        return self._hunks
 
     def calculate_updated_line_range(self, start_line, end_line):
         updated_start_line = start_line
         updated_end_line = end_line
 
-        for hunk in self.hunks:
+        for hunk in self._hunks:
             if self.__is_hunk_before_line(hunk, start_line):
                 updated_start_line += hunk.get_new_length() - hunk.get_old_length()
                 updated_end_line += hunk.get_new_length() - hunk.get_old_length()

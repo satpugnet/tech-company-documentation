@@ -36,8 +36,6 @@ def access_token():
                                 'Accept': 'application/json'
                             })
 
-    print(response)
-
     # We get the access token
     access_token = response.json().get("access_token")
 
@@ -50,8 +48,6 @@ def access_token():
 def webhook():
     data = request.get_json()
     type = data.get("action")
-
-    print(type)
 
     if type != "opened":
         return None

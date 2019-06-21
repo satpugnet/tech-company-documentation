@@ -15,11 +15,11 @@
           <li v-if="!repo" v-for="r in repos">
             <a href="#" v-on:click="selectRepo(r)">{{ r }}</a>
           </li>
-          <li v-if="repo && isDirectory()" v-for="path in content">
-            <a href="#" v-on:click="selectPath(path)">{{ path }}</a>
+          <li v-if="repo && isDirectory()" v-for="(_, filename) in subfiles">
+            <a href="#" v-on:click="selectPath(filename)">{{ filename }}</a>
           </li>
         </ul>
-        <div v-if="!loading && repo && isFile()" v-html="content" @click="selectLines" @mouseover="selectLinesPreviews"></div>
+        <div v-if="!loading && repo && isFile()" v-html="fileContent" @click="selectLines" @mouseover="selectLinesPreviews"></div>
 
         <!-- Spinner -->
         <Spinner
@@ -69,7 +69,8 @@
         repos: [],
         currentPath: [],
         contentType: '',
-        content: [],
+        subfiles: {},
+        fileContent: "",
         loading: true,
         startLine: null,
         endLine: null,
@@ -83,7 +84,7 @@
         this.getContentForPath();
       },
       selectPath(path) {
-        if (this.content.includes(path)) {
+        if (Object.keys(this.subfiles).includes(path)) {
           // check that we can move forward in the repo browsing
           // if we select a path that is not currently shown, something is off so we just reload the content for the path
           this.currentPath.push(path);
@@ -96,7 +97,8 @@
         let url = 'http://localhost:5000/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
         this.$http.get(url).then(response => {
           this.contentType = response.body.type;
-          this.content = response.body.content;
+          this.subfiles = response.body.subfiles;
+          this.fileContent = response.body.content;
           this.loading = false;
         }, error => {
           this.loading = false;
@@ -111,7 +113,7 @@
         });
       },
       isDirectory() {
-        return this.contentType === "directory";
+        return this.contentType === "dir";
       },
       isFile() {
         return this.contentType === "file";
