@@ -1,3 +1,5 @@
+import copy
+
 from flask import Flask, jsonify, request, abort, Response
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
@@ -61,20 +63,20 @@ def files():
     path_arg = request.args.get('path')
     path = path_arg if path_arg else ""
 
-    directory = repo.get_content_at_path(path)
+    repo_object = copy.deepcopy(repo.get_content_at_path(path))
 
     # Syntax highlighting for file
-    if directory.type == 'file':
+    if repo_object.type == 'file':
         try:
             lexer = get_lexer_for_filename(path)
         except ClassNotFound:
             lexer = TextLexer()  # use a generic lexer if we can't find anything
 
         formatter = HtmlFormatter(noclasses=True, linenos='table', linespans='code-line')
-        directory.content = highlight(directory.content, lexer, formatter)
+        repo_object.content = highlight(repo_object.content, lexer, formatter)
 
     # Return the response
-    response = jsonify(directory)
+    response = jsonify(repo_object)
     response.headers['Access-Control-Allow-Origin'] = '*'
 
     return response
