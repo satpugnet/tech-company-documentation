@@ -36,7 +36,7 @@ make db
 
 #### Check out the app
 
-Visit http://localhost:8081/
+Visit http://localhost:8080/
 
 ## Development
 
