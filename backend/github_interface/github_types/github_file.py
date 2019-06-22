@@ -26,6 +26,9 @@ class GithubFile(AbstractGithubFile, Jsonable):
             return "File is too large to be displayed (>1 MB in size)"
         except UnicodeDecodeError:
             return "Error decoding, 'utf-8' codec cannot decode"
+        except AssertionError:
+            return "Unsupported encoding"
+
 
     def to_json(self):
         new_json = {

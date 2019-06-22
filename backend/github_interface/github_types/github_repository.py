@@ -59,6 +59,3 @@ class GithubRepository:
 
     def __file_path_to_list(self, path):
         return list(filter(None, path.split("/")))
-
-
-
