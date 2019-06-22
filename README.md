@@ -6,6 +6,13 @@ A project to attempt to create a solid tool for documenting code internally for 
 
 Both frontend and backend need to run simultaneously
 
+#### Setup the webhook locally
+
+```bash
+npm install --global smee-client
+smee --url https://smee.io/UUkxjK9NwrD3pnTH --path /webhook_handler --port 5000
+```
+
 #### Running the backend server
 
 ```bash
