@@ -16,9 +16,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(VueShowdown, {
   flavor: 'github', // set default flavor of showdown
   options: { // set default options of showdown (will override the flavor options)
-    emoji: true,
+    emoji: true
   },
 });
+
+// Import github css like stylesheet
+import 'github-markdown-css/github-markdown.css'
 
 // Import Vue resource
 Vue.use(VueResource);

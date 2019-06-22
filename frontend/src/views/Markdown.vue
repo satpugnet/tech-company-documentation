@@ -3,10 +3,16 @@
     <div class="card bg-light">
       <div class="card-header">Markdown</div>
       <div class="card-body">
-        <VueShowdown
+        <div class="row">
+          <div class="col-6 card">
+            <textarea class="form-control" v-model="code" rows="20"></textarea>
+          </div>
+          <div class="col-6 card markdown-body">
+            <VueShowdown
           flavor="github"
-          v-bind:markdown='code'
-          vueTemplate=true />
+          v-bind:markdown=code />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -14,21 +20,10 @@
 
 <script>
   export default {
-    created() {
-      this.$http.get('http://localhost:5000/github').then(response => {
-        // success callback
-        console.log('success');
-        console.log(response);
-        this.code = response.body;
-      }, error => {
-        // error callback
-        console.log('error');
-        console.log(error);
-      });
-    },
+    created() {},
     data() {
       return {
-        code: 'hello'
+        code: ''
       }
     }
   }
