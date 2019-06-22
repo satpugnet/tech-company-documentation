@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Markdown from './views/Markdown.vue'
-import Browser from './views/Browser.vue'
+import BrowserView from './views/BrowserView.vue'
 import Documents from './views/Documents.vue'
 
 Vue.use(Router);
@@ -24,7 +24,7 @@ export default new Router({
     {
       path: '/browser',
       name: 'browser',
-      component: Browser
+      component: BrowserView
     },
     {
       path: '/docs',

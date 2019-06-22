@@ -29,7 +29,7 @@
 </template>
 
 <script>
-  import FilepathBreadcrumb from "./elements/FilepathBreadcrumb";
+  import FilepathBreadcrumb from "./elements/browser/FilepathBreadcrumb";
   import Spinner from "./elements/Spinner";
 
   export default {
