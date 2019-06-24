@@ -2,23 +2,21 @@
   <div class="container mt-3">
     <div class="card bg-light">
       <div class="card-header">Documents</div>
-      <div class="card-body">
+      <div class="card-body bg-white">
 
         <!-- Browser file display -->
-        <ul v-if="!loading && !doc">
+        <ul v-if="!loading && !name">
           <li v-for="doc in documents">
             <a href="#" v-on:click="selectDoc(doc.name)">{{ doc.name }}</a>
           </li>
         </ul>
 
-        <h2 v-if="doc">{{ doc.name }}</h2>
-        <div v-if="doc">{{ doc.content }}</div>
-
-        <VueShowdown
-          v-if="doc"
-          flavor="github"
-          v-bind:markdown='doc.code'
-          vueTemplate=true />
+        <div class="markdown-body" v-if="name">
+          <VueShowdown
+            flavor="github"
+            v-bind:markdown="renderMarkdown(content)"
+            vueTemplate=true />
+        </div>
 
         <!-- Spinner -->
         <Spinner
@@ -38,6 +36,7 @@
       FilepathBreadcrumb,
       Spinner
     },
+
     created() {
       this.$http.get('http://localhost:5000/docs').then(response => {
         this.documents = response.body;
@@ -51,19 +50,29 @@
         })
       });
     },
+
     data() {
       return {
         documents: [],
-        doc: null,
         loading: true,
+
+        name: null,
+        content: null,
+        refs: {}
       }
     },
+
     methods: {
       selectDoc(name) {
         this.loading = true;
 
         this.$http.get('http://localhost:5000/render?name=' + encodeURIComponent(name)).then(response => {
-          this.doc = response.body;
+          const r = response.body;
+
+          this.name = r.name;
+          this.content = r.content;
+          this.refs = r.refs;
+
           this.loading = false;
         }, error => {
           this.loading = false;
@@ -73,7 +82,33 @@
             variant: 'danger',
           })
         });
+      },
+
+      renderMarkdown(markdown) {
+        let renderedMarkdown = markdown;
+
+        for (let refId in this.refs) {
+          // Replace all code references in the rendered markdown with the actual code
+          const codeToInsert = '\n' + this.refs[refId].code + '\n';
+          renderedMarkdown = renderedMarkdown.replace(this._generate_reference(refId), codeToInsert)
+        }
+
+        return renderedMarkdown;
+      },
+
+      _generate_reference(referenceId) {
+        return `[code-reference:${referenceId}]`;
       }
     }
   }
 </script>
+
+<style lang="scss">
+  .highlighttable {
+    cursor: text !important;
+
+    span {
+      cursor: text !important;
+    }
+  }
+</style>

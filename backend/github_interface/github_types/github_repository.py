@@ -32,6 +32,9 @@ class GithubRepository:
 
         return current_directory
 
+    def get_lines_at_path(self, path, start_line, end_line):
+        return self.get_content_at_path(path).content.splitlines()[start_line - 1: end_line]
+
     def get_commit_files(self, branch_name="master", sha=None):
         if sha:
             commit = self.__repo_object.get_commit(sha)

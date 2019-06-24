@@ -19,11 +19,9 @@
       @select="selectPath($event.path)"/>
 
     <FileBrowserDisplay
-      :repo="repo"
-      :filePath="currentPath.join('/')"
       :fileContent="fileContent"
-      v-if="!loading && repo && isFile()"
-      @select="" />
+      @lineReference="sendFileReference($event.lineReference)"
+      v-if="!loading && repo && isFile()" />
 
     <!-- Spinner -->
     <Spinner
@@ -123,24 +121,23 @@
       back(path) {
         this.currentPath = path;
         this.getContentForPath();
+      },
+
+      sendFileReference(lineReference) {
+        let fileReference = {
+          repo: this.repo,
+          path: this.currentPath.join('/'),
+          startLine: lineReference.startLine,
+          endLine: lineReference.endLine
+        };
+
+        this.$emit('fileReference', {
+          fileReference: fileReference
+        });
       }
     }
   }
 </script>
 
-<style scoped>
-  .linenodiv {
-    background-color: transparent !important;
-    padding: 20px !important;
-  }
-
-  .code-highlight {
-    background-color: red;
-  }
-
-  [id^="code-line"] {
-    display: block;
-    width: 100%;
-    cursor: pointer;
-  }
+<style>
 </style>

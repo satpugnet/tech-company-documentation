@@ -2,10 +2,6 @@
   <div>
     <!-- File preview -->
     <div v-html="fileContent" @click="selectLines" @mouseover="selectLinesPreviews"></div>
-
-    <!-- Save button -->
-    <button type="button" class="btn btn-success" v-if="startLine && endLine" @click="save">Reference</button>
-
   </div>
 </template>
 
@@ -16,8 +12,6 @@
     },
 
     props: {
-      repo: String,
-      filePath: String,
       fileContent: String
     },
 
@@ -107,22 +101,59 @@
         }
       },
 
-      save() {
-        let fileReference = {
-          'repo': this.repo,
-          'path': this.filePath,
-          'start_line': this.startLine,
-          'end_line': this.endLine
+      sendReference() {
+        let lineReference = {
+          startLine: this.startLine,
+          endLine: this.endLine
         };
 
-        this.$emit('fileReference', {
-          fileReference: fileReference
+        this.$emit('lineReference', {
+          lineReference: lineReference
         });
       }
+    },
+
+    watch: {
+      startLine: 'sendReference',
+      endLine: 'sendReference'
     }
   }
 </script>
 
-<style scoped>
+<style lang="scss">
+  .linenodiv {
+    background-color: transparent !important;
+    padding: 0 !important;
 
+    pre {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  .highlighttable {
+    background-color: #f6f8fa;
+
+    tr {
+      border: 0 !important;
+    }
+
+    td {
+      border: 0 !important;
+      padding: 0 !important;
+    }
+  }
+
+  .highlight {
+    margin-bottom: 0 !important;
+  }
+
+  .code-highlight {
+    background-color: red;
+  }
+
+  [id^="code-line"] {
+    display: block;
+    width: 100%;
+    cursor: pointer;
+  }
 </style>

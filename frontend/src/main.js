@@ -10,6 +10,7 @@ Vue.config.productionTip = false;
 // Import bootstrap
 Vue.use(BootstrapVue);
 import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.js'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Import Showdown
