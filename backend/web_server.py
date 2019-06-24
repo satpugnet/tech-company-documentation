@@ -165,14 +165,12 @@ def get_lines():
     code = highlight(content, lexer, formatter)
 
     response = jsonify({
-        'ref': str(uuid.uuid1()),  # generate a unique id for the reference
-        'content': {
-            'code': code,
-            'repo': repo,
-            'path': path,
-            'startLine': start_line,
-            'endLine': end_line,
-        }
+        'ref_id': str(uuid.uuid1()),  # generate a unique id for the reference
+        'code': code,
+        'repo': repo,
+        'path': path,
+        'startLine': start_line,
+        'endLine': end_line,
     })
 
     response.headers['Access-Control-Allow-Origin'] = '*'

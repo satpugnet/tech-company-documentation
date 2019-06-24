@@ -15,11 +15,14 @@
           </div>
 
           <div class="row">
-            <textarea class="form-control col-6 card" v-model="markdown" rows="20" ref="textarea"></textarea>
+            <textarea class="form-control col-6 card" v-model="content" rows="20" ref="textarea"></textarea>
 
             <div class="col-6 card markdown-body">
-              <VueShowdown
-                v-bind:markdown=renderMarkdown(markdown) />
+              <MarkdownFile
+                :name="title"
+                :content="content"
+                :refs="refs">
+              </MarkdownFile>
             </div>
           </div>
         </div>
@@ -54,38 +57,26 @@
 
 <script>
   import Browser from "./elements/browser/Browser";
+  import MarkdownFile from "./elements/MarkdownFile";
 
   export default {
     components: {
-      Browser
+      Browser,
+      MarkdownFile
     },
-
-    created() {},
 
     data() {
       return {
         title: '',
-        markdown: '',
-        currentReference: {},
-        fileReferences: {}
+        content: '',
+        refs: {},
+        currentReference: {}
       }
     },
 
     methods: {
       setCurrentReference(reference) {
         this.currentReference = reference;
-      },
-
-      renderMarkdown(markdown) {
-        let renderedMarkdown = markdown;
-
-        for (let refId in this.fileReferences) {
-          // Replace all code references in the rendered markdown with the actual code
-          const codeToInsert = '\n' + this.fileReferences[refId].code + '\n';
-          renderedMarkdown = renderedMarkdown.replace(this._generate_reference(refId), codeToInsert)
-        }
-
-        return renderedMarkdown;
       },
 
       saveReference() {
@@ -95,13 +86,19 @@
         if (this.currentReference.startLine && this.currentReference.endLine) {
           let url = this._generate_url(this.currentReference);
           this.$http.get(url).then(response => {
-            const body = response.body;
+            const r = response.body;
 
             // Save the reference and the content
-            this.fileReferences[body.ref] = body.content;
+            this.refs[r.ref_id] = {
+              code: r.code,
+              repo: r.repo,
+              path: r.path,
+              startLine: r.startLine,
+              endLine: r.endLine,
+            };
 
             // Add the reference in the markdown
-            this._addAtCursor(body.ref);
+            this._addAtCursor(r.ref_id);
 
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching github lines", {
@@ -128,8 +125,8 @@
 
         let references = [];
 
-        for (let refId in this.fileReferences) {
-          const content = this.fileReferences[refId];
+        for (let refId in this.refs) {
+          const content = this.refs[refId];
 
           references.push({
             'ref_id': refId,
@@ -142,8 +139,8 @@
 
         let body = {
           'name': this.title,
-          'content': this.markdown,
-          'references': references
+          'content': this.content,
+          'refs': references
         };
 
         this.$http.post('http://localhost:5000/save', body).then(response => {
@@ -152,6 +149,7 @@
             autoHideDelay: 2000,
             variant: 'success',
           });
+
         }, error => {
           this.$bvToast.toast("An error has occurred while saving", {
             title: 'Error',
@@ -164,11 +162,11 @@
       _addAtCursor(referenceId) {
         const cursorPosition = this.$refs.textarea.selectionStart;
 
-        const before = this.markdown.substring(0, cursorPosition);
-        const after = this.markdown.substring(cursorPosition, this.markdown.length);
+        const before = this.content.substring(0, cursorPosition);
+        const after = this.content.substring(cursorPosition, this.content.length);
         const ref = this._generate_reference(referenceId);
 
-        this.markdown = before + ref + after;
+        this.content = before + ref + after;
       },
 
       _generate_reference(referenceId) {
@@ -187,11 +185,4 @@
 </script>
 
 <style lang="scss">
-  .highlighttable {
-    cursor: text !important;
-
-    span {
-      cursor: text !important;
-    }
-  }
 </style>

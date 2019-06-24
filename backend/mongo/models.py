@@ -66,7 +66,7 @@ class Document:
         return {
             'name': self.name,
             'content': self.content,
-            'references': [ref.to_json() for ref in self.references],
+            'refs': [ref.to_json() for ref in self.references],
         }
 
     @staticmethod
@@ -74,5 +74,5 @@ class Document:
         return Document(
             document['name'],
             document['content'],
-            [Document.FileReference.from_json(ref) for ref in document['references']]
+            [Document.FileReference.from_json(ref) for ref in document['refs']]
         )

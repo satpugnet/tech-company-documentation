@@ -2,7 +2,7 @@
   <div class="container mt-3">
     <div class="card bg-light">
       <div class="card-header">Documents</div>
-      <div class="card-body bg-white">
+      <div class="card-body">
 
         <!-- Browser file display -->
         <ul v-if="!loading && !name">
@@ -11,12 +11,12 @@
           </li>
         </ul>
 
-        <div class="markdown-body" v-if="name">
-          <VueShowdown
-            flavor="github"
-            v-bind:markdown="renderMarkdown(content)"
-            vueTemplate=true />
-        </div>
+        <MarkdownFile
+          v-if="name"
+          :name="name"
+          :content="content"
+          :refs="refs"
+          />
 
         <!-- Spinner -->
         <Spinner
@@ -28,13 +28,15 @@
 
 <script>
   import FilepathBreadcrumb from "./elements/browser/FilepathBreadcrumb";
+  import MarkdownFile from "./elements/MarkdownFile";
   import Spinner from "./elements/Spinner";
 
   export default {
 
     components: {
       FilepathBreadcrumb,
-      Spinner
+      Spinner,
+      MarkdownFile
     },
 
     created() {
@@ -82,33 +84,10 @@
             variant: 'danger',
           })
         });
-      },
-
-      renderMarkdown(markdown) {
-        let renderedMarkdown = markdown;
-
-        for (let refId in this.refs) {
-          // Replace all code references in the rendered markdown with the actual code
-          const codeToInsert = '\n' + this.refs[refId].code + '\n';
-          renderedMarkdown = renderedMarkdown.replace(this._generate_reference(refId), codeToInsert)
-        }
-
-        return renderedMarkdown;
-      },
-
-      _generate_reference(referenceId) {
-        return `[code-reference:${referenceId}]`;
       }
     }
   }
 </script>
 
 <style lang="scss">
-  .highlighttable {
-    cursor: text !important;
-
-    span {
-      cursor: text !important;
-    }
-  }
 </style>

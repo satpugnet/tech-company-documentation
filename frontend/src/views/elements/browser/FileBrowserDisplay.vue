@@ -1,14 +1,21 @@
 <template>
-  <div>
-    <!-- File preview -->
-    <div v-html="fileContent" @click="selectLines" @mouseover="selectLinesPreviews"></div>
+  <div class="file-browser-display">
+    <MarkdownFile
+      :name="''"
+      :content="fileContent"
+      :refs="{}"
+      @click.native="selectLines"
+      @mouseover.native="selectLinesPreviews">
+    </MarkdownFile>
   </div>
 </template>
 
 <script>
+  import MarkdownFile from "../MarkdownFile";
 
   export default {
     components: {
+      MarkdownFile
     },
 
     props: {
@@ -26,6 +33,8 @@
     methods: {
       selectLines(event) {
         let id = event.target.id;
+
+        console.log(event);
 
         if (!id) {
           return;
@@ -121,39 +130,16 @@
 </script>
 
 <style lang="scss">
-  .linenodiv {
-    background-color: transparent !important;
-    padding: 0 !important;
+  .file-browser-display {
 
-    pre {
-      margin-bottom: 0 !important;
-    }
-  }
-
-  .highlighttable {
-    background-color: #f6f8fa;
-
-    tr {
-      border: 0 !important;
+    .code-highlight {
+      background-color: #fdbbbb;
     }
 
-    td {
-      border: 0 !important;
-      padding: 0 !important;
+    [id^="code-line"] {
+      display: block;
+      width: 100%;
+      cursor: pointer !important;
     }
-  }
-
-  .highlight {
-    margin-bottom: 0 !important;
-  }
-
-  .code-highlight {
-    background-color: red;
-  }
-
-  [id^="code-line"] {
-    display: block;
-    width: 100%;
-    cursor: pointer;
   }
 </style>
