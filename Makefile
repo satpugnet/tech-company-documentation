@@ -13,3 +13,11 @@ frontend:
 .PHONY: db
 db:
 	mongod --config /usr/local/etc/mongod.conf
+
+.PHONY: db_show
+db_show:
+	mongo --eval "db.document.find().pretty()" documentation
+
+.PHONY: db_clean
+db_clean:
+	mongo --eval "db.document.deleteMany({})" documentation

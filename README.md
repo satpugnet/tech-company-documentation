@@ -34,6 +34,18 @@ Then to run the database:
 make db
 ```
 
+To see the documents, run
+
+```bash
+make db_show
+```
+
+To clean the database, run
+
+```bash
+make db_clean
+```
+
 #### Check out the app
 
 Visit http://localhost:8080/
