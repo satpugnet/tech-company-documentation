@@ -14,6 +14,10 @@ frontend:
 db:
 	mongod --config /usr/local/etc/mongod.conf
 
+.PHONY: db_setup
+db_setup:
+	sh insert_doc.sh
+
 .PHONY: db_show
 db_show:
 	mongo --eval "db.document.find().pretty()" documentation

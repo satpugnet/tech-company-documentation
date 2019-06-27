@@ -34,13 +34,19 @@ Then to run the database:
 make db
 ```
 
-To see the documents, run
+To setup the database and insert data, run 
+
+```bash
+make db_setup
+```
+
+To see the documents in the document collection, run
 
 ```bash
 make db_show
 ```
 
-To clean the database, run
+To clean the database document collection, run
 
 ```bash
 make db_clean

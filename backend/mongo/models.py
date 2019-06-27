@@ -35,8 +35,8 @@ class Document:
                 file_ref['ref_id'],
                 file_ref['repo'],
                 file_ref['path'],
-                file_ref['start_line'],
-                file_ref['end_line']
+                int(file_ref['start_line']),
+                int(file_ref['end_line'])
             )
 
     def __init__(self, name, content, references):
