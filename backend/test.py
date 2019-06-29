@@ -1,9 +1,78 @@
+import datetime
 import json
 import sys
 import time
 
+from github_interface.git.git_diff_parser import GitDiffParser
+
+from github import Github, GithubIntegration, BadCredentialsException
+
 from github_interface.interface import GithubInterface
 from utils.json.custom_json_encoder import CustomJsonEncoder
+
+
+
+
+raw_patch = "@@ -1,4 +1,5 @@\n" \
+" 1\n"  \
+"+1bis\n" \
+"+2\n" \
+" 3\n" \
+" 4\n" \
+"@@ -37,3 +38,4 @@ hello world\n" \
+" hello world\n" \
+" hello world\n" \
+" hello world\n" \
+"+hello world"
+parser = GitDiffParser(raw_patch)
+print(parser.calculate_updated_line_range(1, 6))
+
+
+try:
+        g = Github("etufwf")
+        g.get_rate_limit()
+except BadCredentialsException as e:
+        print("error printed")
+
+# GITHUB_APP_IDENTIFIER = 33713
+# INSTALLATION_ID = 1191487
+
+with open('ressources/github-private-key.pem', 'rb') as file:
+    private_key = file.read()
+
+# g2 = GitHub()
+# g2.login_as_app_installation(private_key, GITHUB_APP_IDENTIFIER, INSTALLATION_ID)
+#
+# # print(dir(g2.repository("saturnin13", "tech-company-documentation").file_contents("")))
+# print(g2.repository("saturnin13", "tech-company-documentation").directory_contents(""))
+# print(dir(g2.repository("saturnin13", "tech-company-documentation").file_contents("Makefile")))
+# print(base64.b64decode(g2.repository("saturnin13", "tech-company-documentation").file_contents("Makefile").content))
+# print(g2.all_repositories())
+# # for repo in g2.all_repositories():
+# #         print(dir(repo))
+
+integration = GithubIntegration(str(GITHUB_APP_IDENTIFIER), private_key)
+print(integration.create_jwt())
+print(datetime.datetime.now())
+print("access token: " + str(integration.get_access_token(INSTALLATION_ID).token))
+print("access token expire time: " + str(integration.get_access_token(INSTALLATION_ID).expires_at))
+
+access_token = integration.get_access_token(INSTALLATION_ID).token
+access_token = "v1.31eb4345c03f4f2d0e7779c0cbaf5902ec9f3035"
+
+g2 = GithubInterface(access_token=access_token, is_user_access_token=False)
+# root_directory = g2.get_repo("saturnin13/tech-company-documentation").root_directory
+# root_directory.load_subfiles()
+# print(root_directory.subfiles["backend"])
+# root_directory.subfiles["backend"].load_subfiles()
+# print(root_directory.subfiles["backend"].subfiles["web_server.py"].content)
+print("laaaaaaaaaaaaaaaaaaaaaa")
+for repo in g2.get_repos():
+        print(repo.full_name)
+print(g2.get_installation(INSTALLATION_ID))
+print()
+
+
 
 start = time.time()
 
@@ -11,7 +80,7 @@ start = time.time()
 repo_name = "louisblin/LondonHousingForecast-Backend"
 # repo_name = "paulvidal/1-week-1-tool"
 
-g = GithubInterface("39180cc3f47072520e81a31484291ea5acc5af9f")
+g = GithubInterface(access_token="39180cc3f47072520e81a31484291ea5acc5af9f", is_user_access_token=True)
 repo = g.get_repo(repo_name)
 repo_root = repo.root_directory
 
@@ -53,7 +122,7 @@ commit_files = repo.get_commit_files("master", sha=None)
 for commit_file in commit_files:
         print()
         print(commit_file.calculate_updated_line_range(3, 50))
-        print(commit_file.has_path_changed())
+        print(commit_file.has_path_changed)
         print(commit_file.previous_path)
         print(commit_file.path)
 
@@ -117,3 +186,5 @@ for commit_file in commit_files:
 #
 # #TODO check why the second part is not being taken into account by the range (fix for diff_parser.calculate_updated_line_range(2, 11))
 
+# GITHUB_WEBHOOK_SECRET = SatPaulDocumentation
+# GITHUB_APP_IDENTIFIER = 33713

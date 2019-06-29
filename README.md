@@ -52,6 +52,13 @@ To clean the database document collection, run
 make db_clean
 ```
 
+### Setting the webhook redirect
+
+To set the webhook redirect to localhost:
+```bash
+make webhook
+```
+
 #### Check out the app
 
 Visit http://localhost:8080/
@@ -70,8 +77,26 @@ pip freeze > backend/requirements.txt
 pip install -r backend/requirements.txt
 ```
 
+### Clone the test folder locally
+
+```bash
+git clone git@github.com:codersdoc/Test.git
+```
+
+### Change the setup of the Github app
+
+Go to this [link](https://github.com/settings/apps/tech-documentation).
+
+### Useful links
+
+* [Github enpoints available](https://developer.github.com/v3/apps/available-endpoints/).
+
+
 ## Miscallaneous 
 
 ### Tech and library used
 
 * pyGithub
+* mongo
+* flask
+* Vuejs

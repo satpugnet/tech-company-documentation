@@ -13,12 +13,13 @@ class Document:
         A FileReference is part of a Document, and references lines of code in repositories
         """
 
-        def __init__(self, ref_id, repo, path, start_line, end_line):
+        def __init__(self, ref_id, repo, path, start_line, end_line, is_deleted):
             self.ref_id = ref_id
             self.repo = repo
             self.path = path
             self.start_line = start_line
             self.end_line = end_line
+            self.is_deleted = is_deleted
 
         def to_json(self):
             return {
@@ -27,6 +28,7 @@ class Document:
                 'path': self.path,
                 'start_line': self.start_line,
                 'end_line': self.end_line,
+                'is_deleted': self.is_deleted
             }
 
         @staticmethod
@@ -36,7 +38,8 @@ class Document:
                 file_ref['repo'],
                 file_ref['path'],
                 int(file_ref['start_line']),
-                int(file_ref['end_line'])
+                int(file_ref['end_line']),
+                file_ref['is_deleted']
             )
 
     def __init__(self, name, content, references):
@@ -46,6 +49,45 @@ class Document:
 
     def insert(self):
         return self.COLLECTION.insert_one(self.to_json())
+
+    @staticmethod
+    def __update(query, new_values):
+        return Document.COLLECTION.update_one(query, new_values)
+
+    @staticmethod
+    def update_lines_ref(ref_id, new_start_line, new_end_line):
+        query = { "refs.ref_id": ref_id }
+        new_values = {
+            "$set": {
+                "refs.$.start_line": new_start_line,
+                "refs.$.end_line": new_end_line
+            }
+        }
+
+        return Document.__update(query, new_values)
+
+    @staticmethod
+    def update_path_ref(ref_id, path):
+        query = {"refs.ref_id": ref_id}
+        new_values = {
+            "$set": {
+                "refs.$.path": path
+            }
+        }
+
+        return Document.__update(query, new_values)
+
+    staticmethod
+
+    def update_is_deleted_ref(ref_id, is_deleted):
+        query = {"refs.ref_id": ref_id}
+        new_values = {
+            "$set": {
+                "refs.$.is_deleted": is_deleted
+            }
+        }
+
+        return Document.__update(query, new_values)
 
     @staticmethod
     def find(name):
