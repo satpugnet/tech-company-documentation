@@ -45,6 +45,7 @@ class GitDiffHunk:
     def __count_line_change_helper(self, line_number, is_count_before):
         current_old_line_number = self.get_old_start_line() - 1
         total_line_change = 0
+        counter_reseted = False
 
         for code_line in self.code_lines:
             if code_line.state == GitDiffCodeLineState.UNCHANGED:
@@ -55,10 +56,11 @@ class GitDiffHunk:
             elif code_line.state == GitDiffCodeLineState.ADDED:
                 total_line_change += 1
 
-            if current_old_line_number == line_number:
+            if current_old_line_number == line_number and not counter_reseted:
                 if is_count_before:
                     break
                 else:
+                    counter_reseted = True
                     total_line_change = 0
 
         return total_line_change

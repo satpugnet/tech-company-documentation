@@ -45,9 +45,11 @@ class GithubRepository:
         for file in commit.files:
             if file.status == "removed":
                 file_object = None
+                is_deleted = True
             else:
                 file_object = self.__get_file_object(file.filename)
-            files.append(GithubCommitFile(file_object, file.previous_filename, file.patch))
+                is_deleted = False
+            files.append(GithubCommitFile(file_object, file.filename, file.previous_filename, file.patch, is_deleted))
 
         return files
 

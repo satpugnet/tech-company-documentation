@@ -4,6 +4,11 @@ import Home from './views/Home.vue'
 import Markdown from './views/Markdown.vue'
 import BrowserView from './views/BrowserView.vue'
 import Documents from './views/Documents.vue'
+import Login from './views/Login.vue'
+import AuthGithubCallback from "./views/AuthGithubCallback";
+import Installs from "./views/Installs";
+import AppInstallationCallbackGithub from "./views/AppInstallationCallbackGithub";
+import AuthGithub from "./views/AuthGithub";
 
 Vue.use(Router);
 
@@ -17,25 +22,44 @@ export default new Router({
       component: Home
     },
     {
-      path: '/markdown',
+      path: '/installs/:account_id/markdown',
       name: 'markdown',
       component: Markdown
     },
     {
-      path: '/browser',
+      path: '/installs/:account_id/browser',
       name: 'browser',
       component: BrowserView
     },
     {
-      path: '/docs',
+      path: '/installs/:account_id/docs',
       name: 'docs',
       component: Documents
     },
-    // {
-    //   path: '/markdown',
-    //   name: 'markdown',
-    //   // separate chunk (about.[hash].js) lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/Markdown.vue')
-    // }
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/auth/github',
+      name: 'auth_github',
+      component: AuthGithub
+    },
+    {
+      path: '/auth/github/callback',
+      name: 'auth_github_callback',
+      component: AuthGithubCallback
+    },
+    {
+      path: '/installs',
+      name: 'installs',
+      component: Installs
+    },
+    {
+      path: '/auth/github/app_installation_callback',
+      name: 'auth_github_app_installation_callback',
+      component: AppInstallationCallbackGithub
+    }
   ]
 })

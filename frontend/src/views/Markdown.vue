@@ -133,7 +133,8 @@
             'repo': content.repo,
             'path': content.path,
             'start_line': content.startLine,
-            'end_line': content.endLine
+            'end_line': content.endLine,
+            'is_deleted': false
           })
         }
 

@@ -34,8 +34,6 @@
       selectLines(event) {
         let id = event.target.id;
 
-        console.log(event);
-
         if (!id) {
           return;
         }
