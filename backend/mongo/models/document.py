@@ -77,8 +77,7 @@ class Document:
 
         return Document.__update(query, new_values)
 
-    staticmethod
-
+    @staticmethod
     def update_is_deleted_ref(ref_id, is_deleted):
         query = {"refs.ref_id": ref_id}
         new_values = {

@@ -10,7 +10,7 @@ from pygments.util import ClassNotFound
 
 from github_interface.interface import GithubInterface
 from mongo.credentials import CredentialsManager
-from mongo.models import Document
+from mongo.models.document import Document
 from utils import code_formatter
 from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL_LOGIN
 from utils.file_interface import FileInterface

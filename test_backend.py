@@ -11,8 +11,6 @@ from github_interface.interface import GithubInterface
 from utils.json.custom_json_encoder import CustomJsonEncoder
 
 
-
-
 raw_patch = "@@ -1,4 +1,5 @@\n" \
 " 1\n"  \
 "+1bis\n" \
@@ -58,7 +56,7 @@ print("access token: " + str(integration.get_access_token(INSTALLATION_ID).token
 print("access token expire time: " + str(integration.get_access_token(INSTALLATION_ID).expires_at))
 
 access_token = integration.get_access_token(INSTALLATION_ID).token
-access_token = "v1.31eb4345c03f4f2d0e7779c0cbaf5902ec9f3035"
+access_token = "v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94"
 
 g2 = GithubInterface(access_token=access_token, is_user_access_token=False)
 # root_directory = g2.get_repo("saturnin13/tech-company-documentation").root_directory
@@ -80,9 +78,12 @@ start = time.time()
 repo_name = "louisblin/LondonHousingForecast-Backend"
 # repo_name = "paulvidal/1-week-1-tool"
 
-g = GithubInterface(access_token="39180cc3f47072520e81a31484291ea5acc5af9f", is_user_access_token=True)
+g = GithubInterface(access_token="v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94", is_user_access_token=True)
 repo = g.get_repo(repo_name)
 repo_root = repo.root_directory
+
+print("laaaaa")
+print(repo.get_commits())
 
 print("It took " + str(time.time() - start) + " to download " + repo_name)
 
