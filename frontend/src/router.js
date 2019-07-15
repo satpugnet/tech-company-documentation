@@ -22,17 +22,17 @@ export default new Router({
       component: Home
     },
     {
-      path: '/installs/:account_id/markdown',
+      path: '/:account_id/markdown',
       name: 'markdown',
       component: Markdown
     },
     {
-      path: '/installs/:account_id/browser',
+      path: '/:account_id/browser',
       name: 'browser',
       component: BrowserView
     },
     {
-      path: '/installs/:account_id/docs',
+      path: '/:account_id/docs',
       name: 'docs',
       component: Documents
     },

@@ -5,7 +5,7 @@
     </div>
     <ul>
       <li v-for="installation in installations">
-        <a :href="'http://localhost:8080/installs/' + installation.account.id + '/browser'" v-on:click="saveInstallationAccessToken(installation.id)">
+        <a :href="'http://localhost:8080/' + installation.account.login + '/browser'" v-on:click="saveInstallationAccessToken(installation.id)">
           <button type="button" class="btn btn-primary" >{{ installation.account.login }}</button>
         </a>
       </li>
