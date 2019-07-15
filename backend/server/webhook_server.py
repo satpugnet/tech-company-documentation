@@ -16,19 +16,22 @@ def webhook_handler():
     if not __signature_valid():
         abort(401)
 
-    __update_db()
+    data = json.loads(request.data.decode("utf-8"))
+
+    __update_db(data["repository"]["full_name"])
 
     response = jsonify({})
 
     return response
 
-def __update_db():
-    data = json.loads(request.data.decode("utf-8"))
-    repo = GithubInterface.get_repo(data["repository"]["full_name"])
+def manually_update_db(repo_full_name):
+    __update_db(repo_full_name)
+
+def __update_db(repo_name):
+    repo = GithubInterface.get_repo(repo_name)
 
     commits = __get_commits_from_db_sha(repo)
-
-    # commits =__get_commits_from_webhook(data, repo)
+    # commits = __get_commits_from_webhook(data, repo)
 
     for commit in commits:
         Repository.upsert_sha_last_update(repo.full_name, commit.sha)
