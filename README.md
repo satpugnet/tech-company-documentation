@@ -18,7 +18,7 @@ make backend
 make frontend
 ```
 
-#### Launching the Database
+#### Running the Database
 
 MongoDB is used. To install follow the steps [here](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/).
 
@@ -33,6 +33,8 @@ Then to run the database:
 ```bash
 make db
 ```
+
+#### Database operations
 
 To setup the database and insert data, run 
 
@@ -54,7 +56,14 @@ make db_clean
 
 ### Setting the webhook redirect
 
-To set the webhook redirect to localhost:
+To set the webhook redirecting to localhost, first install [smee](https://smee.io/)
+
+```bash
+npm install --global smee-client
+```
+
+Then, run
+
 ```bash
 make webhook
 ```
@@ -79,20 +88,23 @@ pip install -r backend/requirements.txt
 
 ### Clone the test folder locally
 
+This folder is used to make some test on an organisation code.
+
 ```bash
 git clone git@github.com:codersdoc/Test.git
 ```
+
+## Github
 
 ### Change the setup of the Github app
 
 Go to this [link](https://github.com/settings/apps/tech-documentation).
 
+## Miscallaneous 
+
 ### Useful links
 
-* [Github enpoints available](https://developer.github.com/v3/apps/available-endpoints/).
-
-
-## Miscallaneous 
+* [Github enpoints available](https://developer.github.com/v3/apps/available-endpoints/). 
 
 ### Tech and library used
 
