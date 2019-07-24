@@ -1,7 +1,7 @@
 from github import UnknownObjectException
 
 from github_interface.github_types.abstract_github_file import AbstractGithubFile
-from github_interface.github_types.github_commit_file import GithubCommitFile
+from github_interface.github_types.git_commit import GithubCommit
 from github_interface.github_types.github_directory import GithubDirectory
 
 
@@ -35,23 +35,25 @@ class GithubRepository:
     def get_lines_at_path(self, path, start_line, end_line):
         return self.get_content_at_path(path).content.splitlines()[start_line - 1: end_line]
 
-    def get_commit_files(self, branch_name="master", sha=None):
+    def get_commits_since_sha_exclusive(self, sha_last_update, branch_name="master"):
+        commits = []
+        commits_object = self.__repo_object.get_commits(branch_name)
+
+        for commit in commits_object:
+            if commit.sha == sha_last_update:
+                break
+            commits.append(self.get_commit(sha=commit.sha))
+
+        commits.reverse()
+        return commits
+
+    def get_commit(self, branch_name="master", sha=None):
         if sha:
             commit = self.__repo_object.get_commit(sha)
         else:
             commit = self.__repo_object.get_branch(branch_name).commit
 
-        files = []
-        for file in commit.files:
-            if file.status == "removed":
-                file_object = None
-                is_deleted = True
-            else:
-                file_object = self.__get_file_object(file.filename)
-                is_deleted = False
-            files.append(GithubCommitFile(file_object, file.filename, file.previous_filename, file.patch, is_deleted))
-
-        return files
+        return GithubCommit(commit)
 
     def __get_file_object(self, filename):
         try:
