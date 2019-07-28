@@ -22,21 +22,6 @@ export default new Router({
       component: Home
     },
     {
-      path: '/:account_id/markdown',
-      name: 'markdown',
-      component: Markdown
-    },
-    {
-      path: '/:account_id/browser',
-      name: 'browser',
-      component: BrowserView
-    },
-    {
-      path: '/:account_id/docs',
-      name: 'docs',
-      component: Documents
-    },
-    {
       path: '/login',
       name: 'login',
       component: Login
@@ -60,6 +45,26 @@ export default new Router({
       path: '/auth/github/app_installation_callback',
       name: 'auth_github_app_installation_callback',
       component: AppInstallationCallbackGithub
-    }
+    },
+    {
+      path: '/:installation_account_login',
+      name: 'installation home',
+      component: BrowserView
+    },
+    {
+      path: '/:installation_account_login/markdown',
+      name: 'markdown',
+      component: Markdown
+    },
+    {
+      path: '/:installation_account_login/browser',
+      name: 'browser',
+      component: BrowserView
+    },
+    {
+      path: '/:installation_account_login/docs',
+      name: 'docs',
+      component: Documents
+    },
   ]
 })

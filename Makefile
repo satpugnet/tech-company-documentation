@@ -20,7 +20,7 @@ db:
 
 .PHONY: db_update
 db_update:
-	python backend/manually_update_db.py $(repo_full_name)
+	python backend/manually_update_db.py $(organisation_login) $(repo_full_name)
 
 .PHONY: db_setup
 db_setup:

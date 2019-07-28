@@ -7,8 +7,8 @@ from mongo.models.document import Document
 from mongo.models.repository import Repository
 from utils.constants import GITHUB_WEBHOOK_SECRET
 
-webhook_server = Blueprint('webhook_server', __name__, )
 
+webhook_server = Blueprint('webhook_server', __name__)
 
 @webhook_server.route("/webhook_handler", methods=['POST'])
 def webhook_handler():
@@ -18,17 +18,17 @@ def webhook_handler():
 
     data = json.loads(request.data.decode("utf-8"))
 
-    __update_db(data["repository"]["full_name"])
+    __update_db(data["organization"]["login"], data["repository"]["full_name"])
 
     response = jsonify({})
 
     return response
 
-def manually_update_db(repo_full_name):
-    __update_db(repo_full_name)
+def manually_update_db(organisation_login, repo_full_name):
+    __update_db(organisation_login, repo_full_name)
 
-def __update_db(repo_name):
-    repo = GithubInterface.get_repo(repo_name)
+def __update_db(organisation_login, repo_name):
+    repo = GithubInterface.get_repo_without_user_authentification(organisation_login, repo_name)
 
     commits = __get_commits_from_db_sha(repo)
     # commits = __get_commits_from_webhook(data, repo)

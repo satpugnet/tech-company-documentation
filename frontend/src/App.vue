@@ -7,13 +7,13 @@
             <router-link to="/" class="nav-link">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/' + $route.params.account_id + '/markdown'" class="nav-link">Markdown</router-link>
+            <router-link :to="'/' + $route.params.installation_account_login + '/markdown'" class="nav-link">Markdown</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/' + $route.params.account_id + '/browser'" class="nav-link">Browser</router-link>
+            <router-link :to="'/' + $route.params.installation_account_login + '/browser'" class="nav-link">Browser</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/' + $route.params.account_id + '/docs'" class="nav-link">Documents</router-link>
+            <router-link :to="'/' + $route.params.installation_account_login + '/docs'" class="nav-link">Documents</router-link>
           </li>
         </ul>
       </div>

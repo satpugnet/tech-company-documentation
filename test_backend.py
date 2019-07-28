@@ -3,13 +3,34 @@ import json
 import sys
 import time
 
-from github_interface.git.git_diff_parser import GitDiffParser
-
 from github import Github, GithubIntegration, BadCredentialsException
 
+from github_interface.git.git_diff_parser import GitDiffParser
 from github_interface.interface import GithubInterface
 from utils.json.custom_json_encoder import CustomJsonEncoder
 
+# User.upsert_installation("saturnin13", "12342", "445sf475", "6")
+
+github_account = Github("aed389484d26dd38496bea60762d699a33d37b29")
+
+user = github_account.get_user()
+print(user)
+
+def decode_flask_cookie(secret_key, cookie_str):
+    import hashlib
+    from itsdangerous import URLSafeTimedSerializer
+    from flask.sessions import TaggedJSONSerializer
+    salt = 'cookie-session'
+    serializer = TaggedJSONSerializer()
+    signer_kwargs = {
+        'key_derivation': 'hmac',
+        'digest_method': hashlib.sha1
+    }
+    s = URLSafeTimedSerializer(secret_key, salt=salt, serializer=serializer, signer_kwargs=signer_kwargs)
+    return s.loads(cookie_str)
+
+print(decode_flask_cookie("test", ".eJwNw20KgCAMANC7eII557QuE_tQiEAj-hfdvR68J2ynXDLm7ts9jzbCGpolL-qV0RlTzMDaBXJlSFG0VyEjbFQwcyyLuSlBlyr_okAY3g-RwhmK.XTpayQ.xL26gkdSVnilRz8srBTeqW8o2rU"))
+print("la")
 
 raw_patch = "@@ -1,4 +1,5 @@\n" \
 " 1\n"  \

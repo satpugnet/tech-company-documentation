@@ -52,8 +52,8 @@ class Repository:
         }
 
     @staticmethod
-    def from_json(document):
+    def from_json(repository):
         return Repository(
-            document['repository_full_name'],
-            document['sha_last_update']
+            repository['repository_full_name'],
+            repository['sha_last_update']
         )
