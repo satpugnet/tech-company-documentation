@@ -85,7 +85,7 @@
 
         if (this.currentReference.startLine && this.currentReference.endLine) {
           let url = this._generate_url(this.currentReference);
-          this.$http.get(url, {credentials: true}).then(response => {
+          this.$http.get(url).then(response => {
             const r = response.body;
 
             // Save the reference and the content
@@ -144,7 +144,7 @@
           'refs': references
         };
 
-        this.$http.post('/api/save', body, {credentials: true}).then(response => {
+        this.$http.post('/api/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,

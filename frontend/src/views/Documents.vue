@@ -40,7 +40,7 @@
     },
 
     created() {
-      this.$http.get('/api/docs', {credentials: true}).then(response => {
+      this.$http.get('/api/docs').then(response => {
         this.documents = response.body;
         this.loading = false;
       }, error => {
@@ -68,7 +68,7 @@
       selectDoc(name) {
         this.loading = true;
 
-        this.$http.get('/api/' + this.$router.currentRoute.path.split("/")[1] + '/render?name=' + encodeURIComponent(name), {credentials: true}).then(response => {
+        this.$http.get('/api/' + this.$router.currentRoute.path.split("/")[1] + '/render?name=' + encodeURIComponent(name)).then(response => {
           const r = response.body;
 
           this.name = r.name;

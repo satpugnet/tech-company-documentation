@@ -225,21 +225,10 @@ def __isUserAuthorised():
     return 'user_login' in session
 
 def __create_unauthorised_response():
-    response = Response()
-    return __set_base_headers(response)
+    return Response()
 
 def __create_response(json):
-    response = __set_base_headers(jsonify(json))
-    response.headers['Access-Control-Allow-Headers'] = 'Set-Cookie'
-    return response
+    return jsonify(json)
 
 def __create_option_response():
-    response = __set_base_headers(Response())
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Set-Cookie'
-    return response
-
-
-def __set_base_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
+    return Response()
