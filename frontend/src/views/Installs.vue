@@ -21,7 +21,7 @@
   export default {
 
     created() {
-      this.$http.post('/api/installs', "", {credentials: true}).then(response => {
+      this.$http.post('/api/installs', "").then(response => {
         this.installations = response.body.installations;
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations", {
@@ -39,7 +39,7 @@
     methods: {
       saveInstallationAccessTokenAndRedirect(installation_id, installation_account_login) {
         this.$http.post('/api/installs/installation_selection?installation_id=' + installation_id +
-            "&installation_account_login=" + installation_account_login, "", {credentials: true}).then(response => {
+            "&installation_account_login=" + installation_account_login, "").then(response => {
             this.$router.replace({ path: "/" + installation_account_login + "/browser" });
         }, error => {
           this.loading = false;
