@@ -7,7 +7,7 @@ from mongo.models.document import Document
 from mongo.models.repository import Repository
 from utils.constants import GITHUB_WEBHOOK_SECRET
 
-webhook_server = Blueprint('webhook_server', __name__,)
+webhook_server = Blueprint('webhook_server', __name__, )
 
 
 @webhook_server.route("/webhook_handler", methods=['POST'])
@@ -55,6 +55,7 @@ def __get_commits_from_webhook(data, repo):
             sha = commit["id"]
             commits.append(repo.get_commit(sha=sha))
     return commits
+
 
 def __is_branch_master(ref):
     return ref[ref.rfind('/') + 1:] == "master"
