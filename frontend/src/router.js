@@ -2,9 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Markdown from './views/Markdown.vue'
-import BrowserView from './views/BrowserView.vue'
 import Documents from './views/Documents.vue'
-import Login from './views/Login.vue'
 import AuthGithubCallback from "./views/AuthGithubCallback";
 import Installs from "./views/Installs";
 import AppInstallationCallbackGithub from "./views/AppInstallationCallbackGithub";
@@ -20,11 +18,6 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login
     },
     {
       path: '/auth/github',
