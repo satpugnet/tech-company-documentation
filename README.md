@@ -36,22 +36,28 @@ make db
 
 #### Database operations
 
-To setup the database and insert data, run 
+To setup the database and insert data, run:
 
 ```bash
 make db_setup
 ```
 
-To see the documents in the document collection, run
+To see the documents in the document collection, run:
 
 ```bash
 make db_show
 ```
 
-To clean the database document collection, run
+To clean the database document collection, run:
 
 ```bash
 make db_clean
+```
+
+To update the database for a specific repository manually instead of using the webhook, run:
+
+```bash
+make db_update organisation_login=<organisation_login (i.e. codersdoc)> repo_full_name=<fullname of repositories (i.e. codersdoc/Test)>
 ```
 
 ### Setting the webhook redirect

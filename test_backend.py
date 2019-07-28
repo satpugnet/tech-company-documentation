@@ -3,15 +3,34 @@ import json
 import sys
 import time
 
-from github_interface.git.git_diff_parser import GitDiffParser
-
 from github import Github, GithubIntegration, BadCredentialsException
 
+from github_interface.git.git_diff_parser import GitDiffParser
 from github_interface.interface import GithubInterface
 from utils.json.custom_json_encoder import CustomJsonEncoder
 
+# User.upsert_installation("saturnin13", "12342", "445sf475", "6")
 
+github_account = Github("aed389484d26dd38496bea60762d699a33d37b29")
 
+user = github_account.get_user()
+print(user)
+
+def decode_flask_cookie(secret_key, cookie_str):
+    import hashlib
+    from itsdangerous import URLSafeTimedSerializer
+    from flask.sessions import TaggedJSONSerializer
+    salt = 'cookie-session'
+    serializer = TaggedJSONSerializer()
+    signer_kwargs = {
+        'key_derivation': 'hmac',
+        'digest_method': hashlib.sha1
+    }
+    s = URLSafeTimedSerializer(secret_key, salt=salt, serializer=serializer, signer_kwargs=signer_kwargs)
+    return s.loads(cookie_str)
+
+print(decode_flask_cookie("test", ".eJwNw20KgCAMANC7eII557QuE_tQiEAj-hfdvR68J2ynXDLm7ts9jzbCGpolL-qV0RlTzMDaBXJlSFG0VyEjbFQwcyyLuSlBlyr_okAY3g-RwhmK.XTpayQ.xL26gkdSVnilRz8srBTeqW8o2rU"))
+print("la")
 
 raw_patch = "@@ -1,4 +1,5 @@\n" \
 " 1\n"  \
@@ -58,7 +77,7 @@ print("access token: " + str(integration.get_access_token(INSTALLATION_ID).token
 print("access token expire time: " + str(integration.get_access_token(INSTALLATION_ID).expires_at))
 
 access_token = integration.get_access_token(INSTALLATION_ID).token
-access_token = "v1.31eb4345c03f4f2d0e7779c0cbaf5902ec9f3035"
+access_token = "v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94"
 
 g2 = GithubInterface(access_token=access_token, is_user_access_token=False)
 # root_directory = g2.get_repo("saturnin13/tech-company-documentation").root_directory
@@ -80,9 +99,12 @@ start = time.time()
 repo_name = "louisblin/LondonHousingForecast-Backend"
 # repo_name = "paulvidal/1-week-1-tool"
 
-g = GithubInterface(access_token="39180cc3f47072520e81a31484291ea5acc5af9f", is_user_access_token=True)
+g = GithubInterface(access_token="v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94", is_user_access_token=True)
 repo = g.get_repo(repo_name)
 repo_root = repo.root_directory
+
+print("laaaaa")
+print(repo.get_commits())
 
 print("It took " + str(time.time() - start) + " to download " + repo_name)
 

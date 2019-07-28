@@ -18,6 +18,10 @@ webhook:
 db:
 	mongod --config /usr/local/etc/mongod.conf
 
+.PHONY: db_update
+db_update:
+	python backend/manually_update_db.py $(organisation_login) $(repo_full_name)
+
 .PHONY: db_setup
 db_setup:
 	sh insert_doc.sh

@@ -7,10 +7,10 @@
 <script>
   export default {
     created() {
-      this.$http.get('/api/github_app_installation_callback?installation_id=' +
-          this.$route.query.installation_id + "&setup_action=" +  this.$route.query.setup_action).then(response => {
-          if (typeof response.body.installation.account !== 'undefined') {
-              this.$router.replace({path: '/installs/' + response.body.installation.account.id});
+      this.$http.post('/api/github_app_installation_callback?installation_id=' +
+          this.$route.query.installation_id + "&setup_action=" +  this.$route.query.setup_action, "", {credentials: true}).then(response => {
+          if (typeof response.body.login !== 'undefined') {
+              this.$router.replace({path: '/' + response.body.login});
           } else {
               this.$router.replace({ path: '/auth/github' });
           }
