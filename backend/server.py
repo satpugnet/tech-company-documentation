@@ -10,17 +10,17 @@ from utils.json.custom_json_encoder import CustomJsonEncoder
 app = Flask(__name__)
 
 config = {
-    "development": "server.configuration.developement_config.DevelopmentConfig",
+    "development": "server.configuration.development_config.DevelopmentConfig",
     "prod": "server.configuration.prod_config.ProdConfig",
-    "default": "server.configuration.developement_config.DevelopmentConfig"
+    "default": "server.configuration.development_config.DevelopmentConfig"
 }
-
 
 config_name = os.getenv('FLASK_CONFIGURATION', 'default')
 app.config.from_object(config[config_name])
 
 app.json_encoder = CustomJsonEncoder
-app.secret_key = os.urandom(24)
+# TODO: put this in an env variable
+app.secret_key = b'`\xefM\x11\xfd\xef\x1d"\x06\x9ek\xb3r\xb0\xcc\x17\xeb\x85u\xf8$\xc1\x94\xce'
 
 paranoid = Paranoid(app)
 
