@@ -4,6 +4,7 @@ import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
 import VueResource from 'vue-resource'
 import router from './router'
+import fontAwesome from './font-awesome'
 
 Vue.config.productionTip = false;
 
@@ -26,6 +27,9 @@ import 'github-markdown-css/github-markdown.css'
 
 // Import Vue resource
 Vue.use(VueResource);
+
+// Register font awesome component
+Vue.component('font-awesome-icon', fontAwesome);
 
 // Render the app
 new Vue({

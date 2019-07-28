@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-3">
-    <div class="card bg-light">
+    <div class="row card bg-light">
       <div class="card-header">Documents</div>
       <div class="card-body">
 

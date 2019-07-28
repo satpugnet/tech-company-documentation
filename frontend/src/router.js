@@ -49,17 +49,12 @@ export default new Router({
     {
       path: '/:installation_account_login',
       name: 'installation home',
-      component: BrowserView
+      component: Home
     },
     {
       path: '/:installation_account_login/markdown',
       name: 'markdown',
       component: Markdown
-    },
-    {
-      path: '/:installation_account_login/browser',
-      name: 'browser',
-      component: BrowserView
     },
     {
       path: '/:installation_account_login/docs',
