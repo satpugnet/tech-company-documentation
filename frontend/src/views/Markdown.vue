@@ -144,7 +144,7 @@
           'refs': references
         };
 
-        this.$http.post('http://localhost:5000/save', body).then(response => {
+        this.$http.post('/api/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,
@@ -175,7 +175,7 @@
       },
 
       _generate_url(reference) {
-        return 'http://localhost:5000/lines?'
+        return '/api/lines?'
           + 'repo=' + encodeURIComponent(reference.repo)
           + '&path=' + encodeURIComponent(reference.path)
           + '&startLine=' + encodeURIComponent(reference.startLine)

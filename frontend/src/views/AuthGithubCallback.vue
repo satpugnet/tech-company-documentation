@@ -8,7 +8,7 @@
   export default {
     created() {
 
-      this.$http.post('http://localhost:5000/auth/github/callback?code=' + this.$route.query.code + "&state=" +
+      this.$http.post('/api/auth/github/callback?code=' + this.$route.query.code + "&state=" +
           this.$route.query.state, "").then(response => {
         this.$router.replace({ path: '/installs' });
       }, error => {

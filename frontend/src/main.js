@@ -30,9 +30,5 @@ Vue.use(VueResource);
 // Render the app
 new Vue({
   render: h => h(App),
-  router: router,
-  http: {
-    root: 'http://localhost:5000',
-    headers: {}
-  }
+  router: router
 }).$mount('#app');

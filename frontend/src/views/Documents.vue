@@ -40,7 +40,7 @@
     },
 
     created() {
-      this.$http.get('http://localhost:5000/docs').then(response => {
+      this.$http.get('/api/docs').then(response => {
         this.documents = response.body;
         this.loading = false;
       }, error => {
@@ -68,7 +68,7 @@
       selectDoc(name) {
         this.loading = true;
 
-        this.$http.get('http://localhost:5000/render?name=' + encodeURIComponent(name)).then(response => {
+        this.$http.get('/api/render?name=' + encodeURIComponent(name)).then(response => {
           const r = response.body;
 
           this.name = r.name;

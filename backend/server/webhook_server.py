@@ -6,7 +6,7 @@ from github_interface.interface import GithubInterface
 from mongo.models import Document
 from utils.constants import GITHUB_WEBHOOK_SECRET
 
-webhook_server = Blueprint('webhook_server', __name__,)
+webhook_server = Blueprint('webhook_server', __name__, )
 
 
 @webhook_server.route("/webhook_handler", methods=['POST'])
@@ -32,8 +32,10 @@ def webhook_handler():
 
     return response
 
+
 def __is_branch_master(ref):
     return ref[ref.rfind('/') + 1:] == "master"
+
 
 def __update_db_ref_line_numbers(repo_name, commit_files):
     name_commit_files = [commit_file.previous_path for commit_file in commit_files]

@@ -1,7 +1,7 @@
 import copy
 import uuid
 
-from flask import jsonify, request, abort, Response, Blueprint
+from flask import jsonify, request, abort, Response, Blueprint, logging
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_for_filename
@@ -15,7 +15,8 @@ from utils import code_formatter
 from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL_LOGIN
 from utils.file_interface import FileInterface
 
-web_server = Blueprint('web_server', __name__,)
+web_server = Blueprint('web_server', __name__, )
+
 
 @web_server.route("/repos")
 def repos():
@@ -24,6 +25,7 @@ def repos():
 
     # Return the response
     return __create_response(repo_names)
+
 
 @web_server.route("/file")
 def file():
@@ -55,6 +57,7 @@ def file():
     # Return the response
     return __create_response(repo_object)
 
+
 @web_server.route("/save", methods=['POST', 'OPTIONS'])
 def save():
     if request.method == 'OPTIONS':
@@ -74,6 +77,7 @@ def docs():
     docs = Document.get_all()
 
     return __create_response([doc.to_json() for doc in docs])
+
 
 @web_server.route("/render")
 def render():
@@ -105,7 +109,6 @@ def render():
     })
 
 
-
 # TODO: similar to render -> refactor later
 @web_server.route("/lines")
 def get_lines():
@@ -134,6 +137,7 @@ def get_lines():
         'endLine': end_line,
     })
 
+
 @web_server.route("/auth/github/callback", methods=['POST', 'OPTIONS'])
 def auth_github_callback():
     if request.method == 'OPTIONS':
@@ -145,10 +149,12 @@ def auth_github_callback():
     if state != SECRET_PASSWORD_FORGERY:
         abort(401)
 
-    user_access_token = GithubInterface.get_user_access_token(CLIENT_ID, CLIENT_SECRET, temporary_code, REDIRECT_URL_LOGIN)
+    user_access_token = GithubInterface.get_user_access_token(CLIENT_ID, CLIENT_SECRET, temporary_code,
+                                                              REDIRECT_URL_LOGIN)
     CredentialsManager.write_credentials(user_access_token=user_access_token)
 
     return __create_response({})
+
 
 @web_server.route("/installs")
 def installs():
@@ -167,20 +173,24 @@ def installs():
 def installs_installation_selection():
     installation_id = request.args.get('installation_id')
 
-    CredentialsManager.write_credentials(installation_access_token=GithubInterface.get_installation_access_token(installation_id, FileInterface.load_private_key()))
+    CredentialsManager.write_credentials(
+        installation_access_token=GithubInterface.get_installation_access_token(installation_id,
+                                                                                FileInterface.load_private_key()))
 
     return __create_response({})
 
+
 @web_server.route("/github_app_installation_callback")
 def github_app_installation_callback():
-    '''
+    """
     TODO: fix bug, when coming back from the installation page from github to the callback with my main account (saturnin13)
     the installation_id in the url is set to "undefined". find why and fix it.
-    '''
+    """
     installation_id = request.args.get('installation_id')
     setup_action = request.args.get('setup_action')
 
-    installation_access_token = GithubInterface.get_installation_access_token(installation_id, FileInterface.load_private_key())
+    installation_access_token = GithubInterface.get_installation_access_token(installation_id,
+                                                                              FileInterface.load_private_key())
 
     CredentialsManager.write_credentials(installation_access_token=installation_access_token)
 
@@ -196,18 +206,10 @@ def github_app_installation_callback():
         "installation": installation
     })
 
-def __create_response(json):
-    response = jsonify(json)
 
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+def __create_response(json):
+    return jsonify(json)
+
 
 def __create_option_response():
-    response = Response()
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    return response
-
-
-
-
+    return Response()

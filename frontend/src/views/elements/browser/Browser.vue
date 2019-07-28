@@ -48,7 +48,7 @@
     },
 
     created() {
-      this.$http.get('http://localhost:5000/repos').then(response => {
+      this.$http.get('/api/repos').then(response => {
         this.repos = response.body;
         this.loading = false;
       }, error => {
@@ -91,7 +91,7 @@
       getContentForPath(newPath=false) {
         this.loading = true;
         let filePath = this.currentPath.join('/');
-        let url = 'http://localhost:5000/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
+        let url = '/api/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
         this.$http.get(url).then(response => {
           this.contentType = response.body.type;
           this.subfiles = response.body.subfiles;
