@@ -21,7 +21,7 @@
   export default {
 
     created() {
-      this.$http.get('http://localhost:5000/installs').then(response => {
+      this.$http.get('/api/installs').then(response => {
         this.installations = response.body.installations;
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations", {
@@ -38,7 +38,7 @@
     },
     methods: {
       saveInstallationAccessToken(installation_id) {
-        this.$http.get('http://localhost:5000/installs/installation_selection?installation_id=' + installation_id).then(response => {
+        this.$http.get('/api/installs/installation_selection?installation_id=' + installation_id).then(response => {
         }, error => {
           this.loading = false;
           this.$bvToast.toast("An error has occurred while saving the installation token", {
