@@ -22,7 +22,8 @@
 
     created() {
       this.$http.post('/api/installs', "").then(response => {
-        this.installations = response.body.installations;
+        const installations = response.body.installations;
+        this.$store.commit('installations/setInstallations', installations);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations", {
           title: 'Error',
@@ -31,9 +32,9 @@
         })
       });
     },
-    data() {
-      return {
-        installations: []
+    computed: {
+      installations () {
+        return this.$store.state.installations.names;
       }
     },
     methods: {
