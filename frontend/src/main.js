@@ -1,10 +1,12 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from "./App.vue"
 import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
 import VueResource from 'vue-resource'
 import router from './router'
 import fontAwesome from './font-awesome'
+import store from './store'
 
 Vue.config.productionTip = false;
 
@@ -34,5 +36,6 @@ Vue.component('font-awesome-icon', fontAwesome);
 // Render the app
 new Vue({
   render: h => h(App),
-  router: router
+  router: router,
+  store: store
 }).$mount('#app');

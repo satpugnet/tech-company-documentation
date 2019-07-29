@@ -4,14 +4,16 @@ import {
   faUser,
   faSearch,
   faPlusCircle,
-  faBook
+  faBook,
+  faCaretDown
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
   faUser,
   faSearch,
   faPlusCircle,
-  faBook
+  faBook,
+  faCaretDown
 );
 
 export default FontAwesomeIcon;
