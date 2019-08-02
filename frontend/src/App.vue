@@ -39,16 +39,18 @@
 
           <div class="col-6">
             <div class="row pt-2 pb-2 h-100">
-              <router-link to="/auth/github" class="col-3 ml-auto border border-dark nav-link">
+              <div class="col-3 ml-auto border border-dark nav-link">
                 <div class="row p-2 h-100">
                   <div class="col-5 d-flex justify-content-center align-items-center">
                     <font-awesome-icon icon="user" size="2x"/>
                   </div>
                   <div class="col-7 d-flex justify-content-center align-items-center">
-                    Paul Vidal
+                    <a :href="getGithubAuthentificationLink()">
+                      Paul Vidal
+                    </a>
                   </div>
                 </div>
-              </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -151,6 +153,15 @@
             variant: 'danger',
           })
         });
+      },
+
+      getGithubAuthentificationLink() {
+        var CLIENT_ID = "Iv1.82c79af55b4c6b95";
+        var REDIRECT_URL_LOGIN = "http://localhost:8080/auth/github/callback";
+        var SECRET_PASSWORD_FORGERY = "secret_password";
+
+        return "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID +
+            "&redirect_uri=" + REDIRECT_URL_LOGIN + "&state=" + SECRET_PASSWORD_FORGERY
       }
     }
   }

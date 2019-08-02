@@ -5,7 +5,7 @@
     </div>
     <ul>
       <li v-for="installation in installations" class="mt-2">
-        <a v-on:click="saveInstallationAccessTokenAndRedirect(installation.id, installation.account.login)">
+        <a href="#" v-on:click="saveInstallationAccessTokenAndRedirect(installation.id, installation.account.login)">
           <button type="button" class="btn btn-primary" >{{ installation.account.login }}</button>
         </a>
       </li>
