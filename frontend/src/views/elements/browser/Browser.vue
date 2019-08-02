@@ -48,7 +48,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$router.currentRoute.path.split("/")[1] + '/repos').then(response => {
+      this.$http.get('/api/' + this.$route.params.installation_account_login + '/repos').then(response => {
         this.repos = response.body;
         this.loading = false;
       }, error => {

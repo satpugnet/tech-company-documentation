@@ -68,7 +68,7 @@
       selectDoc(name) {
         this.loading = true;
 
-        this.$http.get('/api/' + this.$router.currentRoute.path.split("/")[1] + '/render?name=' + encodeURIComponent(name)).then(response => {
+        this.$http.get('/api/' + this.$route.params.installation_account_login + '/render?name=' + encodeURIComponent(name)).then(response => {
           const r = response.body;
 
           this.name = r.name;
