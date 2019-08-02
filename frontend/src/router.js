@@ -6,7 +6,6 @@ import Documents from './views/Documents.vue'
 import AuthGithubCallback from "./views/AuthGithubCallback";
 import Installs from "./views/Installs";
 import AppInstallationCallbackGithub from "./views/AppInstallationCallbackGithub";
-import AuthGithub from "./views/AuthGithub";
 
 Vue.use(Router);
 
@@ -18,11 +17,6 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
-    },
-    {
-      path: '/auth/github',
-      name: 'auth_github',
-      component: AuthGithub
     },
     {
       path: '/auth/github/callback',
