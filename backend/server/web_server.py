@@ -60,8 +60,6 @@ def file(installation_account_login):
 
     repo = GithubInterface.get_repo(session['user_login'], installation_account_login, repo_name)
 
-    repo.postPullRequestComment("Test comment")
-
     # Get the content at path
     path_arg = request.args.get('path')
     path = path_arg if path_arg else ""
@@ -84,21 +82,24 @@ def file(installation_account_login):
     return __create_response(repo_object)
 
 
-@web_server.route("/save", methods=['POST', 'OPTIONS'])
+@web_server.route("/<path:installation_account_login>/save", methods=['POST', 'OPTIONS'])
 @login_required
-def save():
-    if Document.find(request.get_json().get('name')):
+def save(installation_account_login):
+    if Document.find(installation_account_login, request.get_json().get('name')):
         return abort(400, 'Document name already exists')
 
-    doc = Document.from_json(request.get_json())
+    new_doc = request.get_json()
+    new_doc["organisation"] = installation_account_login
+
+    doc = Document.from_json(new_doc)
     doc.insert()
 
     return __create_response({})
 
-@web_server.route("/docs")
+@web_server.route("/<path:installation_account_login>/docs")
 @login_required
-def docs():
-    docs = Document.get_all()
+def docs(installation_account_login):
+    docs = Document.get_all(installation_account_login)
 
     return __create_response([doc.to_json() for doc in docs])
 
@@ -108,7 +109,7 @@ def render(installation_account_login):
     name = request.args.get('name')
 
     # Get the documentation doc
-    doc = Document.find(name)
+    doc = Document.find(installation_account_login, name)
 
     references = {}
 

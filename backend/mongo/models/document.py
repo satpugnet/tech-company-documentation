@@ -42,7 +42,8 @@ class Document:
                 file_ref['is_deleted']
             )
 
-    def __init__(self, name, content, references):
+    def __init__(self, organisation, name, content, references):
+        self.organisation = organisation
         self.name = name
         self.content = content
         self.references = references
@@ -55,8 +56,11 @@ class Document:
         return Document.COLLECTION.update_one(query, new_values)
 
     @staticmethod
-    def update_lines_ref(ref_id, new_start_line, new_end_line):
-        query = { "refs.ref_id": ref_id }
+    def update_lines_ref(organisation, ref_id, new_start_line, new_end_line):
+        query = {
+            "organisation": organisation,
+            "refs.ref_id": ref_id
+        }
         new_values = {
             "$set": {
                 "refs.$.start_line": new_start_line,
@@ -67,8 +71,11 @@ class Document:
         return Document.__update(query, new_values)
 
     @staticmethod
-    def update_path_ref(ref_id, path):
-        query = {"refs.ref_id": ref_id}
+    def update_path_ref(organisation, ref_id, path):
+        query = {
+            "organisation": organisation,
+            "refs.ref_id": ref_id
+        }
         new_values = {
             "$set": {
                 "refs.$.path": path
@@ -78,8 +85,11 @@ class Document:
         return Document.__update(query, new_values)
 
     @staticmethod
-    def update_is_deleted_ref(ref_id, is_deleted):
-        query = {"refs.ref_id": ref_id}
+    def update_is_deleted_ref(organisation, ref_id, is_deleted):
+        query = {
+            "organisation": organisation,
+            "refs.ref_id": ref_id
+        }
         new_values = {
             "$set": {
                 "refs.$.is_deleted": is_deleted
@@ -89,8 +99,9 @@ class Document:
         return Document.__update(query, new_values)
 
     @staticmethod
-    def find(name):
+    def find(organisation, name):
         doc = Document.COLLECTION.find_one({
+            'organisation': organisation,
             'name': name
         })
 
@@ -100,11 +111,16 @@ class Document:
         return Document.from_json(doc)
 
     @staticmethod
-    def get_all():
-        return [Document.from_json(doc) for doc in Document.COLLECTION.find()]
+    def get_all(organisation):
+        docs = Document.COLLECTION.find({
+            'organisation': organisation
+        })
+
+        return [Document.from_json(doc) for doc in docs]
 
     def to_json(self):
         return {
+            'organisation': self.organisation,
             'name': self.name,
             'content': self.content,
             'refs': [ref.to_json() for ref in self.references],
@@ -113,6 +129,7 @@ class Document:
     @staticmethod
     def from_json(document):
         return Document(
+            document['organisation'],
             document['name'],
             document['content'],
             [Document.FileReference.from_json(ref) for ref in document['refs']]

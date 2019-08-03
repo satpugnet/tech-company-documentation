@@ -41,10 +41,6 @@ class Repository:
 
         return Repository.from_json(doc)
 
-    @staticmethod
-    def get_all():
-        return [Repository.from_json(doc) for doc in Repository.COLLECTION.find()]
-
     def to_json(self):
         return {
             'repository_full_name': self.repository_full_name,

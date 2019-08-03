@@ -95,9 +95,9 @@ class User:
         return [User.from_json(user) for user in users]
 
     @staticmethod
-    def find(login):
+    def find(user_login):
         user = User.COLLECTION.find_one({
-            'login': login
+            'login': user_login
         })
 
         if not user:
@@ -120,10 +120,6 @@ class User:
             if current_installation:
                 break
         return current_installation
-
-    @staticmethod
-    def get_all():
-        return [User.from_json(doc) for doc in User.COLLECTION.find()]
 
     def to_json(self):
         return {

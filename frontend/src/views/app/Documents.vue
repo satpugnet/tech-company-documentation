@@ -40,7 +40,7 @@
     },
 
     created() {
-      this.$http.get('/api/docs').then(response => {
+      this.$http.get('/api/' + this.$route.params.installation_account_login + '/docs').then(response => {
         this.documents = response.body;
         this.loading = false;
       }, error => {

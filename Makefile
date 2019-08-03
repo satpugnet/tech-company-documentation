@@ -13,7 +13,7 @@ frontend:
 
 .PHONY: webhook
 webhook:
-	smee --url https://smee.io/UUkxjK9NwrD3pnTH --path /webhook_handler --port 5000
+	smee --url https://smee.io/UUkxjK9NwrD3pnTH --path /api/webhook_handler --port 5000
 
 .PHONY: db
 db:
