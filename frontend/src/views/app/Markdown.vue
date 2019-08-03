@@ -144,7 +144,7 @@
           'refs': references
         };
 
-        this.$http.post('/api/save', body).then(response => {
+        this.$http.post('/api/' + this.$route.params.installation_account_login + '/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,

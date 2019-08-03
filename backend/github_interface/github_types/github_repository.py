@@ -55,8 +55,8 @@ class GithubRepository:
 
         return GithubCommit(commit)
 
-    def postPullRequestComment(self, comment_text):
-        pass
+    # def postPullRequestComment(self, comment_text):
+    #     self.__repo_object.get_pull(1).create_issue_comment(comment_text)
 
     def __get_file_object(self, filename):
         try:

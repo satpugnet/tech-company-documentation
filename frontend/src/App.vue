@@ -94,9 +94,7 @@
     </header>
 
     <article>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+      <router-view></router-view>
     </article>
 
   </div>
