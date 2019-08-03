@@ -185,22 +185,13 @@ def installs():
 
     returned_installation = []
     for installation in user_installations["installations"]:
+        installation_token = GithubInterface.get_installation_access_token(installation["id"], FileInterface.load_private_key())
+        User.upsert_installation(session['user_login'], installation["account"]["login"], installation_token)
         returned_installation.append({"id": installation["id"], "account": {"login": installation["account"]["login"]}})
 
     return __create_response({
         "installations": returned_installation
     })
-
-@web_server.route("/installs/installation_selection", methods=['POST', 'OPTIONS'])
-@login_required
-def installs_installation_selection():
-    installation_id = request.args.get('installation_id')
-    installation_account_login = request.args.get('installation_account_login')
-    installation_token = GithubInterface.get_installation_access_token(installation_id, FileInterface.load_private_key())
-
-    User.upsert_installation(session['user_login'], installation_account_login, installation_token)
-
-    return __create_response({})
 
 @web_server.route("/github_app_installation_callback", methods=['POST', 'OPTIONS'])
 @login_required
@@ -208,17 +199,13 @@ def github_app_installation_callback():
     installation_id = request.args.get('installation_id')
     setup_action = request.args.get('setup_action')
 
-    installation_access_token = GithubInterface.get_installation_access_token(installation_id,
-                                                                              FileInterface.load_private_key())
-
     installation = {}
     user_installations = GithubInterface.get_user_installations(session['user_login'])
     for user_installation in user_installations["installations"]:
         if int(user_installation["id"]) == int(installation_id):
             installation = user_installation
-            User.upsert_installation(session['user_login'], installation["account"]["login"], installation_access_token)
 
-    login = None if not installation["account"] is not None else installation["account"]["login"]
+    login = None if installation["account"] is None else installation["account"]["login"]
 
     return __create_response({
         "login": login

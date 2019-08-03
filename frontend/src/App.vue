@@ -24,10 +24,14 @@
 
                       <!-- All possible installations -->
                       <a v-for="installation in installations"
-                         @click="saveInstallationAccessTokenAndRedirect(installation.id, installation.account.login)"
+                         @click="redirectInstallation(installation.account.login)"
                          class="dropdown-item"
                          :class="{'active': isCurrentInstallation(installation.account.login)}">
                         {{ installation.account.login }}
+                      </a>
+                      <div class="dropdown-divider"></div>
+                      <a @click="redirectGithubNewInstallation()" class="dropdown-item">
+                        Create new installation
                       </a>
                     </div>
 
@@ -94,7 +98,9 @@
     </header>
 
     <article>
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </article>
 
   </div>
@@ -136,21 +142,13 @@
       },
 
       // TODO: copy pasted, to refactor
-      saveInstallationAccessTokenAndRedirect(installation_id, installation_account_login) {
-        this.$http.post('/api/installs/installation_selection?installation_id=' + installation_id +
-            "&installation_account_login=" + installation_account_login, "").then(response => {
+      redirectInstallation(installation_account_login) {
+        this.$router.push({ path: "/" + installation_account_login });
+        location.reload(); // refresh completely the browser as it is a new installation
+      },
 
-            this.$router.push({ path: "/" + installation_account_login });
-            location.reload(); // refresh completely the browser as it is a new installation
-
-        }, error => {
-          this.loading = false;
-          this.$bvToast.toast("An error has occurred while saving the installation token", {
-            title: 'Error',
-            autoHideDelay: 2000,
-            variant: 'danger',
-          })
-        });
+      redirectGithubNewInstallation() {
+        window.location = "https://github.com/apps/tech-documentation/installations/new";
       },
 
       getGithubAuthentificationLink() {

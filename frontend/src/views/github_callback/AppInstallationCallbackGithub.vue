@@ -12,7 +12,7 @@
           if (typeof response.body.login !== 'undefined') {
               this.$router.replace({path: '/' + response.body.login});
           } else {
-              this.$router.replace({ path: '/home' });
+              this.$router.replace({ path: '/' });
           }
       });
     }
