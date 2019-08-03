@@ -60,6 +60,8 @@ def file(installation_account_login):
 
     repo = GithubInterface.get_repo(session['user_login'], installation_account_login, repo_name)
 
+    repo.postPullRequestComment("Test comment")
+
     # Get the content at path
     path_arg = request.args.get('path')
     path = path_arg if path_arg else ""

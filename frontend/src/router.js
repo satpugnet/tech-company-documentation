@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Markdown from './views/Markdown.vue'
-import Documents from './views/Documents.vue'
-import AuthGithubCallback from "./views/AuthGithubCallback";
-import Installs from "./views/Installs";
-import AppInstallationCallbackGithub from "./views/AppInstallationCallbackGithub";
+import DocumentationHome from './views/app/DocumentationHome.vue'
+import Markdown from './views/app/Markdown.vue'
+import Documents from './views/app/Documents.vue'
+import AuthGithubCallback from "./views/github_callback/AuthGithubCallback";
+import Installs from "./views/app/Installs";
+import AppInstallationCallbackGithub from "./views/github_callback/AppInstallationCallbackGithub";
+import Home from "./Home";
 
 Vue.use(Router);
 
@@ -36,7 +37,7 @@ export default new Router({
     {
       path: '/:installation_account_login',
       name: 'installation home',
-      component: Home
+      component: DocumentationHome
     },
     {
       path: '/:installation_account_login/markdown',

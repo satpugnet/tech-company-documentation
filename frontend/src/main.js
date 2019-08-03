@@ -26,6 +26,7 @@ Vue.use(VueShowdown, {
 
 // Import github css like stylesheet
 import 'github-markdown-css/github-markdown.css'
+import Home from "./Home";
 
 // Import Vue resource
 Vue.use(VueResource);
@@ -35,7 +36,12 @@ Vue.component('font-awesome-icon', fontAwesome);
 
 // Render the app
 new Vue({
-  render: h => h(App),
+  render (h) {
+    if(this.$route.name === "home") {
+      return h(Home)
+    }
+    return h(App);
+  },
   router: router,
   store: store
 }).$mount('#app');
