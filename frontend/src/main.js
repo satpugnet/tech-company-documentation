@@ -7,6 +7,8 @@ import VueResource from 'vue-resource'
 import router from './router'
 import fontAwesome from './font-awesome'
 import store from './store'
+import Home from "./Home";
+import CallbackApp from "./views/github_callback/CallbackApp";
 
 Vue.config.productionTip = false;
 
@@ -26,7 +28,6 @@ Vue.use(VueShowdown, {
 
 // Import github css like stylesheet
 import 'github-markdown-css/github-markdown.css'
-import Home from "./Home";
 
 // Import Vue resource
 Vue.use(VueResource);
@@ -39,6 +40,8 @@ new Vue({
   render (h) {
     if(this.$route.name === "home") {
       return h(Home)
+    } else if(this.$route.name === "auth_github_callback" || this.$route.name === "auth_github_app_installation_callback") {
+      return h(CallbackApp)
     }
     return h(App);
   },

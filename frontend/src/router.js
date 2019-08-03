@@ -4,7 +4,6 @@ import DocumentationHome from './views/app/DocumentationHome.vue'
 import Markdown from './views/app/Markdown.vue'
 import Documents from './views/app/Documents.vue'
 import AuthGithubCallback from "./views/github_callback/AuthGithubCallback";
-import Installs from "./views/app/Installs";
 import AppInstallationCallbackGithub from "./views/github_callback/AppInstallationCallbackGithub";
 import Home from "./Home";
 
@@ -23,11 +22,6 @@ export default new Router({
       path: '/auth/github/callback',
       name: 'auth_github_callback',
       component: AuthGithubCallback
-    },
-    {
-      path: '/installs',
-      name: 'installs',
-      component: Installs
     },
     {
       path: '/auth/github/app_installation_callback',
