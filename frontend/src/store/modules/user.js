@@ -1,6 +1,6 @@
 // initial state
 const state = {
-  names: []
+  user_login: []
 };
 
 // getters
@@ -11,8 +11,8 @@ const actions = {};
 
 // mutations
 const mutations = {
-  setInstallations (state, installations) {
-    state.names = installations;
+  setUser (state, user_login) {
+    state.user_login = user_login;
   }
 };
 

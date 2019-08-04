@@ -211,6 +211,16 @@ def github_app_installation_callback():
         "login": login
     })
 
+@web_server.route("/user")
+@login_required
+def api_user():
+    user_login = session['user_login']
+
+    return __create_response({
+        "user_login": user_login
+    })
+
+
 def __isUserAuthorised():
     return 'user_login' in session
 
