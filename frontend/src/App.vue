@@ -50,7 +50,7 @@
                   </div>
                   <div class="col-7 d-flex justify-content-center align-items-center">
                     <a :href="getGithubAuthentificationLink()">
-                      Paul Vidal
+                      {{ userLogin }}
                     </a>
                   </div>
                 </div>
@@ -119,6 +119,10 @@
 
       installations () {
         return this.$store.state.installations.names;
+      },
+
+      userLogin () {
+        return this.$store.state.user.user_login;
       }
     },
 
@@ -128,7 +132,18 @@
         const installations = response.body.installations;
         this.$store.commit('installations/setInstallations', installations);
       }, error => {
-        this.$bvToast.toast("An error has occurred while fetching the installations", {
+        this.$bvToast.toast("An error has occurred while fetching the installations.", {
+          title: 'Error',
+          autoHideDelay: 2000,
+          variant: 'danger',
+        })
+      });
+
+      this.$http.get('/api/user', "").then(response => {
+        const user_login = response.body.user_login;
+        this.$store.commit('user/setUser', user_login);
+      }, error => {
+        this.$bvToast.toast("An error has occurred while fetching the user infromation.", {
           title: 'Error',
           autoHideDelay: 2000,
           variant: 'danger',
