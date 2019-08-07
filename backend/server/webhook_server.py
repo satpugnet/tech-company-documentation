@@ -2,7 +2,8 @@ import json
 
 from flask import jsonify, request, abort, Blueprint
 
-from github_interface.interface import GithubInterface
+from github_interface.authorisation_interface import GithubAuthorisationInterface
+from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from mongo.models.document import Document
 from mongo.models.repository import Repository
 from utils.constants import GITHUB_WEBHOOK_SECRET
@@ -27,7 +28,7 @@ def manually_update_db(organisation_login, repo_full_name):
     __update_db(organisation_login, repo_full_name)
 
 def __update_db(organisation_login, repo_name):
-    repo = GithubInterface.get_repo_without_user_authentification(organisation_login, repo_name)
+    repo = NonAuthenticatedGithubInterface.get_repo(organisation_login, repo_name)
 
     commits = __get_commits_from_db_sha(repo)
     # commits = __get_commits_from_webhook(data, repo)
@@ -39,7 +40,7 @@ def __update_db(organisation_login, repo_name):
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']
     body = request.get_data()
-    return GithubInterface.verify_signature(signature, body, GITHUB_WEBHOOK_SECRET)
+    return GithubAuthorisationInterface.verify_signature(signature, body, GITHUB_WEBHOOK_SECRET)
 
 def __get_commits_from_db_sha(repo):
     sha_last_update = Repository.find(repo.full_name).sha_last_update

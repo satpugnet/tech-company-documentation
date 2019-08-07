@@ -100,6 +100,12 @@ This folder is used to make some test on an organisation code.
 git clone git@github.com:codersdoc/Test.git
 ```
 
+### Test a request to the github api
+
+```bash
+curl -H "Authorization: token <token_value>" -H "Accept: application/vnd.github.machine-man-preview+json" https://api.github.com/user
+```
+
 ## Github
 
 ### Change the setup of the Github app

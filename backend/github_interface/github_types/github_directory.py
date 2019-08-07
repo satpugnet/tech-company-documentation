@@ -9,7 +9,6 @@ class GithubDirectory(AbstractGithubFile, Jsonable):
 
     def __init__(self, repo_object, content_file=""):
         AbstractGithubFile.__init__(self, content_file)
-        print("Downloading directory: /" + str(self.path))
         self.__repo_object = repo_object
         self._subfiles = None
 
@@ -18,6 +17,7 @@ class GithubDirectory(AbstractGithubFile, Jsonable):
         return self._subfiles
 
     def load_subfiles(self):
+        print("(" + str(self.__repo_object.full_name) + ") Downloading directory: /" + str(self.path))
         if self.subfiles:
             self._subfiles = self.subfiles
         else:

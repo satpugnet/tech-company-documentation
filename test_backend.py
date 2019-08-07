@@ -6,7 +6,6 @@ import time
 from github import Github, GithubIntegration, BadCredentialsException
 
 from github_interface.git.git_diff_parser import GitDiffParser
-from github_interface.interface import GithubInterface
 from utils.json.custom_json_encoder import CustomJsonEncoder
 
 # User.upsert_installation("saturnin13", "12342", "445sf475", "6")

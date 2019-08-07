@@ -1,43 +1,32 @@
-import requests
 from github import Github
 
 from github_interface.github_types.github_repository import GithubRepository
 from mongo.models.installation import Installation
-from mongo.models.user import User
-from abc import ABC, abstractmethod
 
 
-class AbstractGithubInterface(ABC):
+class NonAuthenticatedGithubInterface:
 
     __repo_cache = {}
 
     # TODO: use repo id and not repo name for the cache
     @staticmethod
-    @abstractmethod
-    def get_repo(user_login, installation_account_login, repo_name):
+    def get_repo(installation_account_login, repo_name):
+        print("Retrieving single repo")
         installation_token = Installation.find(installation_account_login).installation_token
-        return AbstractGithubInterface.__get_repo_helper(installation_token, repo_name)
-
-    @staticmethod
-    @abstractmethod
-    def get_repo_without_user_authentification(installation_account_login, repo_name):
-        installation_token = Installation.find(installation_account_login).installation_token
-        return AbstractGithubInterface.__get_repo_helper(installation_token, repo_name)
+        return NonAuthenticatedGithubInterface.__get_repo_helper(installation_token, repo_name)
 
     @staticmethod
     def __get_repo_helper(installation_token, repo_name):
         github_account = Github(installation_token)
 
-        if repo_name in AbstractGithubInterface.__repo_cache:
-            repo = AbstractGithubInterface.__repo_cache[repo_name]
-        else:
-            AbstractGithubInterface.__repo_cache[repo_name] = GithubRepository(github_account.get_repo(repo_name))
-            repo = AbstractGithubInterface.__repo_cache[repo_name]
-        return repo
+        if repo_name not in NonAuthenticatedGithubInterface.__repo_cache:
+            NonAuthenticatedGithubInterface.__repo_cache[repo_name] = GithubRepository(github_account.get_repo(repo_name))
+
+        return NonAuthenticatedGithubInterface.__repo_cache[repo_name]
 
     @staticmethod
-    @abstractmethod
-    def get_repos(user_login, installation_account_login):
+    def get_repos(installation_account_login):
+        print("Retrieving repos")
         # TODO: check if user_login is required in the parameters
         installation_token = Installation.find(installation_account_login).installation_token
         github_account = Github(installation_token)
@@ -52,20 +41,12 @@ class AbstractGithubInterface(ABC):
 
     @staticmethod
     def get_user_login(user_access_token):
+        print("Retrieving user login")
         github_account = Github(user_access_token)
 
         user = github_account.get_user()
         return user.login
 
-    @staticmethod
-    @abstractmethod
-    def get_user_installations(user_login):
-        user_access_token = User.find(user_login).user_token
-        response = requests.get(url="https://api.github.com/user/installations",
-                                headers={
-                                    "Authorization": "token " + user_access_token,
-                                    "Accept": "application/vnd.github.machine-man-preview+json"
-                                })
-        return response.json()
+
 
 

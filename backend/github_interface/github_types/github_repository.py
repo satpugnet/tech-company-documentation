@@ -10,6 +10,8 @@ class GithubRepository:
         self.__repo_object = repo_object
         self._full_name = self.__repo_object.full_name
         self._root_directory = self.__load_github_repo()
+        self._owner = self.__initialiase_owner()
+        self._private = bool(self.__repo_object.private)
 
     @property
     def full_name(self):
@@ -18,6 +20,14 @@ class GithubRepository:
     @property
     def root_directory(self):
         return self._root_directory
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def private(self):
+        return self._private
 
     def get_content_at_path(self, path=""):
         path_files = self.__file_path_to_list(path)
@@ -69,3 +79,8 @@ class GithubRepository:
 
     def __file_path_to_list(self, path):
         return list(filter(None, path.split("/")))
+
+    def __initialiase_owner(self):
+        return {
+            "type": self.__repo_object.owner.type
+        }
