@@ -2,6 +2,7 @@ from github import UnknownObjectException
 
 from github_interface.github_types.abstract_github_file import AbstractGithubFile
 from github_interface.github_types.git_commit import GithubCommit
+from github_interface.github_types.github_commit_file import GithubCommitFile
 from github_interface.github_types.github_directory import GithubDirectory
 
 
@@ -65,8 +66,14 @@ class GithubRepository:
 
         return GithubCommit(commit)
 
-    # def postPullRequestComment(self, comment_text):
-    #     self.__repo_object.get_pull(1).create_issue_comment(comment_text)
+    def post_pull_request_comment(self, issue_number, comment_text):
+        self.__repo_object.get_pull(issue_number).create_issue_comment(comment_text)
+
+    def post_commit_comment(self, sha, comment_text):
+        self.__repo_object.get_commit(sha).create_comment(comment_text)
+
+    def get_pull_request_files(self, issue_number):
+        return [GithubCommitFile(file.filename, None, file.patch, file.status == "removed") for file in self.__repo_object.get_pull(issue_number).get_files()]
 
     def __get_file_object(self, filename):
         try:

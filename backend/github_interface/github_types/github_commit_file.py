@@ -25,6 +25,10 @@ class GithubCommitFile:
     def is_deleted(self):
         return self._is_deleted
 
+    def has_line_range_changed(self, start_line, end_line):
+        updated_line_range = self.calculate_updated_line_range(start_line, end_line)
+        return not(updated_line_range[0] == start_line and updated_line_range[1] == end_line)
+
     def calculate_updated_line_range(self, start_line, end_line):
         return self.__git_diff_parser.calculate_updated_line_range(start_line, end_line)
 
