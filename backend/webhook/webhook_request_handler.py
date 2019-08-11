@@ -41,7 +41,7 @@ class WebhookRequestHandler:
                     if not is_pull_request:
                         self.__update_db_ref_state(commit_file, ref)
             if has_refs_been_affected:
-                affected_refs.append("http://http://localhost:8080/" + str(document_json["organisation"]) + "/docs/" + str(document_json["name"]).replace(" ", "_"))
+                affected_refs.append("http://http://localhost:8080/" + str(document_json["organisation"]) + "/docs/" + str(document_json["name"]).replace(" ", "-"))
 
         if len(affected_refs) > 0:
             if is_pull_request:

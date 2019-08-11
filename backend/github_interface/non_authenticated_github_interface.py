@@ -1,7 +1,7 @@
 from github import Github
 
 from github_interface.github_types.github_repository import GithubRepository
-from mongo.models.installation import Installation
+from mongo.models.account_installation import AccountInstallation
 
 
 class NonAuthenticatedGithubInterface:
@@ -12,7 +12,7 @@ class NonAuthenticatedGithubInterface:
     @staticmethod
     def get_repo(installation_account_login, repo_name):
         print("Retrieving single repo")
-        installation_token = Installation.find(installation_account_login).installation_token
+        installation_token = AccountInstallation.find(installation_account_login).installation_token
         return NonAuthenticatedGithubInterface.__get_repo_helper(installation_token, repo_name)
 
     @staticmethod
@@ -28,7 +28,7 @@ class NonAuthenticatedGithubInterface:
     def get_repos(installation_account_login):
         print("Retrieving repos")
         # TODO: check if user_login is required in the parameters
-        installation_token = Installation.find(installation_account_login).installation_token
+        installation_token = AccountInstallation.find(installation_account_login).installation_token
         github_account = Github(installation_token)
         repos = []
 

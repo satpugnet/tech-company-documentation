@@ -13,7 +13,7 @@ from github_interface.authenticated_github_interface import AuthenticatedGithubI
 from github_interface.authorisation_interface import GithubAuthorisationInterface
 from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from mongo.models.document import Document
-from mongo.models.installation import Installation
+from mongo.models.account_installation import AccountInstallation
 from mongo.models.user import User
 from utils import code_formatter
 from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL_LOGIN
@@ -203,7 +203,7 @@ def installs():
 
     returned_installation = []
     for installation in user_installations:
-        Installation.insert_if_not_exist(installation.account["login"], installation.id)
+        AccountInstallation.insert_if_not_exist(installation.account["login"], installation.id)
         returned_installation.append(installation.to_json())
 
     return __create_response({

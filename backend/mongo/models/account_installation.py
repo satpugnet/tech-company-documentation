@@ -5,12 +5,12 @@ from mongo.mongo_client import DB
 from utils.file_interface import FileInterface
 
 
-class Installation:
+class AccountInstallation:
     """
-    Represents an installation
+    Represents an account installation
     """
 
-    COLLECTION = DB['installation']  # Reference to the mongo collection
+    COLLECTION = DB['account_installation']  # Reference to the mongo collection
 
     def __init__(self, account_login, installation_id, installation_token, expires_at):
         self.account_login = account_login
@@ -23,7 +23,7 @@ class Installation:
 
     @staticmethod
     def __upsert(query, new_values):
-        return Installation.COLLECTION.update(query, new_values, upsert=True)
+        return AccountInstallation.COLLECTION.update(query, new_values, upsert=True)
 
     @staticmethod
     def __upsert_updated_installation(account_login, installation_id):
@@ -38,11 +38,11 @@ class Installation:
             }
         }
 
-        return Installation.__upsert(query, new_values)
+        return AccountInstallation.__upsert(query, new_values)
 
     @staticmethod
     def __find(account_login):
-        installation = Installation.COLLECTION.find_one({
+        installation = AccountInstallation.COLLECTION.find_one({
             'account_login': account_login
         })
         
@@ -50,26 +50,26 @@ class Installation:
 
     @staticmethod
     def find(account_login):
-        installation = Installation.__find(account_login)
+        installation = AccountInstallation.__find(account_login)
 
         if not installation:
             return None
 
-        installation_object = Installation.from_json(installation)
+        installation_object = AccountInstallation.from_json(installation)
 
-        if Installation.__is_expired(installation_object):
-            Installation.__upsert_updated_installation(account_login, installation_object.installation_id)
-            installation = Installation.__find(account_login)
-            return Installation.from_json(installation)
+        if AccountInstallation.__is_expired(installation_object):
+            AccountInstallation.__upsert_updated_installation(account_login, installation_object.installation_id)
+            installation = AccountInstallation.__find(account_login)
+            return AccountInstallation.from_json(installation)
         else:
             return installation_object
 
     @staticmethod
     def insert_if_not_exist(account_login, installation_id):
-        if Installation.find(account_login) is not None:
+        if AccountInstallation.find(account_login) is not None:
             return
 
-        Installation.__upsert_updated_installation(account_login, installation_id)
+        AccountInstallation.__upsert_updated_installation(account_login, installation_id)
 
     @staticmethod
     def __is_expired(installation_object):
@@ -85,7 +85,7 @@ class Installation:
 
     @staticmethod
     def from_json(installation):
-        return Installation(
+        return AccountInstallation(
             installation['account_login'],
             installation['installation_id'],
             installation['installation_token'],
