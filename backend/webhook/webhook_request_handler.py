@@ -43,10 +43,11 @@ class WebhookRequestHandler:
             if has_refs_been_affected:
                 affected_refs.append("http://http://localhost:8080/" + str(document_json["organisation"]) + "/docs/" + str(document_json["name"]).replace(" ", "_"))
 
-        if is_pull_request:
-            self.__repo.post_pull_request_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
-        else:
-            self.__repo.post_commit_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
+        if len(affected_refs) > 0:
+            if is_pull_request:
+                self.__repo.post_pull_request_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
+            else:
+                self.__repo.post_commit_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
 
     def __update_db_ref_state(self, commit_file, ref):
         updated_line_range = commit_file.calculate_updated_line_range(ref["start_line"], ref["end_line"])
