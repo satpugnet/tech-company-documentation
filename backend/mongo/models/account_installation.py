@@ -72,6 +72,14 @@ class AccountInstallation:
         AccountInstallation.__upsert_updated_installation(account_login, installation_id)
 
     @staticmethod
+    def remove(account_login):
+        installation = AccountInstallation.COLLECTION.remove({
+            'account_login': account_login
+        })
+
+        return installation
+
+    @staticmethod
     def __is_expired(installation_object):
         return installation_object.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc)
 

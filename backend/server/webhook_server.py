@@ -4,7 +4,8 @@ from flask import jsonify, request, abort, Blueprint
 
 from github_interface.authorisation_interface import GithubAuthorisationInterface
 from utils.constants import GITHUB_WEBHOOK_SECRET
-from webhook.webhook_request_handler import WebhookRequestHandler
+from webhook.installation_request_handler import InstallationRequestHandler
+from webhook.push_and_pr_request_handler import PushAndPRRequestHandler
 
 webhook_server = Blueprint('webhook_server', __name__)
 
@@ -16,19 +17,23 @@ def webhook_handler():
 
     event_type = request.headers['x-github-event']
     data = json.loads(request.data.decode("utf-8"))
-    request_handler = WebhookRequestHandler(data["repository"]["owner"]["login"], data["repository"]["full_name"])
 
     if event_type == "push":
+        request_handler = PushAndPRRequestHandler(data["repository"]["owner"]["login"], data["repository"]["full_name"])
         if __is_branch_master(data["ref"]):
             request_handler.enact_push_event()
     elif event_type == "pull_request" and data["action"] == "opened":
-        request_handler.enact_pull_request_event(data["number"])
+        request_handler = PushAndPRRequestHandler(data["repository"]["owner"]["login"], data["repository"]["full_name"])
+        request_handler.enact_pull_request_opened_event(data["number"])
+    elif event_type == "installation" and data["action"] == "deleted":
+        request_handler = InstallationRequestHandler(data["installation"]["account"]["login"])
+        request_handler.enact_installation_deleted_event()
 
     response = jsonify({})
     return response
 
 def manually_update_db(organisation_login, repo_full_name):
-    WebhookRequestHandler(organisation_login, repo_full_name).enact_push_event()
+    PushAndPRRequestHandler(organisation_login, repo_full_name).enact_push_event()
 
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']

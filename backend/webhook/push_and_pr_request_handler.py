@@ -3,7 +3,7 @@ from mongo.models.document import Document
 from mongo.models.repository import Repository
 
 
-class WebhookRequestHandler:
+class PushAndPRRequestHandler:
 
     def __init__(self, organisation_login, repo_full_name):
         self.__organisation_login = organisation_login
@@ -16,7 +16,7 @@ class WebhookRequestHandler:
             Repository.upsert_sha_last_update(self.__repo.full_name, commit.sha)
             self.__apply_pr_or_commit_updates(commit.files, False, commit.sha, "This commit has affected the following documentation files: \n")
 
-    def enact_pull_request_event(self, issue_number):
+    def enact_pull_request_opened_event(self, issue_number):
         repo = NonAuthenticatedGithubInterface.get_repo(self.__organisation_login, self.__repo.full_name)
         pull_request_files = repo.get_pull_request_files(issue_number)
 
