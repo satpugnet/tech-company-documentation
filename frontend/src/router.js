@@ -1,11 +1,22 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import DocumentationHome from './views/app/DocumentationHome.vue'
+import App from './App.vue'
+import AppHome from './views/app/AppHome.vue'
 import Markdown from './views/app/Markdown.vue'
 import Documents from './views/app/Documents.vue'
-import AuthGithubCallback from "./views/github_callback/AuthGithubCallback";
-import AppInstallationCallbackGithub from "./views/github_callback/AppInstallationCallbackGithub";
+import AuthGithubCallback from "./views/githubCallback/AuthGithubCallback";
+import AppInstallationCallback from "./views/githubCallback/AppInstallationCallback";
 import Home from "./Home";
+
+function mainRoute(routeName) {
+  if (routeName === "home") {
+    return Home
+  } else {
+    return App
+  }
+}
+
+export { mainRoute };
 
 Vue.use(Router);
 
@@ -20,26 +31,26 @@ export default new Router({
     },
     {
       path: '/auth/github/callback',
-      name: 'auth_github_callback',
+      name: 'authGithubCallback',
       component: AuthGithubCallback
     },
     {
-      path: '/auth/github/app_installation_callback',
-      name: 'auth_github_app_installation_callback',
-      component: AppInstallationCallbackGithub
+      path: '/auth/github/appInstallationCallback',
+      name: 'appInstallationCallback',
+      component: AppInstallationCallback
     },
     {
-      path: '/:installation_account_login',
-      name: 'installation home',
-      component: DocumentationHome
+      path: '/app/:appAccount',
+      name: 'appHome',
+      component: AppHome
     },
     {
-      path: '/:installation_account_login/markdown',
+      path: '/app/:appAccount/markdown',
       name: 'markdown',
       component: Markdown
     },
     {
-      path: '/:installation_account_login/docs',
+      path: '/app/:appAccount/docs',
       name: 'docs',
       component: Documents
     },

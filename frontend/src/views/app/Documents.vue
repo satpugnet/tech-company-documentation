@@ -40,7 +40,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.installation_account_login + '/docs').then(response => {
+      this.$http.get('/api/' + this.$route.params.appAccount + '/docs').then(response => {
         this.documents = response.body;
         this.loading = false;
       }, error => {
@@ -68,7 +68,7 @@
       selectDoc(name) {
         this.loading = true;
 
-        this.$http.get('/api/' + this.$route.params.installation_account_login + '/render?name=' + encodeURIComponent(name)).then(response => {
+        this.$http.get('/api/' + this.$route.params.appAccount + '/render?name=' + encodeURIComponent(name)).then(response => {
           const r = response.body;
 
           this.name = r.name;

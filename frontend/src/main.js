@@ -1,14 +1,12 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 import App from "./App.vue"
 import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
 import VueResource from 'vue-resource'
-import router from './router'
+import router, { mainRoute } from './router'
 import fontAwesome from './font-awesome'
 import store from './store'
 import Home from "./Home";
-import CallbackApp from "./views/github_callback/CallbackApp";
 
 Vue.config.productionTip = false;
 
@@ -38,12 +36,7 @@ Vue.component('font-awesome-icon', fontAwesome);
 // Render the app
 new Vue({
   render (h) {
-    if(this.$route.name === "home") {
-      return h(Home)
-    } else if(this.$route.name === "auth_github_callback" || this.$route.name === "auth_github_app_installation_callback") {
-      return h(CallbackApp)
-    }
-    return h(App);
+    return h(mainRoute(this.$route.name));
   },
   router: router,
   store: store

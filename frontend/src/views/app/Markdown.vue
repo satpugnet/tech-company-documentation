@@ -144,7 +144,7 @@
           'refs': references
         };
 
-        this.$http.post('/api/' + this.$route.params.installation_account_login + '/save', body).then(response => {
+        this.$http.post('/api/' + this.$route.params.appAccount + '/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,
@@ -175,7 +175,7 @@
       },
 
       _generate_url(reference) {
-        return '/api/' + this.$router.currentRoute.path.split("/")[1] + '/lines?'
+        return '/api/' + this.$route.params.appAccount + '/lines?'
           + 'repo=' + encodeURIComponent(reference.repo)
           + '&path=' + encodeURIComponent(reference.path)
           + '&startLine=' + encodeURIComponent(reference.startLine)

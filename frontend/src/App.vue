@@ -49,9 +49,7 @@
                     <font-awesome-icon icon="user" size="2x"/>
                   </div>
                   <div class="col-7 d-flex justify-content-center align-items-center">
-                    <a :href="getGithubAuthentificationLink()">
-                      {{ userLogin }}
-                    </a>
+                    {{ userLogin }}
                   </div>
                 </div>
               </div>
@@ -76,7 +74,7 @@
           <div class="col-3">
             <div class="row">
               <div class="col-6 pr-0">
-                <router-link :to="'/' + currentInstallation + '/markdown'">
+                <router-link :to="'/app/' + currentInstallation + '/markdown'">
                   <button class="btn btn-success w-100">
                     <font-awesome-icon icon="plus-circle" size="sm" class="mr-1" />
                     Create
@@ -84,7 +82,7 @@
                 </router-link>
               </div>
               <div class="col-6 pr-0">
-                <router-link :to="'/' + currentInstallation + '/docs'">
+                <router-link :to="'/app/' + currentInstallation + '/docs'">
                   <button class="btn btn-primary w-100">
                     <font-awesome-icon icon="book" size="sm" class="mr-1" />
                     List
@@ -114,11 +112,11 @@
     computed: {
       currentInstallation () {
         // TODO: remove placeholder when we have authentication ready
-        return this.$route.params.installation_account_login || 'Datadog';
+        return this.$route.params.appAccount || 'Datadog';
       },
 
       installations () {
-        return this.$store.state.installations.names;
+        return this.$store.state.user.installations;
       },
 
       userLogin () {
@@ -130,7 +128,7 @@
     created() {
       this.$http.post('/api/installs', "").then(response => {
         const installations = response.body.installations;
-        this.$store.commit('installations/setInstallations', installations);
+        this.$store.commit('user/setInstallations', installations);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations.", {
           title: 'Error',
@@ -153,26 +151,17 @@
 
     methods: {
       isCurrentInstallation (installationName) {
-        return this.$route.params.installation_account_login === installationName;
+        return this.$route.params.appAccount === installationName;
       },
 
       // TODO: copy pasted, to refactor
-      redirectInstallation(installation_account_login) {
-        this.$router.push({ path: "/" + installation_account_login });
+      redirectInstallation(appAccount) {
+        this.$router.push({ path: "/app/" + appAccount });
         location.reload(); // refresh completely the browser as it is a new installation
       },
 
       redirectGithubNewInstallation() {
         window.location = "https://github.com/apps/tech-documentation/installations/new";
-      },
-
-      getGithubAuthentificationLink() {
-        var CLIENT_ID = "Iv1.82c79af55b4c6b95";
-        var REDIRECT_URL_LOGIN = "http://localhost:8080/auth/github/callback";
-        var SECRET_PASSWORD_FORGERY = "secret_password";
-
-        return "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID +
-            "&redirect_uri=" + REDIRECT_URL_LOGIN + "&state=" + SECRET_PASSWORD_FORGERY
       }
     }
   }
