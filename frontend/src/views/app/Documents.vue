@@ -5,18 +5,11 @@
       <div class="card-body">
 
         <!-- Browser file display -->
-        <ul v-if="!loading && !name">
+        <ul v-if="!loading">
           <li v-for="doc in documents">
-            <a href="#" v-on:click="selectDoc(doc.name)">{{ doc.name }}</a>
+            <a v-on:click="selectDoc(doc.name)">{{ doc.name }}</a>
           </li>
         </ul>
-
-        <MarkdownFile
-          v-if="name"
-          :name="name"
-          :content="content"
-          :refs="refs"
-          />
 
         <!-- Spinner -->
         <Spinner
@@ -57,37 +50,24 @@
       return {
         documents: [],
         loading: true,
-
-        name: null,
-        content: null,
-        refs: {}
       }
     },
 
     methods: {
       selectDoc(name) {
-        this.loading = true;
-
-        this.$http.get('/api/' + this.$route.params.appAccount + '/render?name=' + encodeURIComponent(name)).then(response => {
-          const r = response.body;
-
-          this.name = r.name;
-          this.content = r.content;
-          this.refs = r.refs;
-
-          this.loading = false;
-        }, error => {
-          this.loading = false;
-          this.$bvToast.toast("An error has occurred while fetching document", {
-            title: 'Error',
-            autoHideDelay: 2000,
-            variant: 'danger',
-          })
-        });
+        this.$router.push({ path: "/app/" + this.$route.params.appAccount + "/docs/" + name });
       }
     }
   }
 </script>
 
 <style lang="scss">
+  a {
+    cursor: pointer !important;
+    color: #007bff !important;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
 </style>

@@ -4,6 +4,7 @@ import App from './App.vue'
 import AppHome from './views/app/AppHome.vue'
 import Markdown from './views/app/Markdown.vue'
 import Documents from './views/app/Documents.vue'
+import Document from './views/app/Document.vue'
 import AuthGithubCallback from "./views/githubCallback/AuthGithubCallback";
 import AppInstallationCallback from "./views/githubCallback/AppInstallationCallback";
 import Home from "./Home";
@@ -53,6 +54,11 @@ export default new Router({
       path: '/app/:appAccount/docs',
       name: 'docs',
       component: Documents
+    },
+    {
+      path: '/app/:appAccount/docs/:docName',
+      name: 'doc',
+      component: Document
     },
   ]
 })

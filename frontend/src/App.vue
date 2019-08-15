@@ -7,7 +7,7 @@
             <div class="row h-100 ">
               <div class="col-6">
                 <div class="row pt-2 pb-2 h-100 dropright">
-                  <button class="col-10 border border-dark nav-link" style="outline: none" id="dropdownMenuButton" data-toggle="dropdown">
+                  <button class="col-12 border border-dark nav-link" style="outline: none" id="dropdownMenuButton" data-toggle="dropdown">
                     <h2 class="text-left mb-0 d-flex align-items-center">
                       <img src="https://imgix.datadoghq.com/img/dd_logo_70x75.png" class="mr-2" style="width: 30px;height: 30px">
                       {{ currentInstallation }}
@@ -43,12 +43,12 @@
 
           <div class="col-6">
             <div class="row pt-2 pb-2 h-100">
-              <div class="col-3 ml-auto border border-dark nav-link">
+              <div class="col-4 ml-auto border border-dark nav-link">
                 <div class="row p-2 h-100">
-                  <div class="col-5 d-flex justify-content-center align-items-center">
+                  <div class="col-4 d-flex justify-content-center align-items-center">
                     <font-awesome-icon icon="user" size="2x"/>
                   </div>
-                  <div class="col-7 d-flex justify-content-center align-items-center">
+                  <div class="col-8 d-flex justify-content-center align-items-center">
                     {{ userLogin }}
                   </div>
                 </div>
