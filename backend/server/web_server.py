@@ -30,7 +30,7 @@ def before_request_func():
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if not __isUserAuthorised():
+        if not __is_user_authorised():
             print("User not authorised")
             return __create_unauthorised_response()
         return f(*args, **kwargs)
@@ -41,8 +41,7 @@ def login_required(f):
 def installation_validation_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if not __canUserAccessInstallation():
-            print("User is not authorised to access this installation")
+        if not __can_user_access_installation():
             return __create_unauthorised_response()
         return f(*args, **kwargs)
 
@@ -249,16 +248,19 @@ def api_user():
     })
 
 
-def __isUserAuthorised():
+def __is_user_authorised():
     return 'user_login' in session
 
 
-def __canUserAccessInstallation():
+def __can_user_access_installation():
     user_installations = AuthenticatedGithubInterface(session['user_login']).get_user_installations()
+    user = request.path.split('/')[2]
 
     for installation in user_installations:
-        if request.path.split('/')[2] == installation.account["login"]:
+        if user == installation.account["login"]:
             return True
+
+    print('User {} is not authorised to access this installation'.format(user))
     return False
 
 
