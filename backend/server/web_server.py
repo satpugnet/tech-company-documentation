@@ -20,10 +20,12 @@ from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, R
 
 web_server = Blueprint('web_server', __name__)
 
+
 @web_server.before_request
 def before_request_func():
     if request.method == 'OPTIONS':
         return __create_option_response()
+
 
 def login_required(f):
     @wraps(f)
@@ -35,6 +37,7 @@ def login_required(f):
 
     return wrap
 
+
 def installation_validation_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -45,21 +48,25 @@ def installation_validation_required(f):
 
     return wrap
 
+
 @web_server.route("/logout")
 @login_required
 def logout():
     session.pop('user_login')
     return __create_response({})
 
+
 @web_server.route("/<path:installation_account_login>/repos")
 @login_required
 @installation_validation_required
 def repos(installation_account_login):
     # Get the repository list
-    repo_names = [r.full_name for r in AuthenticatedGithubInterface(session['user_login']).get_repos(installation_account_login)]
+    repo_names = [r.full_name for r in
+                  AuthenticatedGithubInterface(session['user_login']).get_repos(installation_account_login)]
 
     # Return the response
     return __create_response(repo_names)
+
 
 @web_server.route("/<path:installation_account_login>/file")
 @login_required
@@ -70,7 +77,6 @@ def file(installation_account_login):
 
     if not repo_name:
         return abort(400, "A repo should be specified")
-
 
     repo = AuthenticatedGithubInterface(session['user_login']).get_repo(installation_account_login, repo_name)
 
@@ -111,6 +117,7 @@ def save(installation_account_login):
 
     return __create_response({})
 
+
 @web_server.route("/<path:installation_account_login>/docs")
 @login_required
 @installation_validation_required
@@ -118,6 +125,7 @@ def docs(installation_account_login):
     docs = Document.get_all(installation_account_login)
 
     return __create_response([doc.to_json() for doc in docs])
+
 
 @web_server.route("/<path:installation_account_login>/render")
 @login_required
@@ -149,6 +157,7 @@ def render(installation_account_login):
         'content': doc.content,
         'refs': references
     })
+
 
 # TODO: similar to render -> refactor later
 @web_server.route("/<path:installation_account_login>/lines")
@@ -189,12 +198,14 @@ def auth_github_callback():
     if state != SECRET_PASSWORD_FORGERY:
         abort(401)
 
-    user_access_token = GithubAuthorisationInterface.get_user_access_token(CLIENT_ID, CLIENT_SECRET, temporary_code, REDIRECT_URL_LOGIN)
+    user_access_token = GithubAuthorisationInterface.get_user_access_token(CLIENT_ID, CLIENT_SECRET, temporary_code,
+                                                                           REDIRECT_URL_LOGIN)
 
     session['user_login'] = NonAuthenticatedGithubInterface.get_user_login(user_access_token)
     User.upsert_user_token(session['user_login'], user_access_token)
 
     return __create_response({})
+
 
 @web_server.route("/installs", methods=['POST', 'OPTIONS'])
 @login_required
@@ -209,6 +220,7 @@ def installs():
     return __create_response({
         "installations": returned_installation
     })
+
 
 @web_server.route("/github_app_installation_callback", methods=['POST', 'OPTIONS'])
 @login_required
@@ -226,6 +238,7 @@ def github_app_installation_callback():
         "login": installation.account["login"]
     })
 
+
 @web_server.route("/user")
 @login_required
 def api_user():
@@ -239,6 +252,7 @@ def api_user():
 def __isUserAuthorised():
     return 'user_login' in session
 
+
 def __canUserAccessInstallation():
     user_installations = AuthenticatedGithubInterface(session['user_login']).get_user_installations()
 
@@ -247,11 +261,14 @@ def __canUserAccessInstallation():
             return True
     return False
 
+
 def __create_unauthorised_response():
-    return Response()
+    return abort(403)  # Forbidden to access the resource
+
 
 def __create_response(json):
     return jsonify(json)
+
 
 def __create_option_response():
     return Response()
