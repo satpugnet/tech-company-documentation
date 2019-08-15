@@ -1,7 +1,7 @@
 <template>
   <ul>
     <li v-for="(_, path) in files">
-      <a href="#" v-on:click="select(path)">{{ path }}</a>
+      <a v-on:click="select(path)">{{ path }}</a>
     </li>
   </ul>
 </template>

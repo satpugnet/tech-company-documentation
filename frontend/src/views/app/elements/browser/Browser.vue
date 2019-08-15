@@ -51,13 +51,14 @@
       this.$http.get('/api/' + this.$route.params.appAccount + '/repos').then(response => {
         this.repos = response.body;
         this.loading = false;
+
       }, error => {
         this.loading = false;
-          this.$bvToast.toast("An error has occurred while fetching github", {
-            title: 'Error',
-            autoHideDelay: 2000,
-            variant: 'danger',
-          })
+        this.$bvToast.toast("An error has occurred while fetching github", {
+          title: 'Error',
+          autoHideDelay: 2000,
+          variant: 'danger',
+        })
       });
     },
 

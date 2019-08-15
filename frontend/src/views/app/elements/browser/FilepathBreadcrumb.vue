@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4">
     <h2 class="mb-4">
-      <a href="#" v-on:click="backToRoot">{{ repo }}</a>
+      <a v-on:click="backToRoot">{{ repo }}</a>
     </h2>
 
     <nav aria-label="breadcrumb" v-if="path.length !== 0">
@@ -12,7 +12,7 @@
             v-bind:class="{ active: (index === path.length -1) }">
 
           <template v-if="index !== path.length -1">
-            <a href="#" v-on:click="back(index)">{{ file }}</a>
+            <a v-on:click="back(index)">{{ file }}</a>
           </template>
 
           <template v-else>
