@@ -1,7 +1,7 @@
 <template>
   <ul>
-    <li v-for="(_, path) in files">
-      <a v-on:click="select(path)">{{ path }}</a>
+    <li v-for="file in files">
+      <a v-on:click="select(file.name)">{{ file.name }}</a>
     </li>
   </ul>
 </template>
@@ -9,13 +9,13 @@
 <script>
   export default {
     props: {
-      files: Object
+      files: Array
     },
 
     methods: {
-      select(path) {
+      select(fs_node_name) {
         this.$emit('select', {
-          path: path
+          path: fs_node_name
         });
       }
     }

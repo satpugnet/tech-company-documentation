@@ -41,22 +41,22 @@ export default new Router({
       component: AppInstallationCallback
     },
     {
-      path: '/app/:appAccount',
-      name: 'appHome',
+      path: '/app/:orgUserAccount',
+      name: 'installation home',
       component: AppHome
     },
     {
-      path: '/app/:appAccount/markdown',
+      path: '/app/:orgUserAccount/markdown',
       name: 'markdown',
       component: Markdown
     },
     {
-      path: '/app/:appAccount/docs',
+      path: '/app/:orgUserAccount/docs',
       name: 'docs',
       component: Documents
     },
     {
-      path: '/app/:appAccount/docs/:docName',
+      path: '/app/:orgUserAccount/docs/:docName',
       name: 'doc',
       component: Document
     },

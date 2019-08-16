@@ -8,7 +8,7 @@ from utils.constants import GITHUB_APP_IDENTIFIER
 
 class GithubAuthorisationInterface:
     @staticmethod
-    def get_user_access_token(client_id, client_secret, code, redirect_uri):
+    def get_user_token(client_id, client_secret, code, redirect_uri):
         params = {
             "client_id": client_id,
             "client_secret": client_secret,
@@ -17,14 +17,15 @@ class GithubAuthorisationInterface:
         }
         r = requests.get(url="https://github.com/login/oauth/access_token", params=params)
         content = r.content.decode("utf-8")
-        user_access_token = content[content.find("access_token=") + 13: content.find("&")]
+        user_token = content[content.find("access_token=") + 13: content.find("&")]
 
-        return user_access_token
+        return user_token
 
     @staticmethod
     def get_installation_access_token(installation_id, private_key):
         integration = GithubIntegration(str(GITHUB_APP_IDENTIFIER), private_key)
-        return integration.get_access_token(installation_id).token, integration.get_access_token(installation_id).expires_at
+        installation_token = integration.get_access_token(installation_id)
+        return installation_token.token, installation_token.expires_at
 
     @staticmethod
     def verify_signature(signature, body, github_webhook_secret):

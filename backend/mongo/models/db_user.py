@@ -1,7 +1,7 @@
 from mongo.mongo_client import DB
 
 
-class User:
+class DbUser:
     """
     Represents a user
     """
@@ -17,11 +17,11 @@ class User:
 
     @staticmethod
     def __upsert(query, new_values):
-        return User.COLLECTION.update(query, new_values, upsert=True)
+        return DbUser.COLLECTION.update(query, new_values, upsert=True)
 
     @staticmethod
     def __update(query, new_values):
-        return User.COLLECTION.update(query, new_values)
+        return DbUser.COLLECTION.update(query, new_values)
 
     @staticmethod
     def upsert_user_token(login, user_token):
@@ -32,24 +32,24 @@ class User:
             }
         }
 
-        return User.__upsert(query, new_values)
+        return DbUser.__upsert(query, new_values)
 
     @staticmethod
     def find_all():
-        users = User.COLLECTION.find({})
+        users = DbUser.COLLECTION.find({})
 
-        return [User.from_json(user) for user in users]
+        return [DbUser.from_json(user) for user in users]
 
     @staticmethod
     def find(user_login):
-        user = User.COLLECTION.find_one({
+        user = DbUser.COLLECTION.find_one({
             'login': user_login
         })
 
         if not user:
             return None
 
-        return User.from_json(user)
+        return DbUser.from_json(user)
 
     def to_json(self):
         return {
@@ -59,7 +59,7 @@ class User:
 
     @staticmethod
     def from_json(user):
-        return User(
+        return DbUser(
             user['login'],
             user['user_token']
         )

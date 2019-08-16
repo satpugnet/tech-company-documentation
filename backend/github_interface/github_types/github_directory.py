@@ -1,49 +1,25 @@
-from github import UnknownObjectException
-
-from github_interface.github_types.abstract_github_file import AbstractGithubFile
-from github_interface.github_types.github_file import GithubFile
+from github_interface.github_types.abstract_github_fs_node import AbstractGithubFSNode
 from utils.json.jsonable import Jsonable
 
 
-class GithubDirectory(AbstractGithubFile, Jsonable):
+class GithubDirectory(AbstractGithubFSNode, Jsonable):
 
-    def __init__(self, repo_object, content_file=""):
-        AbstractGithubFile.__init__(self, content_file)
-        self.__repo_object = repo_object
-        self._subfiles = None
+    def __init__(self, path, type, sub_fs_nodes=None):
+        AbstractGithubFSNode.__init__(self, path, type)
+        self._sub_fs_nodes = sub_fs_nodes
 
     @property
-    def subfiles(self):
-        return self._subfiles
-
-    def load_subfiles(self):
-        print("(" + str(self.__repo_object.full_name) + ") Downloading directory: /" + str(self.path))
-        if self.subfiles:
-            self._subfiles = self.subfiles
-        else:
-            self._subfiles = self.__initialise_subfiles()
-        return self.subfiles
-
-    def __initialise_subfiles(self):
-        files = {}
-        contents = self.__repo_object.get_contents(self.path)
-        for content_file in contents:
-            # Submodule type are currently breaking here
-            if content_file.type == AbstractGithubFile.DIRECTORY:
-                files[content_file.name] = GithubDirectory(self.__repo_object, content_file)
-            else:
-                files[content_file.name] = GithubFile(content_file)
-        return files
-
-    def __get_file_object(self, filename):
-        try:
-            return self.__repo_object.get_contents(filename)
-        except UnknownObjectException:
-            print("File " + filename + " not found")
+    def sub_fs_nodes(self):
+        if self._sub_fs_nodes is None:
+            raise Exception("The content of this directory was not initialised")
+        return self._sub_fs_nodes
 
     def to_json(self):
-        new_json = {
-            "subfiles": self.subfiles
-        }
-        return {**super().to_json(), **new_json}
+        try:
+            new_json = {
+                "sub_fs_nodes": self.sub_fs_nodes
+            }
+        except:
+            new_json = {}
 
+        return {**super().to_json(), **new_json}

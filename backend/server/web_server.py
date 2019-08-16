@@ -1,4 +1,5 @@
 import copy
+import logging
 import uuid
 from functools import wraps
 
@@ -12,9 +13,9 @@ from pygments.util import ClassNotFound
 from github_interface.authenticated_github_interface import AuthenticatedGithubInterface
 from github_interface.authorisation_interface import GithubAuthorisationInterface
 from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from mongo.models.document import Document
-from mongo.models.account_installation import AccountInstallation
-from mongo.models.user import User
+from mongo.models.db_document import DbDocument
+from mongo.models.db_account_installation import DbAccountInstallation
+from mongo.models.db_user import DbUser
 from utils import code_formatter
 from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL_LOGIN
 
@@ -31,17 +32,15 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if not __is_user_authorised():
-            print("User not authorised")
             return __create_unauthorised_response()
         return f(*args, **kwargs)
 
     return wrap
 
-
-def installation_validation_required(f):
+def org_user_access_validation_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if not __can_user_access_installation():
+        if not __can_user_access_org_user_account():
             return __create_unauthorised_response()
         return f(*args, **kwargs)
 
@@ -54,91 +53,88 @@ def logout():
     session.pop('user_login')
     return __create_response({})
 
-
-@web_server.route("/<path:installation_account_login>/repos")
+@web_server.route("/<path:org_user_account>/repos")
 @login_required
-@installation_validation_required
-def repos(installation_account_login):
+@org_user_access_validation_required
+def repos(org_user_account):
     # Get the repository list
-    repo_names = [r.full_name for r in
-                  AuthenticatedGithubInterface(session['user_login']).get_repos(installation_account_login)]
+
+    repo_names = [r.full_name for r in AuthenticatedGithubInterface(session['user_login']).get_repos(org_user_account)]
 
     # Return the response
     return __create_response(repo_names)
 
 
-@web_server.route("/<path:installation_account_login>/file")
+@web_server.route("/<path:org_user_account>/file")
 @login_required
-@installation_validation_required
-def file(installation_account_login):
+@org_user_access_validation_required
+def file(org_user_account):
     # Get the repository
     repo_name = request.args.get('repo')
 
     if not repo_name:
         return abort(400, "A repo should be specified")
 
-    repo = AuthenticatedGithubInterface(session['user_login']).get_repo(installation_account_login, repo_name)
+    repo = AuthenticatedGithubInterface(session['user_login']).get_repo(org_user_account, repo_name)
 
     # Get the content at path
     path_arg = request.args.get('path')
     path = path_arg if path_arg else ""
 
     # TODO: fix this so we don't have to deepcopy
-    repo_object = copy.deepcopy(repo.get_content_at_path(path))
+    fs_node = copy.deepcopy(repo.get_content_at_path(path))
 
     # Syntax highlighting for file
-    if repo_object.type == 'file':
+    if fs_node.type == 'file':
         try:
             lexer = get_lexer_for_filename(path)
         except ClassNotFound:
             lexer = TextLexer()  # use a generic lexer if we can't find anything
 
         formatter = HtmlFormatter(noclasses=True, linenos='table', linespans='code-line')
-        repo_object.content = highlight(repo_object.content, lexer, formatter)
+        fs_node.content = highlight(fs_node.content, lexer, formatter)
 
     # Return the response
     # TODO: return only the necessary fields, not the entire repo object
-    return __create_response(repo_object)
+    return __create_response(fs_node)
 
 
-@web_server.route("/<path:installation_account_login>/save", methods=['POST', 'OPTIONS'])
+@web_server.route("/<path:org_user_account>/save", methods=['POST', 'OPTIONS'])
 @login_required
-@installation_validation_required
-def save(installation_account_login):
-    if Document.find(installation_account_login, request.get_json().get('name')):
+@org_user_access_validation_required
+def save(org_user_account):
+    if DbDocument.find(org_user_account, request.get_json().get('name')):
         return abort(400, 'Document name already exists')
 
     new_doc = request.get_json()
-    new_doc["organisation"] = installation_account_login
+    new_doc["org_user_account"] = org_user_account
 
-    doc = Document.from_json(new_doc)
+    doc = DbDocument.from_json(new_doc)
     doc.insert()
 
     return __create_response({})
 
-
-@web_server.route("/<path:installation_account_login>/docs")
+@web_server.route("/<path:org_user_account>/docs")
 @login_required
-@installation_validation_required
-def docs(installation_account_login):
-    docs = Document.get_all(installation_account_login)
+@org_user_access_validation_required
+def docs(org_user_account):
+    docs = DbDocument.get_all(org_user_account)
 
     return __create_response([doc.to_json() for doc in docs])
 
-
-@web_server.route("/<path:installation_account_login>/render")
+@web_server.route("/<path:org_user_account>/render")
 @login_required
-@installation_validation_required
-def render(installation_account_login):
+@org_user_access_validation_required
+def render(org_user_account):
     name = request.args.get('name')
 
     # Get the documentation doc
-    doc = Document.find(installation_account_login, name)
+    doc = DbDocument.find(org_user_account, name)
 
     references = {}
 
     for ref in doc.references:
-        repo = AuthenticatedGithubInterface(session['user_login']).get_repo(installation_account_login, ref.repo)
+        repo = AuthenticatedGithubInterface(session['user_login']).get_repo(org_user_account, ref.repo)
 
         content = '\n'.join(repo.get_lines_at_path(ref.path, ref.start_line, ref.end_line))
         formatted_code = code_formatter.format(ref.path, content, ref.start_line)
@@ -159,16 +155,16 @@ def render(installation_account_login):
 
 
 # TODO: similar to render -> refactor later
-@web_server.route("/<path:installation_account_login>/lines")
+@web_server.route("/<path:org_user_account>/lines")
 @login_required
-@installation_validation_required
-def get_lines(installation_account_login):
+@org_user_access_validation_required
+def get_lines(org_user_account):
     repo = request.args.get('repo')
     path = request.args.get('path')
     start_line = int(request.args.get('startLine'))
     end_line = int(request.args.get('endLine'))
 
-    repository = AuthenticatedGithubInterface(session['user_login']).get_repo(installation_account_login, repo)
+    repository = AuthenticatedGithubInterface(session['user_login']).get_repo(org_user_account, repo)
     content = ''.join(repository.get_content_at_path(path).content.splitlines(keepends=True)[start_line - 1: end_line])
 
     try:
@@ -197,11 +193,10 @@ def auth_github_callback():
     if state != SECRET_PASSWORD_FORGERY:
         abort(401)
 
-    user_access_token = GithubAuthorisationInterface.get_user_access_token(CLIENT_ID, CLIENT_SECRET, temporary_code,
-                                                                           REDIRECT_URL_LOGIN)
+    user_token = GithubAuthorisationInterface.get_user_token(CLIENT_ID, CLIENT_SECRET, temporary_code, REDIRECT_URL_LOGIN)
 
-    session['user_login'] = NonAuthenticatedGithubInterface.get_user_login(user_access_token)
-    User.upsert_user_token(session['user_login'], user_access_token)
+    session['user_login'] = NonAuthenticatedGithubInterface.get_user_login(user_token)
+    DbUser.upsert_user_token(session['user_login'], user_token)
 
     return __create_response({})
 
@@ -209,11 +204,13 @@ def auth_github_callback():
 @web_server.route("/installs", methods=['POST', 'OPTIONS'])
 @login_required
 def installs():
+    logging.critical('This is a debug message')
     user_installations = AuthenticatedGithubInterface(session['user_login']).get_user_installations()
 
     returned_installation = []
     for installation in user_installations:
-        AccountInstallation.insert_if_not_exist(installation.account["login"], installation.id)
+        # TODO: delete the use of insert_if_not_exist here if it is now setup using the webhook
+        DbAccountInstallation.insert_if_not_exist(installation.account["login"], installation.id)
         returned_installation.append(installation.to_json())
 
     return __create_response({
@@ -249,10 +246,12 @@ def api_user():
 
 
 def __is_user_authorised():
-    return 'user_login' in session
+    authorised = 'user_login' in session
+    if not authorised:
+        print("User not authorised for {}".format(request.path))
+    return authorised
 
-
-def __can_user_access_installation():
+def __can_user_access_org_user_account():
     user_installations = AuthenticatedGithubInterface(session['user_login']).get_user_installations()
     user = request.path.split('/')[2]
 
@@ -260,7 +259,7 @@ def __can_user_access_installation():
         if user == installation.account["login"]:
             return True
 
-    print('User {} is not authorised to access this installation'.format(user))
+    print('User {} is not authorised to access this installation for {}'.format(user, request.path))
     return False
 
 

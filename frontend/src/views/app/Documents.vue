@@ -33,7 +33,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.appAccount + '/docs').then(response => {
+      this.$http.get('/api/' + this.$route.params.orgUserAccount + '/docs').then(response => {
         this.documents = response.body;
         this.loading = false;
       }, error => {
@@ -55,7 +55,7 @@
 
     methods: {
       selectDoc(name) {
-        this.$router.push({ path: "/app/" + this.$route.params.appAccount + "/docs/" + name });
+        this.$router.push({ path: "/app/" + this.$route.params.orgUserAccount + "/docs/" + name });
       }
     }
   }

@@ -5,15 +5,15 @@ from mongo.mongo_client import DB
 from utils.file_interface import FileInterface
 
 
-class AccountInstallation:
+class DbAccountInstallation:
     """
     Represents an account installation
     """
 
     COLLECTION = DB['account_installation']  # Reference to the mongo collection
 
-    def __init__(self, account_login, installation_id, installation_token, expires_at):
-        self.account_login = account_login
+    def __init__(self, org_user_account, installation_id, installation_token, expires_at):
+        self.org_user_account = org_user_account
         self.installation_id = installation_id
         self.installation_token = installation_token # Anytime this is accessed, the expires_at must be checked
         self.expires_at = expires_at
@@ -23,58 +23,58 @@ class AccountInstallation:
 
     @staticmethod
     def __upsert(query, new_values):
-        return AccountInstallation.COLLECTION.update(query, new_values, upsert=True)
+        return DbAccountInstallation.COLLECTION.update(query, new_values, upsert=True)
 
     @staticmethod
-    def __upsert_updated_installation(account_login, installation_id):
+    def __upsert_updated_installation(org_user_account, installation_id):
         installation_token, expires_at = GithubAuthorisationInterface.get_installation_access_token(installation_id, FileInterface.load_private_key())
-        query = {"account_login": account_login}
+        query = {"org_user_account": org_user_account}
         new_values = {
             "$set": {
-                "account_login": account_login,
+                "org_user_account": org_user_account,
                 "installation_id": installation_id,
                 "installation_token": installation_token,
                 "expires_at": expires_at
             }
         }
 
-        return AccountInstallation.__upsert(query, new_values)
+        return DbAccountInstallation.__upsert(query, new_values)
 
     @staticmethod
-    def __find(account_login):
-        installation = AccountInstallation.COLLECTION.find_one({
-            'account_login': account_login
+    def __find(org_user_account):
+        installation = DbAccountInstallation.COLLECTION.find_one({
+            'org_user_account': org_user_account
         })
         
         return installation
 
     @staticmethod
-    def find(account_login):
-        installation = AccountInstallation.__find(account_login)
+    def find(org_user_account):
+        installation = DbAccountInstallation.__find(org_user_account)
 
         if not installation:
             return None
 
-        installation_object = AccountInstallation.from_json(installation)
+        installation_object = DbAccountInstallation.from_json(installation)
 
-        if AccountInstallation.__is_expired(installation_object):
-            AccountInstallation.__upsert_updated_installation(account_login, installation_object.installation_id)
-            installation = AccountInstallation.__find(account_login)
-            return AccountInstallation.from_json(installation)
+        if DbAccountInstallation.__is_expired(installation_object):
+            DbAccountInstallation.__upsert_updated_installation(org_user_account, installation_object.installation_id)
+            installation = DbAccountInstallation.__find(org_user_account)
+            return DbAccountInstallation.from_json(installation)
         else:
             return installation_object
 
     @staticmethod
-    def insert_if_not_exist(account_login, installation_id):
-        if AccountInstallation.find(account_login) is not None:
+    def insert_if_not_exist(org_user_account, installation_id):
+        if DbAccountInstallation.find(org_user_account) is not None:
             return
 
-        AccountInstallation.__upsert_updated_installation(account_login, installation_id)
+        DbAccountInstallation.__upsert_updated_installation(org_user_account, installation_id)
 
     @staticmethod
-    def remove(account_login):
-        installation = AccountInstallation.COLLECTION.remove({
-            'account_login': account_login
+    def remove(org_user_account):
+        installation = DbAccountInstallation.COLLECTION.remove({
+            'org_user_account': org_user_account
         })
 
         return installation
@@ -85,7 +85,7 @@ class AccountInstallation:
 
     def to_json(self):
         return {
-            'account_login': self.account_login,
+            'org_user_account': self.org_user_account,
             'installation_id': self.installation_id,
             'installation_token': self.installation_token,
             'expires_at': self.expires_at
@@ -93,8 +93,8 @@ class AccountInstallation:
 
     @staticmethod
     def from_json(installation):
-        return AccountInstallation(
-            installation['account_login'],
+        return DbAccountInstallation(
+            installation['org_user_account'],
             installation['installation_id'],
             installation['installation_token'],
             installation['expires_at']

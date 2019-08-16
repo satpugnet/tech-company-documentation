@@ -1,7 +1,7 @@
 from mongo.mongo_client import DB
 
 
-class Document:
+class DbDocument:
     """
     Represents a file of documentation, which will contain reference to code lines
     """
@@ -33,7 +33,7 @@ class Document:
 
         @staticmethod
         def from_json(file_ref):
-            return Document.FileReference(
+            return DbDocument.FileReference(
                 file_ref['ref_id'],
                 file_ref['repo'],
                 file_ref['path'],
@@ -42,8 +42,8 @@ class Document:
                 file_ref['is_deleted']
             )
 
-    def __init__(self, organisation, name, content, references):
-        self.organisation = organisation
+    def __init__(self, org_user_account, name, content, references):
+        self.org_user_account = org_user_account
         self.name = name
         self.content = content
         self.references = references
@@ -53,12 +53,12 @@ class Document:
 
     @staticmethod
     def __update(query, new_values):
-        return Document.COLLECTION.update_one(query, new_values)
+        return DbDocument.COLLECTION.update_one(query, new_values)
 
     @staticmethod
-    def update_lines_ref(organisation, ref_id, new_start_line, new_end_line):
+    def update_lines_ref(org_user_account, ref_id, new_start_line, new_end_line):
         query = {
-            "organisation": organisation,
+            "org_user_account": org_user_account,
             "refs.ref_id": ref_id
         }
         new_values = {
@@ -68,12 +68,12 @@ class Document:
             }
         }
 
-        return Document.__update(query, new_values)
+        return DbDocument.__update(query, new_values)
 
     @staticmethod
-    def update_path_ref(organisation, ref_id, path):
+    def update_path_ref(org_user_account, ref_id, path):
         query = {
-            "organisation": organisation,
+            "org_user_account": org_user_account,
             "refs.ref_id": ref_id
         }
         new_values = {
@@ -82,12 +82,12 @@ class Document:
             }
         }
 
-        return Document.__update(query, new_values)
+        return DbDocument.__update(query, new_values)
 
     @staticmethod
-    def update_is_deleted_ref(organisation, ref_id, is_deleted):
+    def update_is_deleted_ref(org_user_account, ref_id, is_deleted):
         query = {
-            "organisation": organisation,
+            "org_user_account": org_user_account,
             "refs.ref_id": ref_id
         }
         new_values = {
@@ -96,31 +96,31 @@ class Document:
             }
         }
 
-        return Document.__update(query, new_values)
+        return DbDocument.__update(query, new_values)
 
     @staticmethod
-    def find(organisation, name):
-        doc = Document.COLLECTION.find_one({
-            'organisation': organisation,
+    def find(org_user_account, name):
+        doc = DbDocument.COLLECTION.find_one({
+            'org_user_account': org_user_account,
             'name': name
         })
 
         if not doc:
             return None
 
-        return Document.from_json(doc)
+        return DbDocument.from_json(doc)
 
     @staticmethod
-    def get_all(organisation):
-        docs = Document.COLLECTION.find({
-            'organisation': organisation
+    def get_all(org_user_account):
+        docs = DbDocument.COLLECTION.find({
+            'org_user_account': org_user_account
         })
 
-        return [Document.from_json(doc) for doc in docs]
+        return [DbDocument.from_json(doc) for doc in docs]
 
     def to_json(self):
         return {
-            'organisation': self.organisation,
+            'org_user_account': self.org_user_account,
             'name': self.name,
             'content': self.content,
             'refs': [ref.to_json() for ref in self.references],
@@ -128,9 +128,9 @@ class Document:
 
     @staticmethod
     def from_json(document):
-        return Document(
-            document['organisation'],
+        return DbDocument(
+            document['org_user_account'],
             document['name'],
             document['content'],
-            [Document.FileReference.from_json(ref) for ref in document['refs']]
+            [DbDocument.FileReference.from_json(ref) for ref in document['refs']]
         )

@@ -11,12 +11,12 @@ webhook_server = Blueprint('webhook_server', __name__)
 
 @webhook_server.route("/webhook_handler", methods=['POST'])
 def webhook_handler():
-    print("Webhook has been called for " + str(request.headers['x-github-event']))
+    data = json.loads(request.data.decode("utf-8"))
+    print("Webhook has been called for " + str(request.headers['x-github-event']) + " with action " + str(data["action"]))
     if not __signature_valid():
         abort(401)
 
     event_type = request.headers['x-github-event']
-    data = json.loads(request.data.decode("utf-8"))
 
     if event_type == "push":
         request_handler = PushAndPRRequestHandler(data["repository"]["owner"]["login"], data["repository"]["full_name"])
@@ -25,6 +25,9 @@ def webhook_handler():
     elif event_type == "pull_request" and data["action"] == "opened":
         request_handler = PushAndPRRequestHandler(data["repository"]["owner"]["login"], data["repository"]["full_name"])
         request_handler.enact_pull_request_opened_event(data["number"])
+    elif event_type == "installation" and data["action"] == "created":
+        request_handler = InstallationRequestHandler(data["installation"]["account"]["login"])
+        request_handler.enact_installation_created_event([repo["full_name"] for repo in data["repositories"]], data["installation"]["id"])
     elif event_type == "installation" and data["action"] == "deleted":
         request_handler = InstallationRequestHandler(data["installation"]["account"]["login"])
         request_handler.enact_installation_deleted_event()
@@ -32,8 +35,8 @@ def webhook_handler():
     response = jsonify({})
     return response
 
-def manually_update_db(organisation_login, repo_full_name):
-    PushAndPRRequestHandler(organisation_login, repo_full_name).enact_push_event()
+def manually_update_db(org_user_account, repo_full_name):
+    PushAndPRRequestHandler(org_user_account, repo_full_name).enact_push_event()
 
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']

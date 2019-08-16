@@ -1,13 +1,11 @@
-from github.GithubException import GithubException
-
-from github_interface.github_types.abstract_github_file import AbstractGithubFile
+from github_interface.github_types.abstract_github_fs_node import AbstractGithubFSNode
 from utils.json.jsonable import Jsonable
 
 
-class GithubFile(AbstractGithubFile, Jsonable):
-    def __init__(self, content_file):
-        AbstractGithubFile.__init__(self, content_file)
-        self._content = self.__get_decoded_content(content_file)
+class GithubFile(AbstractGithubFSNode, Jsonable):
+    def __init__(self, path, type, content):
+        AbstractGithubFSNode.__init__(self, path, type)
+        self._content = content
 
     @property
     def content(self):
@@ -16,19 +14,6 @@ class GithubFile(AbstractGithubFile, Jsonable):
     @content.setter
     def content(self, new_content):
         self._content = new_content
-
-    def __get_decoded_content(self, file_object):
-        try:
-            if not file_object:
-                return ""
-            return file_object.decoded_content.decode("utf-8")
-        except GithubException:
-            return "File is too large to be displayed (>1 MB in size)"
-        except UnicodeDecodeError:
-            return "Error decoding, 'utf-8' codec cannot decode"
-        except AssertionError:
-            return "Unsupported encoding"
-
 
     def to_json(self):
         new_json = {

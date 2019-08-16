@@ -1,47 +1,52 @@
 from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from mongo.models.document import Document
-from mongo.models.repository import Repository
+from mongo.models.db_document import DbDocument
+from mongo.models.db_github_file import DbGithubFile
+from mongo.models.db_repo import DbRepo
 
 
 class PushAndPRRequestHandler:
 
-    def __init__(self, organisation_login, repo_full_name):
-        self.__organisation_login = organisation_login
-        self.__repo = NonAuthenticatedGithubInterface.get_repo(self.__organisation_login, repo_full_name)
+    def __init__(self, org_user_account, repo_full_name):
+        self.__org_user_account = org_user_account
+        self.__repo = NonAuthenticatedGithubInterface.get_repo(self.__org_user_account, repo_full_name)
 
     def enact_push_event(self):
         commits = self.__get_commits_from_db_sha()
 
         for commit in commits:
-            Repository.upsert_sha_last_update(self.__repo.full_name, commit.sha)
-            self.__apply_pr_or_commit_updates(commit.files, False, commit.sha, "This commit has affected the following documentation files: \n")
+            DbRepo.upsert_sha_last_update(self.__org_user_account, self.__repo.full_name, commit.sha)
+            self.__update_db_files(commit.files)
 
     def enact_pull_request_opened_event(self, issue_number):
-        repo = NonAuthenticatedGithubInterface.get_repo(self.__organisation_login, self.__repo.full_name)
-        pull_request_files = repo.get_pull_request_files(issue_number)
+        pull_request_files = self.__repo.get_pull_request_files(issue_number)
 
         self.__apply_pr_or_commit_updates(pull_request_files, True, issue_number, "This pull request has affected the following documentation files: \n")
 
     def __get_commits_from_db_sha(self):
-        sha_last_update = Repository.find(self.__repo.full_name).sha_last_update if Repository.find(self.__repo.full_name) else None
+        sha_last_update = DbRepo.find(self.__repo.full_name).sha_last_update if DbRepo.find(self.__repo.full_name) else None
         return self.__repo.get_commits_since_sha_exclusive(sha_last_update, branch_name="master")
 
+    def __update_db_files(self, commit_files):
+        for commit_file_path in [commit_file.path for commit_file in commit_files]:
+            up_to_date_file = self.__repo.get_content_at_path(commit_file_path)
+            DbGithubFile.upsert(self.__org_user_account, self.__repo.full_name, up_to_date_file.dir_path, up_to_date_file.name, up_to_date_file.type, up_to_date_file.content)
+
+    # TODO: split the 2 utilities of the method in different functions or classes
     def __apply_pr_or_commit_updates(self, commit_files, is_pull_request, issue_number_or_commit_sha, comment_message):
         name_commit_files = [commit_file.previous_path for commit_file in commit_files]
         affected_refs = []
 
-        for document in Document.get_all(self.__organisation_login):
+        for document in DbDocument.get_all(self.__org_user_account):
             document_json = document.to_json()
             has_refs_been_affected = False
             for ref in document_json["refs"]:
-                if ref["repo"] == self.__repo.full_name and ref["path"] in name_commit_files:
+                if self.__is_ref_affected(ref, name_commit_files):
                     commit_file = list(filter(lambda x: x.previous_path == ref["path"], commit_files))[0]
-                    if commit_file.has_line_range_changed(ref["start_line"], ref["end_line"]):
-                        has_refs_been_affected = True
+                    has_refs_been_affected = True if commit_file.has_line_range_changed(ref["start_line"], ref["end_line"]) else has_refs_been_affected
                     if not is_pull_request:
-                        self.__update_db_ref_state(commit_file, ref)
+                        self.__update_document_ref_state(commit_file, ref)
             if has_refs_been_affected:
-                affected_refs.append("http://http://localhost:8080/" + str(document_json["organisation"]) + "/docs/" + str(document_json["name"]).replace(" ", "-"))
+                affected_refs.append("http://http://localhost:8080/" + str(document_json["org_user_account"]) + "/docs/" + str(document_json["name"]).replace(" ", "-"))
 
         if len(affected_refs) > 0:
             if is_pull_request:
@@ -49,10 +54,14 @@ class PushAndPRRequestHandler:
             else:
                 self.__repo.post_commit_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
 
-    def __update_db_ref_state(self, commit_file, ref):
+    def __update_document_ref_state(self, commit_file, ref):
         updated_line_range = commit_file.calculate_updated_line_range(ref["start_line"], ref["end_line"])
-        Document.update_lines_ref(self.__organisation_login, ref["ref_id"], updated_line_range[0], updated_line_range[1])
+        DbDocument.update_lines_ref(self.__org_user_account, ref["ref_id"], updated_line_range[0], updated_line_range[1])
         if commit_file.has_path_changed:
-            Document.update_path_ref(self.__organisation_login, ref["ref_id"], commit_file.path)
+            DbDocument.update_path_ref(self.__org_user_account, ref["ref_id"], commit_file.path)
         if commit_file.is_deleted:
-            Document.update_is_deleted_ref(self.__organisation_login, ref["ref_id"], True)
+            DbDocument.update_is_deleted_ref(self.__org_user_account, ref["ref_id"], True)
+
+    def __is_ref_affected(self, ref, name_commit_files):
+        return ref["repo"] == self.__repo.full_name and ref["path"] in name_commit_files
+

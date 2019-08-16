@@ -6,41 +6,37 @@ from github import Github, UnknownObjectException
 from github_interface.github_types.github_installation import GithubInstallation
 from github_interface.github_types.github_repository import GithubRepository
 from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from mongo.models.user import User
+from mongo.models.db_user import DbUser
 
 
 class AuthenticatedGithubInterface:
-
-    __installation_cache = {}
 
     def __init__(self, user_login):
         self.__user_login = user_login
         self.__user_github_object = self.__initialise_user_github_object()
 
-    def get_repo(self, installation_account_login, repo_name):
-        installation_authorised_repo = NonAuthenticatedGithubInterface.get_repo(installation_account_login, repo_name)
+    def get_repo(self, org_user_account, repo_name):
+        installation_authorised_repo = NonAuthenticatedGithubInterface.get_repo(org_user_account, repo_name)
         user_authorised_repo = self._get_user_authorised_repo(installation_authorised_repo.full_name)
         return self.__get_common_repo(installation_authorised_repo, user_authorised_repo)
 
-    def get_repos(self, installation_account_login):
-        installation_authorised_repos = NonAuthenticatedGithubInterface.get_repos(installation_account_login)
-        user_authorised_repos = self.__get_user_authorised_repos(installation_authorised_repos, installation_account_login,
+    def get_repos(self, org_user_account):
+        installation_authorised_repos = NonAuthenticatedGithubInterface.get_repos(org_user_account)
+        user_authorised_repos = self.__get_user_authorised_repos(installation_authorised_repos, org_user_account,
                                                                  installation_authorised_repos[0].owner["type"]) if len(installation_authorised_repos) > 0 else []
         return self.__get_common_repos(installation_authorised_repos, user_authorised_repos)
 
     def get_user_installations(self):
         print("Retrieving user installation " + str(self.__user_login))
-        if self.__user_login not in AuthenticatedGithubInterface.__installation_cache:
-            user_access_token = User.find(self.__user_login).user_token
-            response = requests.get(url="https://api.github.com/user/installations",
-                                    headers={
-                                        "Authorization": "token " + user_access_token,
-                                        "Accept": "application/vnd.github.machine-man-preview+json"
-                                    })
-            user_installations = [GithubInstallation(installation) for installation in self.__filter_user_installations(response.json()["installations"])]
-            AuthenticatedGithubInterface.__installation_cache[self.__user_login] = user_installations
+        user_token = DbUser.find(self.__user_login).user_token
+        response = requests.get(url="https://api.github.com/user/installations",
+                                headers={
+                                    "Authorization": "token " + user_token,
+                                    "Accept": "application/vnd.github.machine-man-preview+json"
+                                })
+        user_installations = [GithubInstallation(installation) for installation in self.__filter_user_installations(response.json()["installations"])]
 
-        return AuthenticatedGithubInterface.__installation_cache[self.__user_login]
+        return user_installations
 
     def _get_user_authorised_repo(self, repo_full_name):
         try:
@@ -50,16 +46,16 @@ class AuthenticatedGithubInterface:
             print("The user " + str(self.__user_login) + " is not authorised to access the repo " + str(repo_full_name))
             return None
 
-    def __get_user_authorised_repos(self, installation_authorised_repos, installation_account_login, account_type):
+    def __get_user_authorised_repos(self, installation_authorised_repos, org_user_account, account_type):
         private_repos = list(filter(lambda repo: repo.private, installation_authorised_repos))
         raw_private_repos = []
 
         if account_type == "Organization":
-            raw_installation_repos = list(self.__user_github_object.get_organization(installation_account_login).get_repos())
-        elif installation_account_login == self.__user_login:
+            raw_installation_repos = list(self.__user_github_object.get_organization(org_user_account).get_repos())
+        elif org_user_account == self.__user_login:
             raw_installation_repos = list(self.__user_github_object.get_user().get_repos())
         else:
-            raw_installation_repos = list(self.__user_github_object.get_user(installation_account_login).get_repos())
+            raw_installation_repos = list(self.__user_github_object.get_user(org_user_account).get_repos())
             pool = mp.Pool()
             raw_private_repos = list(filter(None, pool.map(self._get_user_authorised_repo, [repo.full_name for repo in private_repos])))
             pool.close()
@@ -89,5 +85,5 @@ class AuthenticatedGithubInterface:
         return returned_user_installations
 
     def __initialise_user_github_object(self):
-        user_token = User.find(self.__user_login).user_token
+        user_token = DbUser.find(self.__user_login).user_token
         return Github(user_token)
