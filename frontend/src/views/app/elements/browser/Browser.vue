@@ -145,6 +145,3 @@
     }
   }
 </script>
-
-<style>
-</style>

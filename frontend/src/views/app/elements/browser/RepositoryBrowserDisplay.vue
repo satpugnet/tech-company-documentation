@@ -21,3 +21,14 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  a {
+    cursor: pointer !important;
+    color: #007bff !important;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+</style>

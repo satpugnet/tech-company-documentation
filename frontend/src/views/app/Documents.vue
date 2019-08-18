@@ -7,7 +7,7 @@
         <!-- Browser file display -->
         <ul v-if="!loading">
           <li v-for="doc in documents">
-            <a v-on:click="selectDoc(doc.name)">{{ doc.name }}</a>
+            <a class="file-link" v-on:click="selectDoc(doc.name)">{{ doc.name }}</a>
           </li>
         </ul>
 
@@ -61,7 +61,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   a {
     cursor: pointer !important;
     color: #007bff !important;
