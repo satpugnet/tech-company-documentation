@@ -41,22 +41,22 @@ export default new Router({
       component: AppInstallationCallback
     },
     {
-      path: '/app/:orgUserAccount',
+      path: '/app/:githubAccountLogin',
       name: 'installation home',
       component: AppHome
     },
     {
-      path: '/app/:orgUserAccount/markdown',
+      path: '/app/:githubAccountLogin/markdown',
       name: 'markdown',
       component: Markdown
     },
     {
-      path: '/app/:orgUserAccount/docs',
+      path: '/app/:githubAccountLogin/docs',
       name: 'docs',
       component: Documents
     },
     {
-      path: '/app/:orgUserAccount/docs/:docName',
+      path: '/app/:githubAccountLogin/docs/:docName',
       name: 'doc',
       component: Document
     },

@@ -48,7 +48,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.orgUserAccount + '/repos').then(response => {
+      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/repos').then(response => {
         this.repos = response.body;
         this.loading = false;
 
@@ -92,7 +92,8 @@
       getContentForPath(newPath=false) {
         this.loading = true;
         let filePath = this.currentPath.join('/');
-        let url = '/api/' + this.$route.params.orgUserAccount + '/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
+        let url = '/api/' + this.$route.params.githubAccountLogin + '/file?repo_name=' + encodeURIComponent(this.repo.name) +
+            '&path=' + encodeURIComponent(filePath) + '&file_github_account_login=' + encodeURIComponent(this.repo.github_account_login);
         this.$http.get(url).then(response => {
           this.contentType = response.body.type;
           this.sub_fs_nodes = response.body.sub_fs_nodes;
