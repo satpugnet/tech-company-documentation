@@ -8,6 +8,9 @@ class User:
 
     COLLECTION = DB['user']  # Reference to the mongo collection
 
+    LOGIN_FIELD = "login"
+    USER_TOKEN_FIELD = "user_token"
+
     def __init__(self, login, user_token):
         self.login = login
         self.user_token = user_token
@@ -25,10 +28,13 @@ class User:
 
     @staticmethod
     def upsert_user_token(login, user_token):
-        query = {"login": login}
+        query = {
+            User.LOGIN_FIELD: login
+        }
+
         new_values = {
             "$set": {
-                "user_token": user_token
+                User.USER_TOKEN_FIELD: user_token
             }
         }
 
@@ -43,7 +49,7 @@ class User:
     @staticmethod
     def find(user_login):
         user = User.COLLECTION.find_one({
-            'login': user_login
+            User.LOGIN_FIELD: user_login
         })
 
         if not user:
@@ -53,13 +59,13 @@ class User:
 
     def to_json(self):
         return {
-            'login': self.login,
-            'user_token': self.user_token
+            User.LOGIN_FIELD: self.login,
+            User.USER_TOKEN_FIELD: self.user_token
         }
 
     @staticmethod
     def from_json(user):
         return User(
-            user['login'],
-            user['user_token']
+            user[User.LOGIN_FIELD],
+            user[User.USER_TOKEN_FIELD]
         )

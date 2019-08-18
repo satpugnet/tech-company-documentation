@@ -8,6 +8,9 @@ class Repository:
 
     COLLECTION = DB['repository']  # Reference to the mongo collection
 
+    REPOSITORY_FULL_NAME_FIELD = "repository_full_name"
+    SHA_LAST_UPDATE_FIELD = "sha_last_update"
+
     def __init__(self, repository_full_name, sha_last_update):
         self.repository_full_name = repository_full_name
         self.sha_last_update = sha_last_update
@@ -21,10 +24,13 @@ class Repository:
 
     @staticmethod
     def upsert_sha_last_update(repository_full_name, sha_last_update):
-        query = {"repository_full_name": repository_full_name}
+        query = {
+            Repository.REPOSITORY_FULL_NAME_FIELD: repository_full_name
+        }
+
         new_values = {
             "$set": {
-                "sha_last_update": sha_last_update
+                Repository.SHA_LAST_UPDATE_FIELD: sha_last_update
             }
         }
 
@@ -33,7 +39,7 @@ class Repository:
     @staticmethod
     def find(repository_full_name):
         doc = Repository.COLLECTION.find_one({
-            'repository_full_name': repository_full_name
+            Repository.REPOSITORY_FULL_NAME_FIELD: repository_full_name
         })
 
         if not doc:
@@ -43,13 +49,13 @@ class Repository:
 
     def to_json(self):
         return {
-            'repository_full_name': self.repository_full_name,
-            'sha_last_update': self.sha_last_update
+            Repository.REPOSITORY_FULL_NAME_FIELD: self.repository_full_name,
+            Repository.SHA_LAST_UPDATE_FIELD: self.sha_last_update
         }
 
     @staticmethod
     def from_json(repository):
         return Repository(
-            repository['repository_full_name'],
-            repository['sha_last_update']
+            repository[Repository.REPOSITORY_FULL_NAME_FIELD],
+            repository[Repository.SHA_LAST_UPDATE_FIELD]
         )

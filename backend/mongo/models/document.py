@@ -8,10 +8,22 @@ class Document:
 
     COLLECTION = DB['document']  # Reference to the mongo collection
 
+    ORGANISATION_FIELD = "organisation"
+    NAME_FIELD = "name"
+    CONTENT_FIELD = "content"
+    REFS_FIELD = "refs"
+
     class FileReference:
         """
         A FileReference is part of a Document, and references lines of code in repositories
         """
+
+        REF_ID_FIELD = "ref_id"
+        REPO_FIELD = "repo"
+        PATH_FIELD = "path"
+        START_LINE_FIELD = "start_line"
+        END_LINE_FIELD = "end_line"
+        IS_DELETED_FIELD = "is_deleted"
 
         def __init__(self, ref_id, repo, path, start_line, end_line, is_deleted):
             self.ref_id = ref_id
@@ -23,23 +35,23 @@ class Document:
 
         def to_json(self):
             return {
-                'ref_id': self.ref_id,
-                'repo': self.repo,
-                'path': self.path,
-                'start_line': self.start_line,
-                'end_line': self.end_line,
-                'is_deleted': self.is_deleted
+                Document.FileReference.REF_ID_FIELD: self.ref_id,
+                Document.FileReference.REPO_FIELD: self.repo,
+                Document.FileReference.PATH_FIELD: self.path,
+                Document.FileReference.START_LINE_FIELD: self.start_line,
+                Document.FileReference.END_LINE_FIELD: self.end_line,
+                Document.FileReference.IS_DELETED_FIELD: self.is_deleted
             }
 
         @staticmethod
         def from_json(file_ref):
             return Document.FileReference(
-                file_ref['ref_id'],
-                file_ref['repo'],
-                file_ref['path'],
-                int(file_ref['start_line']),
-                int(file_ref['end_line']),
-                file_ref['is_deleted']
+                file_ref[Document.FileReference.REF_ID_FIELD],
+                file_ref[Document.FileReference.REPO_FIELD],
+                file_ref[Document.FileReference.PATH_FIELD],
+                int(file_ref[Document.FileReference.START_LINE_FIELD]),
+                int(file_ref[Document.FileReference.END_LINE_FIELD]),
+                file_ref[Document.FileReference.IS_DELETED_FIELD]
             )
 
     def __init__(self, organisation, name, content, references):
@@ -58,13 +70,13 @@ class Document:
     @staticmethod
     def update_lines_ref(organisation, ref_id, new_start_line, new_end_line):
         query = {
-            "organisation": organisation,
-            "refs.ref_id": ref_id
+            Document.ORGANISATION_FIELD: organisation,
+            "{}.{}".format(Document.REFS_FIELD, Document.FileReference.REF_ID_FIELD): ref_id
         }
         new_values = {
             "$set": {
-                "refs.$.start_line": new_start_line,
-                "refs.$.end_line": new_end_line
+                "{}.$.{}".format(Document.REFS_FIELD, Document.FileReference.START_LINE_FIELD): new_start_line,
+                "{}.$.{}".format(Document.REFS_FIELD, Document.FileReference.END_LINE_FIELD): new_end_line,
             }
         }
 
@@ -73,12 +85,12 @@ class Document:
     @staticmethod
     def update_path_ref(organisation, ref_id, path):
         query = {
-            "organisation": organisation,
-            "refs.ref_id": ref_id
+            Document.ORGANISATION_FIELD: organisation,
+            "{}.{}".format(Document.REFS_FIELD, Document.FileReference.REF_ID_FIELD): ref_id
         }
         new_values = {
             "$set": {
-                "refs.$.path": path
+                "{}.$.{}".format(Document.REFS_FIELD, Document.FileReference.PATH_FIELD): path,
             }
         }
 
@@ -87,12 +99,12 @@ class Document:
     @staticmethod
     def update_is_deleted_ref(organisation, ref_id, is_deleted):
         query = {
-            "organisation": organisation,
-            "refs.ref_id": ref_id
+            Document.ORGANISATION_FIELD: organisation,
+            "{}.{}".format(Document.REFS_FIELD, Document.FileReference.REF_ID_FIELD): ref_id
         }
         new_values = {
             "$set": {
-                "refs.$.is_deleted": is_deleted
+                "{}.$.{}".format(Document.REFS_FIELD, Document.FileReference.IS_DELETED_FIELD): is_deleted,
             }
         }
 
@@ -101,8 +113,8 @@ class Document:
     @staticmethod
     def find(organisation, name):
         doc = Document.COLLECTION.find_one({
-            'organisation': organisation,
-            'name': name
+            Document.ORGANISATION_FIELD: organisation,
+            Document.NAME_FIELD: name
         })
 
         if not doc:
@@ -113,24 +125,24 @@ class Document:
     @staticmethod
     def get_all(organisation):
         docs = Document.COLLECTION.find({
-            'organisation': organisation
+            Document.ORGANISATION_FIELD: organisation
         })
 
         return [Document.from_json(doc) for doc in docs]
 
     def to_json(self):
         return {
-            'organisation': self.organisation,
-            'name': self.name,
-            'content': self.content,
-            'refs': [ref.to_json() for ref in self.references],
+            Document.ORGANISATION_FIELD: self.organisation,
+            Document.NAME_FIELD: self.name,
+            Document.CONTENT_FIELD: self.content,
+            Document.REFS_FIELD: [ref.to_json() for ref in self.references],
         }
 
     @staticmethod
     def from_json(document):
         return Document(
-            document['organisation'],
-            document['name'],
-            document['content'],
-            [Document.FileReference.from_json(ref) for ref in document['refs']]
+            document[Document.ORGANISATION_FIELD],
+            document[Document.NAME_FIELD],
+            document[Document.CONTENT_FIELD],
+            [Document.FileReference.from_json(ref) for ref in document[Document.REFS_FIELD]]
         )
