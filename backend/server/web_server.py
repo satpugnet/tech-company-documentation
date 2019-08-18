@@ -1,5 +1,4 @@
 import copy
-import logging
 import uuid
 from functools import wraps
 
@@ -10,10 +9,6 @@ from pygments.lexers import get_lexer_for_filename
 from pygments.lexers.special import TextLexer
 from pygments.util import ClassNotFound
 
-from github_interface.authenticated_github_interface import AuthenticatedGithubInterface
-from github_interface.authorisation_interface import GithubAuthorisationInterface
-from mongo.models.db_account_installation import DbAccountInstallation
-from mongo.models.db_user import DbUser
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
 from mongo.collection_clients.db_document_client import DbDocumentClient
