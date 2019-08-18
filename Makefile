@@ -33,4 +33,8 @@ db_show:
 
 .PHONY: db_clean
 db_clean:
-	mongo --eval "db.document.deleteMany({})" documentation
+	mongo --eval "db.dropDatabase()" documentation
+
+.PHONY: db_clean
+db_clean_prod:
+	mongo "mongodb+srv://prod_user:TgSS0ftcTNu4pP3W@prod-ixx3d.gcp.mongodb.net/documentation" --eval "db.dropDatabase()"

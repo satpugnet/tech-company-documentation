@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-export MONGO_URL="mongodb+srv://user:QNBuu71yGEa2lNs6@prod-cluster-hrt4j.gcp.mongodb.net/test?retryWrites=true&w=majority"
+export MONGO_URL="mongodb+srv://prod_user:TgSS0ftcTNu4pP3W@prod-ixx3d.gcp.mongodb.net/test?retryWrites=true&w=majority"
