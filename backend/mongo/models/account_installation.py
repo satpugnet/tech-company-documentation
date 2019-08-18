@@ -90,7 +90,7 @@ class AccountInstallation:
         installation_object = AccountInstallation.from_json(installation)
 
         if AccountInstallation.__is_expired(installation_object):
-            AccountInstallation.update_installation_token(account_login, installation_object.installation_id)
+            AccountInstallation.update_installation_token(installation_object.mongo_id, installation_object.installation_id)
             installation = AccountInstallation.__find(account_login)
             return AccountInstallation.from_json(installation)
 

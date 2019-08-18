@@ -3,6 +3,7 @@ import hmac
 from hashlib import sha1
 from github import GithubIntegration
 
+from tools import logger
 from utils.constants import GITHUB_APP_IDENTIFIER
 
 
@@ -23,6 +24,8 @@ class GithubAuthorisationInterface:
 
     @staticmethod
     def get_installation_access_token(installation_id, private_key):
+        logger.get_logger().info("Retrieving installation access token for installation %s", installation_id)
+
         integration = GithubIntegration(str(GITHUB_APP_IDENTIFIER), private_key)
         access_token = integration.get_access_token(installation_id)
 
