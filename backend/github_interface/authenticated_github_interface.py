@@ -7,6 +7,7 @@ from github_interface.github_types.github_installation import GithubInstallation
 from github_interface.github_types.github_repository import GithubRepository
 from github_interface.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from mongo.models.user import User
+from tools import logger
 
 
 class AuthenticatedGithubInterface:
@@ -29,7 +30,8 @@ class AuthenticatedGithubInterface:
         return self.__get_common_repos(installation_authorised_repos, user_authorised_repos)
 
     def get_user_installations(self):
-        print("Retrieving user installation " + str(self.__user_login))
+        logger.get_logger().info("Retrieving user installation %s", self.__user_login)
+
         if self.__user_login not in AuthenticatedGithubInterface.__installation_cache:
             user_access_token = User.find(self.__user_login).user_token
             response = requests.get(url="https://api.github.com/user/installations",
@@ -46,8 +48,9 @@ class AuthenticatedGithubInterface:
         try:
             user_authorised_repo = self.__user_github_object.get_repo(repo_full_name)
             return GithubRepository(user_authorised_repo)
+
         except UnknownObjectException:
-            print("The user " + str(self.__user_login) + " is not authorised to access the repo " + str(repo_full_name))
+            logger.get_logger().error("The user %s is not authorised to access the repo %s", self.__user_login, repo_full_name)
             return None
 
     def __get_user_authorised_repos(self, installation_authorised_repos, installation_account_login, account_type):
@@ -56,9 +59,12 @@ class AuthenticatedGithubInterface:
 
         if account_type == "Organization":
             raw_installation_repos = list(self.__user_github_object.get_organization(installation_account_login).get_repos())
+
         elif installation_account_login == self.__user_login:
             raw_installation_repos = list(self.__user_github_object.get_user().get_repos())
+
         else:
+
             raw_installation_repos = list(self.__user_github_object.get_user(installation_account_login).get_repos())
             pool = mp.Pool()
             raw_private_repos = list(filter(None, pool.map(self._get_user_authorised_repo, [repo.full_name for repo in private_repos])))
@@ -79,13 +85,17 @@ class AuthenticatedGithubInterface:
 
     def __filter_user_installations(self, user_installations):
         returned_user_installations = []
+
         for user_installation in user_installations:
             if user_installation["account"]["type"] == "User" and user_installation["account"]["login"] == self.__user_login:
                 returned_user_installations.append(user_installation)
+
             elif user_installation["account"]["type"] == "Organization":
                 returned_user_installations.append(user_installation)
+
             else:
-                print("The installation " + str(user_installation["account"]["login"]) + " has been filtered out for the user " + str(self.__user_login))
+                logger.get_logger().info("The installation %s has been filtered out for the user %s", user_installation["account"]["login"], self.__user_login)
+
         return returned_user_installations
 
     def __initialise_user_github_object(self):

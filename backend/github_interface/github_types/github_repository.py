@@ -4,6 +4,7 @@ from github_interface.github_types.abstract_github_file import AbstractGithubFil
 from github_interface.github_types.git_commit import GithubCommit
 from github_interface.github_types.github_commit_file import GithubCommitFile
 from github_interface.github_types.github_directory import GithubDirectory
+from tools import logger
 
 
 class GithubRepository:
@@ -79,7 +80,7 @@ class GithubRepository:
         try:
             return self.__repo_object.get_contents(filename)
         except UnknownObjectException:
-            print("File " + filename + " not found in " + self.full_name)
+            logger.get_logger().error("File %s not found in %s", filename, self.full_name)
 
     def __load_github_repo(self):
         return GithubDirectory(self.__repo_object)

@@ -15,6 +15,7 @@ from github_interface.non_authenticated_github_interface import NonAuthenticated
 from mongo.models.document import Document
 from mongo.models.account_installation import AccountInstallation
 from mongo.models.user import User
+from tools import logger
 from utils import code_formatter
 from utils.constants import SECRET_PASSWORD_FORGERY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL_LOGIN
 
@@ -31,7 +32,7 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if not __is_user_authorised():
-            print("User not authorised")
+            logger.get_logger().info("User not authorised")
             return __create_unauthorised_response()
         return f(*args, **kwargs)
 
@@ -260,7 +261,7 @@ def __can_user_access_installation():
         if user == installation.account["login"]:
             return True
 
-    print('User {} is not authorised to access this installation'.format(user))
+    logger.get_logger().info('User %s is not authorised to access this installation', user)
     return False
 
 
