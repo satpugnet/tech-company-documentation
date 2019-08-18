@@ -39,5 +39,5 @@ make db_clean
 To update the database for a specific repository manually instead of using the webhook, run:
 
 ```bash
-make db_update organisation_login=<organisation_login (i.e. codersdoc)> repo_full_name=<fullname of repositories (i.e. codersdoc/Test)>
+make db_update organisation_login=<organisation_login (i.e. codersdoc)> repo_full_name=<fullname of repositories (i.e. Test)>
 ```

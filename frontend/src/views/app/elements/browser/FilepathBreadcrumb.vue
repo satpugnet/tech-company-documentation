@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4">
     <h2 class="mb-4">
-      <a v-on:click="backToRoot">{{ repo }}</a>
+      <a v-on:click="backToRoot">{{ repo.github_account_login }}/{{ repo.name }}</a>
     </h2>
 
     <nav aria-label="breadcrumb" v-if="path.length !== 0">
@@ -28,7 +28,7 @@
 <script>
   export default {
     props: {
-      repo: String,
+      repo: Object,
       path: Array
     },
     data() {

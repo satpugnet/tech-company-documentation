@@ -91,7 +91,8 @@
             // Save the reference and the content
             this.refs[r.ref_id] = {
               code: r.code,
-              repo: r.repo,
+              github_account_login: r.github_account_login,
+              repo_name: r.repo_name,
               path: r.path,
               startLine: r.startLine,
               endLine: r.endLine,
@@ -130,7 +131,8 @@
 
           references.push({
             'ref_id': refId,
-            'repo': content.repo,
+            'github_account_login': content.github_account_login,
+            'repo_name': content.repo_name,
             'path': content.path,
             'start_line': content.startLine,
             'end_line': content.endLine,
@@ -144,7 +146,7 @@
           'refs': references
         };
 
-        this.$http.post('/api/' + this.$route.params.appAccount + '/save', body).then(response => {
+        this.$http.post('/api/' + this.$route.params.githubAccountLogin + '/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,
@@ -175,8 +177,9 @@
       },
 
       _generate_url(reference) {
-        return '/api/' + this.$route.params.appAccount + '/lines?'
-          + 'repo=' + encodeURIComponent(reference.repo)
+        return '/api/' + this.$route.params.githubAccountLogin + '/lines?'
+          + 'file_github_account_login=' + encodeURIComponent(reference.repo.github_account_login)
+          + '&repo_name=' + encodeURIComponent(reference.repo.name)
           + '&path=' + encodeURIComponent(reference.path)
           + '&startLine=' + encodeURIComponent(reference.startLine)
           + '&endLine=' + encodeURIComponent(reference.endLine);

@@ -14,7 +14,7 @@
       @select="selectRepo($event.repo)"/>
 
     <DirectoryBrowserDisplay
-      :files="subfiles"
+      :files="sub_fs_nodes"
       v-if="!loading && repo && isDirectory()"
       @select="selectPath($event.path)"/>
 
@@ -48,7 +48,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.appAccount + '/repos').then(response => {
+      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/repos').then(response => {
         this.repos = response.body;
         this.loading = false;
 
@@ -68,7 +68,7 @@
         repos: [],
         currentPath: [],
         contentType: '',
-        subfiles: [],
+        sub_fs_nodes: [],
         fileContent: "",
         loading: true,
       }
@@ -80,11 +80,11 @@
         this.getContentForPath();
       },
 
-      selectPath(path) {
-        if (Object.keys(this.subfiles).includes(path)) {
+      selectPath(fs_node_name) {
+        if (this.sub_fs_nodes.some(sub_fs_node => sub_fs_node.name === fs_node_name)) {
           // check that we can move forward in the repo browsing
           // if we select a path that is not currently shown, something is off so we just reload the content for the path
-          this.currentPath.push(path);
+          this.currentPath.push(fs_node_name);
         }
         this.getContentForPath(true);
       },
@@ -92,10 +92,11 @@
       getContentForPath(newPath=false) {
         this.loading = true;
         let filePath = this.currentPath.join('/');
-        let url = '/api/' + this.$route.params.appAccount + '/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
+        let url = '/api/' + this.$route.params.githubAccountLogin + '/file?repo_name=' + encodeURIComponent(this.repo.name) +
+            '&path=' + encodeURIComponent(filePath) + '&file_github_account_login=' + encodeURIComponent(this.repo.github_account_login);
         this.$http.get(url).then(response => {
           this.contentType = response.body.type;
-          this.subfiles = response.body.subfiles;
+          this.sub_fs_nodes = response.body.sub_fs_nodes;
           this.fileContent = response.body.content;
           this.loading = false;
         }, error => {
