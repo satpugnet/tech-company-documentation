@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4">
     <h2 class="mb-4">
-      <a v-on:click="backToRoot">{{ repo }}</a>
+      <a v-on:click="backToAllRepos">All repositories</a> > <a v-on:click="backToRoot">{{ repo }}</a>
     </h2>
 
     <nav aria-label="breadcrumb" v-if="path.length !== 0">
@@ -35,6 +35,9 @@
       return {};
     },
     methods: {
+      backToAllRepos() {
+        this.$emit('backToAll');
+      },
       backToRoot() {
         this.$emit('back', []);
       },

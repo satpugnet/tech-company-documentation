@@ -5,7 +5,8 @@
       :path="currentPath"
       :repo="repo"
       v-if="repo"
-      @back="back"/>
+      @back="back"
+      @backToAll="backToAll"/>
 
     <!-- Browser file display -->
     <RepositoryBrowserDisplay
@@ -117,6 +118,11 @@
 
       isFile() {
         return this.contentType === "file";
+      },
+
+      backToAll() {
+        this.repo = '';
+        this.currentPath = [];
       },
 
       back(path) {
