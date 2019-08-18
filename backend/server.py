@@ -6,8 +6,12 @@ from flask_paranoid import Paranoid
 from server.web_server import web_server
 from server.webhook_server import webhook_server
 from utils.json.custom_json_encoder import CustomJsonEncoder
+from tools import logger
+
 
 app = Flask(__name__)
+
+logger.init(app)
 
 config = {
     "development": "server.configuration.development_config.DevelopmentConfig",

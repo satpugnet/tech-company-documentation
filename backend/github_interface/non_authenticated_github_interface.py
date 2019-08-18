@@ -2,6 +2,7 @@ from github import Github
 
 from github_interface.github_types.github_repository import GithubRepository
 from mongo.models.account_installation import AccountInstallation
+from tools import logger
 
 
 class NonAuthenticatedGithubInterface:
@@ -11,7 +12,8 @@ class NonAuthenticatedGithubInterface:
     # TODO: use repo id and not repo name for the cache
     @staticmethod
     def get_repo(installation_account_login, repo_name):
-        print("Retrieving single repo")
+        logger.get_logger().info("Retrieving single repo")
+
         installation_token = AccountInstallation.find(installation_account_login).installation_token
         return NonAuthenticatedGithubInterface.__get_repo_helper(installation_token, repo_name)
 
@@ -26,7 +28,8 @@ class NonAuthenticatedGithubInterface:
 
     @staticmethod
     def get_repos(installation_account_login):
-        print("Retrieving repos")
+        logger.get_logger().info("Retrieving repos")
+
         # TODO: check if user_login is required in the parameters
         installation_token = AccountInstallation.find(installation_account_login).installation_token
         github_account = Github(installation_token)
@@ -41,7 +44,8 @@ class NonAuthenticatedGithubInterface:
 
     @staticmethod
     def get_user_login(user_access_token):
-        print("Retrieving user login")
+        logger.get_logger().info("Retrieving user login")
+
         github_account = Github(user_access_token)
 
         user = github_account.get_user()
