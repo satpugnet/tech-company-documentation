@@ -24,7 +24,9 @@ class GithubAuthorisationInterface:
     @staticmethod
     def get_installation_access_token(installation_id, private_key):
         integration = GithubIntegration(str(GITHUB_APP_IDENTIFIER), private_key)
-        return integration.get_access_token(installation_id).token, integration.get_access_token(installation_id).expires_at
+        access_token = integration.get_access_token(installation_id)
+
+        return access_token.token, access_token.expires_at
 
     @staticmethod
     def verify_signature(signature, body, github_webhook_secret):
