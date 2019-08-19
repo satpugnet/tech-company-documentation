@@ -3,9 +3,11 @@ import multiprocessing as mp
 import requests
 from github import Github, UnknownObjectException
 
+from github_interface.constants.github_api_fields import GithubApiFields
+from github_interface.constants.github_api_values import GithubApiValues
 from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from github_interface.interfaces.repo_github_interface import RepoGithubInterface
-from github_interface.models.wrappers.github_installation import GithubInstallation
+from github_interface.wrappers.models.github_installation_model import GithubInstallationModel
 from mongo.collection_clients.db_user_client import DbUserClient
 
 
@@ -42,9 +44,12 @@ class AuthenticatedGithubInterface:
                                     "Authorization": "token " + user_token,
                                     "Accept": "application/vnd.github.machine-man-preview+json"
                                 })
-        filtered_user_installations = self.__filter_user_installations(response.json()["installations"])
+        filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS_FIELD])
 
-        return [GithubInstallation(installation["id"], installation["account"]["login"]) for installation in filtered_user_installations]
+        return [
+            GithubInstallationModel(installation[GithubApiFields.ID_FIELD], installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD])
+            for installation in filtered_user_installations
+        ]
 
     def __get_user_authorised_repo(self, repo_full_name):
         try:
@@ -58,7 +63,7 @@ class AuthenticatedGithubInterface:
     def __get_user_authorised_repos(self, installation_authorised_repos, github_account_login, account_type):
         raw_private_repos = []
 
-        if account_type == "Organization":
+        if account_type == GithubApiValues.ORGANISATION_VALUE:
             raw_github_account_repos = list(self.__user_github_account.get_organization(github_account_login).get_repos())
 
         elif github_account_login == self.__user_login:
@@ -80,14 +85,17 @@ class AuthenticatedGithubInterface:
 
         return raw_repos
 
-    def __filter_user_installations(self, user_installations):
+    def __filter_user_installations(self, raw_user_installations):
         returned_user_installations = []
-        for user_installation in user_installations:
-            if user_installation["account"]["type"] == "User" and user_installation["account"]["login"] == self.__user_login \
-                    or user_installation["account"]["type"] == "Organization":
-                returned_user_installations.append(user_installation)
+
+        for raw_user_installation in raw_user_installations:
+
+            if self.__is_current_user_account(raw_user_installation) or self.__is_organisation(raw_user_installation):
+                returned_user_installations.append(raw_user_installation)
+
             else:
-                logger.get_logger().info("The installation %s has been filtered out for the user %s", user_installation["account"]["login"], self.__user_login)
+                logger.get_logger().info("The installation %s has been filtered out for the user %s",
+                                         raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD], self.__user_login)
 
         return returned_user_installations
 
@@ -100,4 +108,11 @@ class AuthenticatedGithubInterface:
         repos1_full_names = [repo_interface.repo.full_name for repo_interface in repo_interfaces2]
 
         return list(filter(lambda repo_interface: repo_interface.repo.full_name in repos1_full_names, repo_interfaces1))
+
+    def __is_current_user_account(self, raw_user_installation):
+        return raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.TYPE_FIELD] == GithubApiValues.USER_VALUE \
+                    and raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD] == self.__user_login
+
+    def __is_organisation(self, raw_user_installation):
+        return raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.TYPE_FIELD] == GithubApiValues.ORGANISATION_VALUE
 

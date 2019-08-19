@@ -1,8 +1,8 @@
 from github import GithubException
 
-from github_interface.models.wrappers.abstract_github_fs_node import AbstractGithubFSNode
-from github_interface.models.wrappers.github_directory import GithubDirectory
-from github_interface.models.wrappers.github_file import GithubFile
+from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
+from github_interface.wrappers.models.github_directory_model import GithubDirectoryModel
+from github_interface.wrappers.models.github_file_model import GithubFileModel
 from utils.path_manipulator import PathManipulator
 
 
@@ -31,11 +31,11 @@ class GithubFSNodeFactory:
 
     class __GithubDirectoryFactory:
         def create_github_dir_from_github_get_contents(self, raw_dirs):
-            return GithubDirectory(self.__extract_path_to_dir(raw_dirs[0].path), AbstractGithubFSNode.DIRECTORY,
-                                   self.__extract_sub_fs_nodes(raw_dirs))
+            return GithubDirectoryModel(self.__extract_path_to_dir(raw_dirs[0].path), AbstractGithubFSNode.DIRECTORY_TYPE,
+                                        self.__extract_sub_fs_nodes(raw_dirs))
 
         def create_github_dir_without_sub_fs_nodes_from_github_get_contents(self, raw_fs_node):
-            return GithubDirectory(raw_fs_node.path, AbstractGithubFSNode.DIRECTORY)
+            return GithubDirectoryModel(raw_fs_node.path, AbstractGithubFSNode.DIRECTORY_TYPE)
 
         def __extract_path_to_dir(self, sub_fs_node_path):
             return PathManipulator().dissociate_dir_path_from_fs_node_name(sub_fs_node_path).dir_path
@@ -45,7 +45,7 @@ class GithubFSNodeFactory:
 
     class __GithubFileFactory:
         def create_github_file_from_github_get_contents(self, raw_file):
-            return GithubFile(raw_file.path, AbstractGithubFSNode.FILE, self.__extract_decoded_content(raw_file))
+            return GithubFileModel(raw_file.path, AbstractGithubFSNode.FILE_TYPE, self.__extract_decoded_content(raw_file))
 
         def __extract_decoded_content(self, raw_file):
             try:

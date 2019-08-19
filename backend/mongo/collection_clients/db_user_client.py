@@ -1,4 +1,5 @@
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
+from mongo.constants.db_new_values_actions import DbNewValuesActions
 from mongo.models.db_user_model import DbUserModel
 
 
@@ -17,7 +18,8 @@ class DbUserClient(AbstractDbCollectionClient):
             ),
             DbUserModel(
                 user_token=user_token
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def find_one(self, login):

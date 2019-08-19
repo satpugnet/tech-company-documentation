@@ -1,4 +1,4 @@
-class GithubCommit:
+class GithubCommitModel:
     def __init__(self, files, sha):
         self.__files = files
         self.__sha = sha

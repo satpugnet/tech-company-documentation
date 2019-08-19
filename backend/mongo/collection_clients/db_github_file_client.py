@@ -1,4 +1,5 @@
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
+from mongo.constants.db_new_values_actions import DbNewValuesActions
 from mongo.models.db_github_file_model import DbGithubFileModel
 
 
@@ -35,7 +36,8 @@ class DbGithubFileClient(AbstractDbCollectionClient):
                 filename=filename,
                 type=type,
                 content=content
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def remove(self, github_account_login):

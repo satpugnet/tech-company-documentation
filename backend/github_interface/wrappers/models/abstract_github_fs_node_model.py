@@ -1,12 +1,14 @@
+from mongo.constants.db_fields import DbFields
 from utils.json.sensitive_jsonable import SensitiveJsonable
 from utils.path_manipulator import PathManipulator
 
 
 class AbstractGithubFSNode(SensitiveJsonable):
-    DIRECTORY = "dir"
-    FILE = "file"
 
-    def __init__(self, path="", type=DIRECTORY):
+    DIRECTORY_TYPE = "dir"
+    FILE_TYPE = "file"
+
+    def __init__(self, path="", type=DIRECTORY_TYPE):
         self._path = path
         self._type = type
         self._name = self.__extract_fs_node_name(self._path)
@@ -36,9 +38,9 @@ class AbstractGithubFSNode(SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         return {
-            "path": self.path,
-            "type": self.type,
-            "name": self.name,
-            "dir_path": self.dir_path
+            DbFields.PATH_FIELD: self.path,
+            DbFields.TYPE_FIELD: self.type,
+            DbFields.NAME_FIELD: self.name,
+            DbFields.DIR_PATH_FIELD: self.dir_path
         }
 

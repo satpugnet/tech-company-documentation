@@ -15,6 +15,7 @@ from mongo.collection_clients.db_document_client import DbDocumentClient
 from mongo.collection_clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.db_user_client import DbUserClient
 from mongo.models.db_document_model import DbDocumentModel
+from mongo.constants.db_fields import DbFields
 from tools import logger
 from utils.code_formatter import CodeFormatter
 from utils.global_constant import GlobalConst
@@ -63,7 +64,7 @@ def repos(github_account_login):
 
     repo_names = []
     for repo_interface in AuthenticatedGithubInterface(session['user_login']).request_repos(github_account_login):
-        repo_names.append({"name": repo_interface.repo.name, "github_account_login": repo_interface.repo.github_account_login})
+        repo_names.append({DbFields.NAME_FIELD: repo_interface.repo.name, DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: repo_interface.repo.github_account_login})
 
     # Return the response
     return __create_response(repo_names)
@@ -112,7 +113,7 @@ def save(github_account_login):
         return abort(400, 'Document name already exists')
 
     new_doc = request.get_json()
-    new_doc["github_account_login"] = github_account_login
+    new_doc[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD] = github_account_login
 
     DbDocumentClient().insert_one(DbDocumentModel.from_json(new_doc))
 
@@ -242,7 +243,7 @@ def github_app_installation_callback():
             installation = user_installation
 
     return __create_response({
-        "login": installation.github_account_login
+        DbFields.LOGIN_FIELD: installation.github_account_login
     })
 
 

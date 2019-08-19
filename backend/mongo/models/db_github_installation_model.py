@@ -1,17 +1,12 @@
+from mongo.constants.db_fields import DbFields
 from utils.json.jsonable import Jsonable
 
 
-# TODO create a parent class for all models to avoid DRY
+# TODO create a parent class for all wrappers to avoid DRY
 class DbGithubInstallationModel(Jsonable):
     """
     Represents an account installation
     """
-
-    MONGO_ID_FIELD = "_id"
-    GITHUB_ACCOUNT_LOGIN_FIELD = "github_account_login"
-    INSTALLATION_ID_FIELD = "installation_id"
-    INSTALLATION_TOKEN_FIELD = "installation_token"
-    EXPIRES_AT_FIELD = "expires_at"
 
     def __init__(self, mongo_id=None, github_account_login=None, installation_id=None, installation_token=None, expires_at=None):
         self.__mongo_id = mongo_id
@@ -42,19 +37,19 @@ class DbGithubInstallationModel(Jsonable):
 
     def to_json(self):
         return {
-            DbGithubInstallationModel.MONGO_ID_FIELD: self.mongo_id,
-            DbGithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
-            DbGithubInstallationModel.INSTALLATION_ID_FIELD: self.installation_id,
-            DbGithubInstallationModel.INSTALLATION_TOKEN_FIELD: self.installation_token,
-            DbGithubInstallationModel.EXPIRES_AT_FIELD: self.expires_at
+            DbFields.MONGO_ID_FIELD: self.mongo_id,
+            DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
+            DbFields.INSTALLATION_ID_FIELD: self.installation_id,
+            DbFields.INSTALLATION_TOKEN_FIELD: self.installation_token,
+            DbFields.EXPIRES_AT_FIELD: self.expires_at
         }
 
     @staticmethod
     def from_json(installation):
         return DbGithubInstallationModel(
-            installation[DbGithubInstallationModel.MONGO_ID_FIELD],
-            installation[DbGithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD],
-            installation[DbGithubInstallationModel.INSTALLATION_ID_FIELD],
-            installation[DbGithubInstallationModel.INSTALLATION_TOKEN_FIELD],
-            installation[DbGithubInstallationModel.EXPIRES_AT_FIELD]
+            installation[DbFields.MONGO_ID_FIELD],
+            installation[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD],
+            installation[DbFields.INSTALLATION_ID_FIELD],
+            installation[DbFields.INSTALLATION_TOKEN_FIELD],
+            installation[DbFields.EXPIRES_AT_FIELD]
         )

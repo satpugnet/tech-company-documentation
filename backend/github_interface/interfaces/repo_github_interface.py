@@ -1,13 +1,13 @@
-from github_interface.models.factories.github_fs_node_factory import GithubFSNodeFactory
-from github_interface.models.wrappers.git_commit import GithubCommit
-from github_interface.models.wrappers.github_commit_file import GithubCommitFile
-from github_interface.models.wrappers.github_repository import GithubRepo
+from github_interface.wrappers.factories.github_fs_node_factory import GithubFSNodeFactory
+from github_interface.wrappers.models.git_commit_model import GithubCommitModel
+from github_interface.wrappers.models.github_commit_file_model import GithubCommitFileModel
+from github_interface.wrappers.models.github_repo_model import GithubRepoModel
 
 
 class RepoGithubInterface:
     def __init__(self, raw_repo):
         self.__repo_object = raw_repo
-        self.__repo = GithubRepo(raw_repo.owner.login, raw_repo.name, raw_repo.full_name, raw_repo.owner.type, bool(raw_repo.private))
+        self.__repo = GithubRepoModel(raw_repo.owner.login, raw_repo.name, raw_repo.full_name, raw_repo.owner.type, bool(raw_repo.private))
 
     @property
     def repo(self):
@@ -50,9 +50,9 @@ class RepoGithubInterface:
 
         commit_files = []
         for file in raw_commit.files:
-            commit_files.append(GithubCommitFile(file.filename, file.previous_filename, file.patch, file.status == "removed"))
+            commit_files.append(GithubCommitFileModel(file.filename, file.previous_filename, file.patch, file.status == "removed"))
 
-        return GithubCommit(commit_files, raw_commit.sha)
+        return GithubCommitModel(commit_files, raw_commit.sha)
 
     def post_pull_request_comment(self, issue_number, comment_text):
         self.__repo_object.get_pull(issue_number).create_issue_comment(comment_text)
@@ -67,4 +67,4 @@ class RepoGithubInterface:
         :return: A list of GithubCommitFile.
         """
         pr_files = self.__repo_object.get_pull(issue_number).get_files()
-        return [GithubCommitFile(file.filename, None, file.patch, file.status == "removed") for file in pr_files]
+        return [GithubCommitFileModel(file.filename, None, file.patch, file.status == "removed") for file in pr_files]

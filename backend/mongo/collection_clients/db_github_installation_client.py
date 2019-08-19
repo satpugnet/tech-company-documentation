@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
-from mongo.models.counter import Counter
+from mongo.collection_clients.db_counter_client import DbCounterClient
+from mongo.constants.db_new_values_actions import DbNewValuesActions
 from mongo.models.db_github_installation_model import DbGithubInstallationModel
 from utils.file_system_interface import FileSystemInterface
 
@@ -48,7 +49,7 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
             FileSystemInterface.load_private_key()
         )
 
-        mongo_id = Counter.get_next_account_installation_id()
+        mongo_id = DbCounterClient().get_next_account_installation_id()
 
         return self._upsert(
             DbGithubInstallationModel(
@@ -59,7 +60,9 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
                 github_account_login=github_account_login,
                 installation_id=installation_id,
                 installation_token=installation_token,
-                expires_at=expires_at)
+                expires_at=expires_at
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def __update_installation_token(self, mongo_id, installation_id):
@@ -75,7 +78,8 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
             DbGithubInstallationModel(
                 installation_token=installation_token,
                 expires_at=expires_at
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def __find_one(self, github_account_login):

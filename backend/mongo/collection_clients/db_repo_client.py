@@ -1,4 +1,5 @@
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
+from mongo.constants.db_new_values_actions import DbNewValuesActions
 from mongo.models.db_repo_model import DbRepoModel
 
 
@@ -16,7 +17,8 @@ class DbRepoClient(AbstractDbCollectionClient):
                 github_account_login=github_account_login,
                 repo_name=repo_name,
                 sha_last_update=""
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def upsert_sha_last_update_only(self, github_account_login, repo_name, sha_last_update):
@@ -27,7 +29,8 @@ class DbRepoClient(AbstractDbCollectionClient):
             ),
             DbRepoModel(
                 sha_last_update=sha_last_update
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def find_one(self, repo_name):

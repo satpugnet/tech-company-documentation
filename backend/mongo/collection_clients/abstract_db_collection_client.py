@@ -1,11 +1,11 @@
-from mongo.mongo_client_connection import MongoClientConnection
+from mongo.mongo_client_connection import DB
 from tools import logger
 
 
 class AbstractDbCollectionClient:
 
     def __init__(self, collection_name, model_class):
-        self.__collection_client = MongoClientConnection.DB[collection_name]
+        self.__collection_client = DB[collection_name]
         self.__model_class = model_class
 
     def find_all(self):
@@ -29,18 +29,24 @@ class AbstractDbCollectionClient:
 
         return self.__model_class.from_json(document) if document else None
 
-    #TODO: convert this to upsert_one
-    def _upsert(self, query_model, new_values_model):
+    def _find_one_and_update(self, query_model, new_values_model, return_document, new_values_action):
         query_model_json = self.__convert_to_query(query_model.to_json())
-        new_values_model_json = self.__convert_to_query_value(new_values_model.to_json())
+        new_values_model_json = self.__convert_to_query_value(new_values_model.to_json(), new_values_action)
 
-        return self.__upsert(query_model_json, {"$set": new_values_model_json})
+        return self.__find_one_and_update(query_model_json, new_values_model_json, return_document)
 
-    def _update_one(self, query_model, new_values_model):
+    # TODO: convert this function to upsert_one and change the naming in all the code base
+    def _upsert(self, query_model, new_values_model, new_values_action):
         query_model_json = self.__convert_to_query(query_model.to_json())
-        new_values_model_json = self.__convert_to_query_value(new_values_model.to_json())
+        new_values_model_json = self.__convert_to_query_value(new_values_model.to_json(), new_values_action)
 
-        return self.__update_one(query_model_json, {"$set": new_values_model_json})
+        return self.__upsert(query_model_json, new_values_model_json)
+
+    def _update_one(self, query_model, new_values_model, new_values_action):
+        query_model_json = self.__convert_to_query(query_model.to_json())
+        new_values_model_json = self.__convert_to_query_value(new_values_model.to_json(), new_values_action)
+
+        return self.__update_one(query_model_json, new_values_model_json)
 
     def _remove(self, query_model):
         query_model_json = self.__convert_to_query(query_model.to_json())
@@ -51,8 +57,8 @@ class AbstractDbCollectionClient:
     def __convert_to_query(self, query_model):
         return self.__convert_helper(query_model, ".")
 
-    def __convert_to_query_value(self, new_values_model):
-        return self.__convert_helper(new_values_model, ".$.")
+    def __convert_to_query_value(self, new_values_model, new_values_action):
+        return {"$" + str(new_values_action): self.__convert_helper(new_values_model, ".$.")}
 
     def __convert_helper(self, model, string_between_key_values):
         model_without_none = self.__remove_none_fields(model)
@@ -81,6 +87,12 @@ class AbstractDbCollectionClient:
             return self.__collection_client.find_one(query)
         except Exception:
             logger.get_logger().error("Failed to find one with query %s", query)
+
+    def __find_one_and_update(self, query, new_values, return_document):
+        try:
+            return self.__collection_client.find_one_and_update(query, new_values, return_document=return_document)
+        except Exception:
+            logger.get_logger().error("Failed to find one and update with query %s and values %s", query, new_values)
 
     def __insert_one(self, new_values):
         try:

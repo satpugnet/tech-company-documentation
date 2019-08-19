@@ -1,4 +1,5 @@
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
+from mongo.constants.db_new_values_actions import DbNewValuesActions
 from mongo.models.db_document_model import DbDocumentModel
 
 
@@ -15,17 +16,18 @@ class DbDocumentClient(AbstractDbCollectionClient):
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
-                    DbDocumentModel.FileReferenceModel(
+                    DbDocumentModel.DbFileReferenceModel(
                         ref_id=ref_id
                     )
                 ]
             ),
             DbDocumentModel(
-                refs=DbDocumentModel.FileReferenceModel(
+                refs=DbDocumentModel.DbFileReferenceModel(
                     start_line=start_line,
                     end_line=end_line
                 )
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def update_one_path_ref(self, github_account_login, ref_id, path):
@@ -33,16 +35,17 @@ class DbDocumentClient(AbstractDbCollectionClient):
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
-                    DbDocumentModel.FileReferenceModel(
+                    DbDocumentModel.DbFileReferenceModel(
                         ref_id=ref_id
                     )
                 ]
             ),
             DbDocumentModel(
-                refs=DbDocumentModel.FileReferenceModel(
+                refs=DbDocumentModel.DbFileReferenceModel(
                     path=path
                 )
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def update_one_is_deleted_ref(self, github_account_login, ref_id, is_deleted):
@@ -50,16 +53,17 @@ class DbDocumentClient(AbstractDbCollectionClient):
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
-                    DbDocumentModel.FileReferenceModel(
+                    DbDocumentModel.DbFileReferenceModel(
                         ref_id=ref_id
                     )
                 ]
             ),
             DbDocumentModel(
-                refs=DbDocumentModel.FileReferenceModel(
+                refs=DbDocumentModel.DbFileReferenceModel(
                     is_deleted=is_deleted
                 )
-            )
+            ),
+            DbNewValuesActions.SET_ACTION
         )
 
     def find_one(self, github_account_login, name):

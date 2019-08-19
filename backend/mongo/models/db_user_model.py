@@ -1,4 +1,4 @@
-from mongo.mongo_client_connection import MongoClientConnection
+from mongo.constants.db_fields import DbFields
 from utils.json.jsonable import Jsonable
 
 
@@ -6,9 +6,6 @@ class DbUserModel(Jsonable):
     """
     Represents a user
     """
-
-    LOGIN_FIELD = "login"
-    USER_TOKEN_FIELD = "user_token"
 
     def __init__(self, login=None, user_token=None):
         self.__login = login
@@ -24,13 +21,13 @@ class DbUserModel(Jsonable):
 
     def to_json(self):
         return {
-            DbUserModel.LOGIN_FIELD: self.login,
-            DbUserModel.USER_TOKEN_FIELD: self.user_token
+            DbFields.LOGIN_FIELD: self.login,
+            DbFields.USER_TOKEN_FIELD: self.user_token
         }
 
     @staticmethod
     def from_json(user):
         return DbUserModel(
-            user[DbUserModel.LOGIN_FIELD],
-            user[DbUserModel.USER_TOKEN_FIELD]
+            user[DbFields.LOGIN_FIELD],
+            user[DbFields.USER_TOKEN_FIELD]
         )
