@@ -1,6 +1,6 @@
 from pymongo import ReturnDocument
 
-from mongo.mongo_client import DB
+from mongo.mongo_client_connection import MongoClientConnection
 
 
 class Counter:
@@ -13,7 +13,7 @@ class Counter:
     You can add multiple counters using this collection. Simply define an ID field.
     """
 
-    COLLECTION = DB['counter']  # Reference to the mongo collection
+    COLLECTION = MongoClientConnection.DB['counter']  # Reference to the mongo collection
 
     MONGO_ID_FIELD = "_id"
     COUNTER_FIELD = "counter"

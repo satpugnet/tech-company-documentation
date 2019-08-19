@@ -32,7 +32,7 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.appAccount + '/render?name=' + encodeURIComponent(this.name)).then(response => {
+      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/render?name=' + encodeURIComponent(this.name)).then(response => {
         const r = response.body;
         this.name = r.name;
         this.content = r.content;

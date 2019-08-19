@@ -15,7 +15,7 @@
             if (installations === undefined || installations.length === 0) {
                 window.location = "https://github.com/apps/tech-documentation/installations/new";
             } else {
-                this.$router.replace({ path: '/app/' + installations[0].account.login });
+                this.$router.replace({ path: '/app/' + installations[0].github_account_login });
             }
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching the installations", {

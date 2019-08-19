@@ -5,8 +5,20 @@ import time
 
 from github import Github, GithubIntegration, BadCredentialsException
 
-from github_interface.git.git_diff_parser import GitDiffParser
+from git_parser.git_diff_parser import GitDiffParser
+from mongo.models.db_user_model import DbUserModel
 from utils.json.custom_json_encoder import CustomJsonEncoder
+
+
+x = DbUserModel
+
+def test(classname):
+    print(classname.COLLECTION)
+
+test(x)
+
+
+
 
 # User.upsert_installation("saturnin13", "12342", "445sf475", "6")
 
@@ -85,7 +97,7 @@ g2 = GithubInterface(access_token=access_token, is_user_access_token=False)
 # root_directory.subfiles["backend"].load_subfiles()
 # print(root_directory.subfiles["backend"].subfiles["web_server.py"].content)
 print("laaaaaaaaaaaaaaaaaaaaaa")
-for repo in g2.get_repos():
+for repo in g2.request_repos():
         print(repo.full_name)
 print(g2.get_installation(INSTALLATION_ID))
 print()
@@ -99,7 +111,7 @@ repo_name = "louisblin/LondonHousingForecast-Backend"
 # repo_name = "paulvidal/1-week-1-tool"
 
 g = GithubInterface(access_token="v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94", is_user_access_token=True)
-repo = g.get_repo(repo_name)
+repo = g.request_repo(repo_name)
 repo_root = repo.root_directory
 
 print("laaaaa")
