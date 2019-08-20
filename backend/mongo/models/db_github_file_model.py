@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.jsonable import Jsonable
 
 
@@ -41,21 +41,21 @@ class DbGithubFileModel(Jsonable):
 
     def to_json(self):
         return {
-            DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: self.__github_account_login,
-            DbFields.REPO_NAME_FIELD: self.__repo_name,
-            DbFields.DIR_PATH_FIELD: self.__dir_path,
-            DbFields.FILENAME_FIELD: self.__filename,
-            DbFields.TYPE_FIELD: self.__type,
-            DbFields.CONTENT_FIELD: self.__content
+            ModelFields.GITHUB_ACCOUNT_LOGIN: self.__github_account_login,
+            ModelFields.REPO_NAME: self.__repo_name,
+            ModelFields.DIR_PATH: self.__dir_path,
+            ModelFields.FILENAME: self.__filename,
+            ModelFields.TYPE: self.__type,
+            ModelFields.CONTENT: self.__content
         }
 
     @staticmethod
     def from_json(github_file):
         return DbGithubFileModel(
-            github_file[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD],
-            github_file[DbFields.REPO_NAME_FIELD],
-            github_file[DbFields.DIR_PATH_FIELD],
-            github_file[DbFields.FILENAME_FIELD],
-            github_file[DbFields.TYPE_FIELD],
-            github_file[DbFields.CONTENT_FIELD]
+            github_file[ModelFields.GITHUB_ACCOUNT_LOGIN],
+            github_file[ModelFields.REPO_NAME],
+            github_file[ModelFields.DIR_PATH],
+            github_file[ModelFields.FILENAME],
+            github_file[ModelFields.TYPE],
+            github_file[ModelFields.CONTENT]
         )

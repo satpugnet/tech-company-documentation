@@ -11,13 +11,13 @@ class DbDocumentClient(AbstractDbCollectionClient):
     def __init__(self):
         super().__init__('document', DbDocumentModel)
 
-    def update_one_lines_ref(self, github_account_login, ref_id, start_line, end_line):
+    def update_one_lines_ref(self, github_account_login, id, start_line, end_line):
         return self._update_one(
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
                     DbDocumentModel.DbFileReferenceModel(
-                        ref_id=ref_id
+                        id=id
                     )
                 ]
             ),
@@ -30,13 +30,13 @@ class DbDocumentClient(AbstractDbCollectionClient):
             DbNewValuesActions.SET_ACTION
         )
 
-    def update_one_path_ref(self, github_account_login, ref_id, path):
+    def update_one_path_ref(self, github_account_login, id, path):
         return self._update_one(
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
                     DbDocumentModel.DbFileReferenceModel(
-                        ref_id=ref_id
+                        id=id
                     )
                 ]
             ),
@@ -48,13 +48,13 @@ class DbDocumentClient(AbstractDbCollectionClient):
             DbNewValuesActions.SET_ACTION
         )
 
-    def update_one_is_deleted_ref(self, github_account_login, ref_id, is_deleted):
+    def update_one_is_deleted_ref(self, github_account_login, id, is_deleted):
         return self._update_one(
             DbDocumentModel(
                 github_account_login=github_account_login,
                 refs=[
                     DbDocumentModel.DbFileReferenceModel(
-                        ref_id=ref_id
+                        id=id
                     )
                 ]
             ),

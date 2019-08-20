@@ -89,7 +89,7 @@
             const r = response.body;
 
             // Save the reference and the content
-            this.refs[r.ref_id] = {
+            this.refs[r.id] = {
               code: r.code,
               github_account_login: r.github_account_login,
               repo_name: r.repo_name,
@@ -99,7 +99,7 @@
             };
 
             // Add the reference in the markdown
-            this._addAtCursor(r.ref_id);
+            this._addAtCursor(r.id);
 
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching github lines", {
@@ -130,7 +130,7 @@
           const content = this.refs[refId];
 
           references.push({
-            'ref_id': refId,
+            'id': refId,
             'github_account_login': content.github_account_login,
             'repo_name': content.repo_name,
             'path': content.path,

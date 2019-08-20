@@ -1,15 +1,15 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.jsonable import Jsonable
 
 
 class DbRepoModel(Jsonable):
     """
-    Represents a github repository, used to keep track of the state of the internal db for this repository
+    Represents a github repository
     """
 
-    def __init__(self, github_account_login=None, repo_name=None, sha_last_update=None):
+    def __init__(self, github_account_login=None, name=None, sha_last_update=None):
         self.__github_account_login = github_account_login
-        self.__repo_name = repo_name
+        self.__name = name
         self.__sha_last_update = sha_last_update
 
     @property
@@ -17,8 +17,8 @@ class DbRepoModel(Jsonable):
         return self.__github_account_login
 
     @property
-    def repo_name(self):
-        return self.__repo_name
+    def name(self):
+        return self.__name
 
     @property
     def sha_last_update(self):
@@ -26,15 +26,15 @@ class DbRepoModel(Jsonable):
 
     def to_json(self):
         return {
-            DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: self.__github_account_login,
-            DbFields.REPO_NAME_FIELD: self.__repo_name,
-            DbFields.SHA_LAST_UPDATE_FIELD: self.__sha_last_update
+            ModelFields.GITHUB_ACCOUNT_LOGIN: self.__github_account_login,
+            ModelFields.NAME: self.__name,
+            ModelFields.SHA_LAST_UPDATE: self.__sha_last_update
         }
 
     @staticmethod
     def from_json(repository):
         return DbRepoModel(
-            repository[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD],
-            repository[DbFields.REPO_NAME_FIELD],
-            repository[DbFields.SHA_LAST_UPDATE_FIELD]
+            repository[ModelFields.GITHUB_ACCOUNT_LOGIN],
+            repository[ModelFields.NAME],
+            repository[ModelFields.SHA_LAST_UPDATE]
         )

@@ -32,7 +32,7 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
         )
 
         if self.__is_expired(installation.expires_at):
-            self.__update_installation_token(installation.mongo_id, installation.installation_id)
+            self.__update_installation_token(installation.mongo_id, installation.id)
             return self.__find_one(github_account_login)
         else:
             return installation
@@ -43,9 +43,9 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
 
         self.__upsert_updated_installation(github_account_login, installation_id)
 
-    def __upsert_updated_installation(self, github_account_login, installation_id):
-        installation_token, expires_at = GithubAuthorisationInterface.request_installation_access_token(
-            installation_id,
+    def __upsert_updated_installation(self, github_account_login, id):
+        token, expires_at = GithubAuthorisationInterface.request_installation_access_token(
+            id,
             FileSystemInterface.load_private_key()
         )
 
@@ -58,15 +58,15 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
             DbGithubInstallationModel(
                 mongo_id=mongo_id,
                 github_account_login=github_account_login,
-                installation_id=installation_id,
-                installation_token=installation_token,
+                id=id,
+                token=token,
                 expires_at=expires_at
             ),
             DbNewValuesActions.SET_ACTION
         )
 
     def __update_installation_token(self, mongo_id, installation_id):
-        installation_token, expires_at = GithubAuthorisationInterface.request_installation_access_token(
+        token, expires_at = GithubAuthorisationInterface.request_installation_access_token(
             installation_id,
             FileSystemInterface.load_private_key()
         )
@@ -76,7 +76,7 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
                 mongo_id=mongo_id
             ),
             DbGithubInstallationModel(
-                installation_token=installation_token,
+                token=token,
                 expires_at=expires_at
             ),
             DbNewValuesActions.SET_ACTION
@@ -85,7 +85,8 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
     def __find_one(self, github_account_login):
         return self._find_one(
             DbGithubInstallationModel(
-                github_account_login=github_account_login)
+                github_account_login=github_account_login
+            )
         )
 
     def __is_expired(self, expires_at):

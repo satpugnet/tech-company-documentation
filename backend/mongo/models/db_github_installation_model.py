@@ -1,18 +1,18 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.jsonable import Jsonable
 
 
 # TODO create a parent class for all wrappers to avoid DRY
 class DbGithubInstallationModel(Jsonable):
     """
-    Represents an account installation
+    Represents a github account installation with its associated token
     """
 
-    def __init__(self, mongo_id=None, github_account_login=None, installation_id=None, installation_token=None, expires_at=None):
+    def __init__(self, mongo_id=None, github_account_login=None, id=None, token=None, expires_at=None):
         self.__mongo_id = mongo_id
         self.__github_account_login = github_account_login
-        self.__installation_id = installation_id
-        self.__installation_token = installation_token  # Anytime this is accessed, the expires_at must be checked
+        self.__id = id
+        self.__token = token  # Anytime this is accessed, the expires_at must be checked
         self.__expires_at = expires_at
 
     @property
@@ -24,12 +24,12 @@ class DbGithubInstallationModel(Jsonable):
         return self.__github_account_login
 
     @property
-    def installation_id(self):
-        return self.__installation_id
+    def id(self):
+        return self.__id
 
     @property
-    def installation_token(self):
-        return self.__installation_token
+    def token(self):
+        return self.__token
 
     @property
     def expires_at(self):
@@ -37,19 +37,19 @@ class DbGithubInstallationModel(Jsonable):
 
     def to_json(self):
         return {
-            DbFields.MONGO_ID_FIELD: self.mongo_id,
-            DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
-            DbFields.INSTALLATION_ID_FIELD: self.installation_id,
-            DbFields.INSTALLATION_TOKEN_FIELD: self.installation_token,
-            DbFields.EXPIRES_AT_FIELD: self.expires_at
+            ModelFields.MONGO_ID: self.mongo_id,
+            ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login,
+            ModelFields.ID: self.id,
+            ModelFields.TOKEN: self.token,
+            ModelFields.EXPIRES_AT: self.expires_at
         }
 
     @staticmethod
     def from_json(installation):
         return DbGithubInstallationModel(
-            installation[DbFields.MONGO_ID_FIELD],
-            installation[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD],
-            installation[DbFields.INSTALLATION_ID_FIELD],
-            installation[DbFields.INSTALLATION_TOKEN_FIELD],
-            installation[DbFields.EXPIRES_AT_FIELD]
+            installation[ModelFields.MONGO_ID],
+            installation[ModelFields.GITHUB_ACCOUNT_LOGIN],
+            installation[ModelFields.ID],
+            installation[ModelFields.TOKEN],
+            installation[ModelFields.EXPIRES_AT]
         )

@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.sensitive_jsonable import SensitiveJsonable
 from utils.path_manipulator import PathManipulator
 
@@ -38,9 +38,9 @@ class AbstractGithubFSNode(SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         return {
-            DbFields.PATH_FIELD: self.path,
-            DbFields.TYPE_FIELD: self.type,
-            DbFields.NAME_FIELD: self.name,
-            DbFields.DIR_PATH_FIELD: self.dir_path
+            ModelFields.PATH: self.path,
+            ModelFields.TYPE: self.type,
+            ModelFields.NAME: self.name,
+            ModelFields.DIR_PATH: self.dir_path
         }
 

@@ -11,13 +11,13 @@ class DbUserClient(AbstractDbCollectionClient):
     def __init__(self):
         super().__init__('user', DbUserModel)
 
-    def upsert_user_token(self, login, user_token):
+    def upsert_user_token(self, login, token):
         return self._upsert(
             DbUserModel(
                 login=login
             ),
             DbUserModel(
-                user_token=user_token
+                token=token
             ),
             DbNewValuesActions.SET_ACTION
         )

@@ -7,7 +7,7 @@ from tools import logger
 
 class NonAuthenticatedGithubInterface:
     def __init__(self, github_account_login):
-        installation_token = DbGithubInstallationClient().find_one(github_account_login).installation_token
+        installation_token = DbGithubInstallationClient().find_one(github_account_login).token
         self.__github_account_login = github_account_login
         self.__installation_github_account = Github(installation_token)
 

@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.sensitive_jsonable import SensitiveJsonable
 
 
@@ -33,9 +33,9 @@ class GithubRepoModel(SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         return {
-            DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
-            DbFields.NAME_FIELD: self.name,
-            DbFields.FULL_NAME_FIELD: self.full_name,
-            DbFields.OWNER_TYPE_FIELD: self.owner_type,
-            DbFields.PRIVATE_FIELD: self.private
+            ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login,
+            ModelFields.NAME: self.name,
+            ModelFields.FULL_NAME: self.full_name,
+            ModelFields.OWNER_TYPE: self.owner_type,
+            ModelFields.PRIVATE: self.private
         }

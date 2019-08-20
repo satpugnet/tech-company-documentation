@@ -3,7 +3,7 @@ from github_interface.interfaces.non_authenticated_github_interface import NonAu
 from mongo.collection_clients.db_document_client import DbDocumentClient
 from mongo.collection_clients.db_repo_client import DbRepoClient
 from mongo.collection_clients.db_github_file_client import DbGithubFileClient
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 
 
 class PushAndPRRequestHandler:
@@ -43,16 +43,16 @@ class PushAndPRRequestHandler:
         for document in DbDocumentClient().find(self.__github_account_login):
             document_json = document.to_json()
             has_refs_been_affected = False
-            for ref in document_json[DbFields.REFS_FIELD]:
+            for ref in document_json[ModelFields.REFS]:
                 if self.__is_ref_affected(ref, name_commit_files):
-                    commit_file = list(filter(lambda x: x.previous_path == ref[DbFields.PATH_FIELD], commit_files))[0]
+                    commit_file = list(filter(lambda x: x.previous_path == ref[ModelFields.PATH], commit_files))[0]
                     has_refs_been_affected = True if \
-                        GitDiffParser(commit_file).has_line_range_changed(ref[DbFields.START_LINE_FIELD], ref[DbFields.END_LINE_FIELD]) else has_refs_been_affected
+                        GitDiffParser(commit_file).has_line_range_changed(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE]) else has_refs_been_affected
                     if not is_pull_request:
                         self.__update_document_ref_state(commit_file, ref)
             if has_refs_been_affected:
-                affected_refs.append("http://localhost:8080/" + str(document_json[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD]) + "/docs/" +
-                                     str(document_json[DbFields.NAME_FIELD]).replace(" ", "-"))
+                affected_refs.append("http://localhost:8080/" + str(document_json[ModelFields.GITHUB_ACCOUNT_LOGIN]) + "/docs/" +
+                                     str(document_json[ModelFields.NAME]).replace(" ", "-"))
 
         if len(affected_refs) > 0:
             if is_pull_request:
@@ -61,14 +61,14 @@ class PushAndPRRequestHandler:
                 self.__repo_interface.post_commit_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
 
     def __update_document_ref_state(self, commit_file, ref):
-        updated_line_range = GitDiffParser(commit_file).calculate_updated_line_range(ref[DbFields.START_LINE_FIELD], ref[DbFields.END_LINE_FIELD])
-        DbDocumentClient().update_one_lines_ref(self.__github_account_login, ref[DbFields.REF_ID_FIELD], updated_line_range[0], updated_line_range[1])
+        updated_line_range = GitDiffParser(commit_file).calculate_updated_line_range(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE])
+        DbDocumentClient().update_one_lines_ref(self.__github_account_login, ref[ModelFields.ID], updated_line_range[0], updated_line_range[1])
         if commit_file.has_path_changed:
-            DbDocumentClient().update_one_path_ref(self.__github_account_login, ref[DbFields.REF_ID_FIELD], commit_file.path)
+            DbDocumentClient().update_one_path_ref(self.__github_account_login, ref[ModelFields.ID], commit_file.path)
         if commit_file.is_deleted:
-            DbDocumentClient().update_one_is_deleted_ref(self.__github_account_login, ref[DbFields.REF_ID_FIELD], True)
+            DbDocumentClient().update_one_is_deleted_ref(self.__github_account_login, ref[ModelFields.ID], True)
 
     def __is_ref_affected(self, ref, name_commit_files):
-        return ref[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD] == self.__repo_interface.repo.github_account_login and \
-               ref[DbFields.REPO_NAME_FIELD] == self.__repo_interface.repo.name and ref[DbFields.PATH_FIELD] in name_commit_files
+        return ref[ModelFields.GITHUB_ACCOUNT_LOGIN] == self.__repo_interface.repo.github_account_login and \
+               ref[ModelFields.REPO_NAME] == self.__repo_interface.repo.name and ref[ModelFields.PATH] in name_commit_files
 

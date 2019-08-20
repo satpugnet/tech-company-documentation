@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.jsonable import Jsonable
 
 
@@ -26,13 +26,13 @@ class DbCounterModel(Jsonable):
 
     def to_json(self):
         return {
-            DbFields.MONGO_ID_FIELD: self.__id,
-            DbFields.COUNTER_FIELD: self.__counter
+            ModelFields.MONGO_ID: self.__id,
+            ModelFields.COUNTER: self.__counter
         }
 
     @staticmethod
     def from_json(counter):
         return DbCounterModel(
-            counter[DbFields.MONGO_ID_FIELD],
-            counter[DbFields.COUNTER_FIELD]
+            counter[ModelFields.MONGO_ID],
+            counter[ModelFields.COUNTER]
         )

@@ -1,5 +1,5 @@
 from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from utils.json.sensitive_jsonable import SensitiveJsonable
 
 
@@ -19,6 +19,6 @@ class GithubFileModel(AbstractGithubFSNode, SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         new_json = {
-            DbFields.CONTENT_FIELD: self.content
+            ModelFields.CONTENT: self.content
         }
         return {**super().non_sensitive_data_to_json(), **new_json}

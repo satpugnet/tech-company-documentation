@@ -15,7 +15,7 @@ from mongo.collection_clients.db_document_client import DbDocumentClient
 from mongo.collection_clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.db_user_client import DbUserClient
 from mongo.models.db_document_model import DbDocumentModel
-from mongo.constants.db_fields import DbFields
+from mongo.constants.db_fields import ModelFields
 from tools import logger
 from utils.code_formatter import CodeFormatter
 from utils.global_constant import GlobalConst
@@ -64,7 +64,7 @@ def repos(github_account_login):
 
     repo_names = []
     for repo_interface in AuthenticatedGithubInterface(session['user_login']).request_repos(github_account_login):
-        repo_names.append({DbFields.NAME_FIELD: repo_interface.repo.name, DbFields.GITHUB_ACCOUNT_LOGIN_FIELD: repo_interface.repo.github_account_login})
+        repo_names.append({ModelFields.NAME: repo_interface.repo.name, ModelFields.GITHUB_ACCOUNT_LOGIN: repo_interface.repo.github_account_login})
 
     # Return the response
     return __create_response(repo_names)
@@ -113,7 +113,7 @@ def save(github_account_login):
         return abort(400, 'Document name already exists')
 
     new_doc = request.get_json()
-    new_doc[DbFields.GITHUB_ACCOUNT_LOGIN_FIELD] = github_account_login
+    new_doc[ModelFields.GITHUB_ACCOUNT_LOGIN] = github_account_login
 
     DbDocumentClient().insert_one(DbDocumentModel.from_json(new_doc))
 
@@ -148,7 +148,7 @@ def render(github_account_login):
         formatted_code = CodeFormatter.format(ref.path, content, ref.start_line)
         # TODO: create a function on object sent to the frontend to populate all the non sensitive information that it
         #  contains (to send to the frontend) so that we don't do it manually
-        refs[ref.ref_id] = {
+        refs[ref.id] = {
             'code': formatted_code,
             'github_account_login': ref.github_account_login,
             'repo': ref.repo_name,
@@ -187,7 +187,7 @@ def get_lines(github_account_login):
     code = highlight(content, lexer, formatter)
 
     return __create_response({
-        'ref_id': str(uuid.uuid1()),  # generate a unique id for the reference
+        'id': str(uuid.uuid1()),  # generate a unique id for the reference
         'code': code,
         'github_account_login': file_github_account_login,
         'repo_name': repo_name,
@@ -243,7 +243,7 @@ def github_app_installation_callback():
             installation = user_installation
 
     return __create_response({
-        DbFields.LOGIN_FIELD: installation.github_account_login
+        ModelFields.LOGIN: installation.github_account_login
     })
 
 
@@ -272,7 +272,7 @@ def __can_user_access_github_account_login():
         if user == installation.github_account_login:
             return True
 
-    logger.get_logger().info('User %s is not authorised to access this installation for ', user, request.path)
+    logger.get_logger().info('User %s is not authorised to access this installation for %s', user, request.path)
     return False
 
 

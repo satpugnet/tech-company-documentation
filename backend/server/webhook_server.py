@@ -18,7 +18,7 @@ webhook_server = Blueprint('webhook_server', __name__)
 def webhook_handler():
     data = json.loads(request.data.decode("utf-8"))
     logger.get_logger().info("Webhook has been called for %s with action %s", request.headers['x-github-event'],
-                             data[GithubApiFields.ACTION_FIELD] if GithubApiFields.ACTION_FIELD in data else "")
+                             data[GithubApiFields.ACTION] if GithubApiFields.ACTION in data else "")
 
     if not __signature_valid():
         abort(401)
@@ -26,35 +26,35 @@ def webhook_handler():
     event_type = request.headers['x-github-event']
 
     if __is_push_event(event_type):
-        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY_FIELD][GithubApiFields.OWNER_FIELD][GithubApiFields.LOGIN_FIELD], data[GithubApiFields.REPOSITORY_FIELD][GithubApiFields.NAME_FIELD])
-        if __is_branch_master(data[GithubApiFields.REF_FIELD]):
+        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN], data[GithubApiFields.REPOSITORY][GithubApiFields.NAME])
+        if __is_branch_master(data[GithubApiFields.REF]):
             request_handler.enact_push_event()
 
     elif __is_pull_request_opened_event(event_type, data):
-        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY_FIELD][GithubApiFields.OWNER_FIELD][GithubApiFields.LOGIN_FIELD], data[GithubApiFields.REPOSITORY_FIELD][GithubApiFields.NAME_FIELD])
-        request_handler.enact_pull_request_opened_event(data[GithubApiFields.NUMBER_FIELD])
+        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN], data[GithubApiFields.REPOSITORY][GithubApiFields.NAME])
+        request_handler.enact_pull_request_opened_event(data[GithubApiFields.NUMBER])
 
     elif __is_installation_created_event(event_type, data):
-        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION_FIELD][GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD])
-        request_handler.enact_installation_created_event([data_repo[GithubApiFields.NAME_FIELD] for data_repo in data[GithubApiFields.REPOSITORIES_FIELD]], data[GithubApiFields.INSTALLATION_FIELD][GithubApiFields.ID_FIELD])
+        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION][GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
+        request_handler.enact_installation_created_event([data_repo[GithubApiFields.NAME] for data_repo in data[GithubApiFields.REPOSITORIES]], data[GithubApiFields.INSTALLATION][GithubApiFields.ID])
 
     elif __is_installation_deleted_event(event_type, data):
-        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION_FIELD][GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD])
+        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION][GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
         request_handler.enact_installation_deleted_event()
 
     return jsonify({})
 
 def __is_push_event(event_type):
-    return event_type == GithubEventValues.PUSH_EVENT
+    return event_type == GithubEventValues.PUSH
 
 def __is_pull_request_opened_event(event_type, data):
-    return event_type == GithubEventValues.PULL_REQUEST_EVENT and data[GithubApiFields.ACTION_FIELD] == GithubApiValues.OPENED_VALUE
+    return event_type == GithubEventValues.PULL_REQUEST and data[GithubApiFields.ACTION] == GithubApiValues.OPENED
 
 def __is_installation_created_event(event_type, data):
-    return event_type == GithubEventValues.INSTALLATION_EVENT and data[GithubApiFields.ACTION_FIELD] == GithubApiValues.CREATED_VALUE
+    return event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.CREATED
 
 def __is_installation_deleted_event(event_type, data):
-    return event_type == GithubEventValues.INSTALLATION_EVENT and data[GithubApiFields.ACTION_FIELD] == GithubApiValues.DELETED_VALUE
+    return event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.DELETED
 
 def manually_update_db(github_account_login, repo_name):
     PushAndPRRequestHandler(github_account_login, repo_name).enact_push_event()

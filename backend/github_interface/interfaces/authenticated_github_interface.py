@@ -18,7 +18,7 @@ from tools import logger
 class AuthenticatedGithubInterface:
     def __init__(self, user_login):
         self.__user_login = user_login
-        self.__user_github_account = Github(DbUserClient().find_one(self.__user_login).user_token)
+        self.__user_github_account = Github(DbUserClient().find_one(self.__user_login).token)
 
     def request_repo(self, github_account_login, repo_name):
         installation_authorised_repo_interface = NonAuthenticatedGithubInterface(github_account_login).request_repo(repo_name)
@@ -38,16 +38,16 @@ class AuthenticatedGithubInterface:
     def request_installations(self):
         logger.get_logger().info("Requesting user installations for %s", self.__user_login)
 
-        user_token = DbUserClient().find_one(self.__user_login).user_token
+        user_token = DbUserClient().find_one(self.__user_login).token
         response = requests.get(url="https://api.github.com/user/installations",
                                 headers={
                                     "Authorization": "token " + user_token,
                                     "Accept": "application/vnd.github.machine-man-preview+json"
                                 })
-        filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS_FIELD])
+        filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS])
 
         return [
-            GithubInstallationModel(installation[GithubApiFields.ID_FIELD], installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD])
+            GithubInstallationModel(installation[GithubApiFields.ID], installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
             for installation in filtered_user_installations
         ]
 
@@ -63,7 +63,7 @@ class AuthenticatedGithubInterface:
     def __get_user_authorised_repos(self, installation_authorised_repos, github_account_login, account_type):
         raw_private_repos = []
 
-        if account_type == GithubApiValues.ORGANISATION_VALUE:
+        if account_type == GithubApiValues.ORGANISATION:
             raw_github_account_repos = list(self.__user_github_account.get_organization(github_account_login).get_repos())
 
         elif github_account_login == self.__user_login:
@@ -95,7 +95,7 @@ class AuthenticatedGithubInterface:
 
             else:
                 logger.get_logger().info("The installation %s has been filtered out for the user %s",
-                                         raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD], self.__user_login)
+                                         raw_user_installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN], self.__user_login)
 
         return returned_user_installations
 
@@ -110,9 +110,9 @@ class AuthenticatedGithubInterface:
         return list(filter(lambda repo_interface: repo_interface.repo.full_name in repos1_full_names, repo_interfaces1))
 
     def __is_current_user_account(self, raw_user_installation):
-        return raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.TYPE_FIELD] == GithubApiValues.USER_VALUE \
-                    and raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.LOGIN_FIELD] == self.__user_login
+        return raw_user_installation[GithubApiFields.ACCOUNT][GithubApiFields.TYPE] == GithubApiValues.USER \
+               and raw_user_installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN] == self.__user_login
 
     def __is_organisation(self, raw_user_installation):
-        return raw_user_installation[GithubApiFields.ACCOUNT_FIELD][GithubApiFields.TYPE_FIELD] == GithubApiValues.ORGANISATION_VALUE
+        return raw_user_installation[GithubApiFields.ACCOUNT][GithubApiFields.TYPE] == GithubApiValues.ORGANISATION
 

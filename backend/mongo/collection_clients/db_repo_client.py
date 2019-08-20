@@ -7,25 +7,25 @@ class DbRepoClient(AbstractDbCollectionClient):
     def __init__(self):
         super().__init__('repo', DbRepoModel)
 
-    def upsert(self, github_account_login, repo_name):
+    def upsert(self, github_account_login, name):
         return self._upsert(
             DbRepoModel(
                 github_account_login=github_account_login,
-                repo_name=repo_name
+                name=name
             ),
             DbRepoModel(
                 github_account_login=github_account_login,
-                repo_name=repo_name,
+                name=name,
                 sha_last_update=""
             ),
             DbNewValuesActions.SET_ACTION
         )
 
-    def upsert_sha_last_update_only(self, github_account_login, repo_name, sha_last_update):
+    def upsert_sha_last_update_only(self, github_account_login, name, sha_last_update):
         return self._upsert(
             DbRepoModel(
                 github_account_login=github_account_login,
-                repo_name=repo_name
+                name=name
             ),
             DbRepoModel(
                 sha_last_update=sha_last_update
@@ -33,10 +33,10 @@ class DbRepoClient(AbstractDbCollectionClient):
             DbNewValuesActions.SET_ACTION
         )
 
-    def find_one(self, repo_name):
+    def find_one(self, name):
         return self._find_one(
             DbRepoModel(
-                repo_name=repo_name
+                name=name
             )
         )
 
