@@ -1,7 +1,9 @@
+from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
 from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from mongo.collection_clients.db_github_file_client import DbGithubFileClient
-from mongo.collection_clients.db_github_installation_client import DbGithubInstallationClient
-from mongo.collection_clients.db_repo_client import DbRepoClient
+from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
+from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
+from mongo.collection_clients.clients.db_repo_client import DbRepoClient
+from utils.file_system_interface import FileSystemInterface
 
 
 class InstallationRequestHandler:
@@ -19,13 +21,14 @@ class InstallationRequestHandler:
     # TODO: refactor so that the 2 distinct use of this enact (inserting token and then inserting file)
     #  are separated in different function/class
     def enact_installation_created_event(self, repos_name, installation_id):
-        DbGithubInstallationClient().insert_if_not_exist(self.__github_account_login, installation_id)
+        installation_token, expires_at = GithubAuthorisationInterface.request_installation_token(installation_id, FileSystemInterface.load_private_key())
+        DbGithubInstallationClient().insert_one(self.__github_account_login, installation_id, installation_token, expires_at)
 
         for repo_name in repos_name:
-            DbRepoClient().upsert(self.__github_account_login, repo_name)
+            DbRepoClient().upsert_one(self.__github_account_login, repo_name)
             installation_repo = NonAuthenticatedGithubInterface(self.__github_account_login).request_repo(repo_name)
             flat_files = installation_repo.get_all_files_flat()
+
             for file in flat_files:
-                DbGithubFileClient().upsert(self.__github_account_login, repo_name, file.dir_path,
-                                            file.name, file.type, file.content)
+                DbGithubFileClient().insert_one(self.__github_account_login, repo_name, file.dir_path, file.name, file.type, file.content)
 

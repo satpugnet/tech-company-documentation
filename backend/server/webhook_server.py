@@ -13,7 +13,7 @@ from webhook_endpoints.push_and_pr_request_handler import PushAndPRRequestHandle
 
 webhook_server = Blueprint('webhook_server', __name__)
 
-
+# TODO: create an interface for each different options that the class inherits and then add an enact to execute it
 @webhook_server.route("/webhook_handler", methods=['POST'])
 def webhook_handler():
     data = json.loads(request.data.decode("utf-8"))

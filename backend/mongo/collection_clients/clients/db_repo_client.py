@@ -1,5 +1,5 @@
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
-from mongo.constants.db_new_values_actions import DbNewValuesActions
+from mongo.constants.db_update_actions import DbUpdateActions
 from mongo.models.db_repo_model import DbRepoModel
 
 
@@ -7,8 +7,15 @@ class DbRepoClient(AbstractDbCollectionClient):
     def __init__(self):
         super().__init__('repo', DbRepoModel)
 
-    def upsert(self, github_account_login, name):
-        return self._upsert(
+    def find_one(self, name):
+        return self._find_one(
+            DbRepoModel(
+                name=name
+            )
+        )
+
+    def upsert_one(self, github_account_login, name):
+        return self._upsert_one(
             DbRepoModel(
                 github_account_login=github_account_login,
                 name=name
@@ -18,11 +25,11 @@ class DbRepoClient(AbstractDbCollectionClient):
                 name=name,
                 sha_last_update=""
             ),
-            DbNewValuesActions.SET_ACTION
+            DbUpdateActions.SET_ACTION
         )
 
-    def upsert_sha_last_update_only(self, github_account_login, name, sha_last_update):
-        return self._upsert(
+    def upsert_one_sha_last_update_only(self, github_account_login, name, sha_last_update):
+        return self._upsert_one(
             DbRepoModel(
                 github_account_login=github_account_login,
                 name=name
@@ -30,14 +37,7 @@ class DbRepoClient(AbstractDbCollectionClient):
             DbRepoModel(
                 sha_last_update=sha_last_update
             ),
-            DbNewValuesActions.SET_ACTION
-        )
-
-    def find_one(self, name):
-        return self._find_one(
-            DbRepoModel(
-                name=name
-            )
+            DbUpdateActions.SET_ACTION
         )
 
     def remove(self, github_account_login):

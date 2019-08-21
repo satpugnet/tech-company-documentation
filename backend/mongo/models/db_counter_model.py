@@ -1,8 +1,8 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.jsonable import Jsonable
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-class DbCounterModel(Jsonable):
+class DbCounterModel(AbstractDbCollectionModel):
     """
     Represents counters for various collections
 

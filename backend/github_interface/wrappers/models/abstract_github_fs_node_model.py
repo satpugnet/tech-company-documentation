@@ -1,9 +1,11 @@
+from abc import ABC, abstractmethod
+
 from mongo.constants.db_fields import ModelFields
 from utils.json.sensitive_jsonable import SensitiveJsonable
 from utils.path_manipulator import PathManipulator
 
 
-class AbstractGithubFSNode(SensitiveJsonable):
+class AbstractGithubFSNode(SensitiveJsonable, ABC):
 
     DIRECTORY_TYPE = "dir"
     FILE_TYPE = "file"
@@ -36,6 +38,7 @@ class AbstractGithubFSNode(SensitiveJsonable):
     def __extract_dir_path(self, path):
         return PathManipulator().dissociate_dir_path_from_fs_node_name(path).dir_path
 
+    @abstractmethod
     def non_sensitive_data_to_json(self):
         return {
             ModelFields.PATH: self.path,

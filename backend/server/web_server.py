@@ -11,13 +11,13 @@ from pygments.util import ClassNotFound
 
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
-from mongo.collection_clients.db_document_client import DbDocumentClient
-from mongo.collection_clients.db_github_installation_client import DbGithubInstallationClient
-from mongo.collection_clients.db_user_client import DbUserClient
-from mongo.models.db_document_model import DbDocumentModel
+from mongo.collection_clients.clients.db_document_client import DbDocumentClient
+from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
+from mongo.collection_clients.clients.db_user_client import DbUserClient
 from mongo.constants.db_fields import ModelFields
 from tools import logger
 from utils.code_formatter import CodeFormatter
+from utils.file_system_interface import FileSystemInterface
 from utils.global_constant import GlobalConst
 
 web_server = Blueprint('web_server', __name__)
@@ -115,7 +115,7 @@ def save(github_account_login):
     new_doc = request.get_json()
     new_doc[ModelFields.GITHUB_ACCOUNT_LOGIN] = github_account_login
 
-    DbDocumentClient().insert_one(DbDocumentModel.from_json(new_doc))
+    DbDocumentClient().insert_one(new_doc)
 
     return __create_response({})
 
@@ -209,7 +209,8 @@ def auth_github_callback():
                                                                  temporary_code, GlobalConst.REDIRECT_URL_LOGIN)
 
     session['user_login'] = GithubAuthorisationInterface.request_user_login(user_token)
-    DbUserClient().upsert_user_token(session['user_login'], user_token)
+    # TODO: remove the upsert one line once the upsert one is changed into an insert and done in the webhook
+    DbUserClient().upsert_one_user_token(session['user_login'], user_token)
 
     return __create_response({})
 
@@ -221,8 +222,10 @@ def installs():
 
     returned_installations = []
     for installation in user_installations:
-        # TODO: delete the use of insert_if_not_exist here if it is now setup using the webhook_endpoints
-        DbGithubInstallationClient().insert_if_not_exist(installation.github_account_login, installation.id)
+        # TODO: delete the use of insert_one and the if statement logic here if it is now setup using the webhook_endpoints
+        if DbGithubInstallationClient().find_one(installation.github_account_login) is None:
+            installation_token, expires_at = GithubAuthorisationInterface.request_installation_token(installation.id, FileSystemInterface.load_private_key())
+            DbGithubInstallationClient().insert_one(installation.github_account_login, installation.id, installation_token, expires_at)
         returned_installations.append(installation)
 
     return __create_response({

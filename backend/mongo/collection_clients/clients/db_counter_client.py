@@ -2,7 +2,7 @@ from pymongo import ReturnDocument
 
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
 from mongo.constants.db_fields import ModelFields
-from mongo.constants.db_new_values_actions import DbNewValuesActions
+from mongo.constants.db_update_actions import DbUpdateActions
 from mongo.models.db_counter_model import DbCounterModel
 
 
@@ -15,8 +15,8 @@ class DbCounterClient(AbstractDbCollectionClient):
         super().__init__('counter', DbCounterModel)
 
     def init(self):
-        if len(self.find_all()) == 0:
-            self.insert_one(
+        if len(self._find_all()) == 0:
+            self._insert_one(
                 DbCounterModel(
                     id=DbCounterClient.COUNTER_ACCOUNT_INSTALLATION_ID_FIELD,
                     counter=0
@@ -31,9 +31,10 @@ class DbCounterClient(AbstractDbCollectionClient):
             DbCounterModel(
                 counter=1
             ),
-            ReturnDocument.AFTER,
-            DbNewValuesActions.INC_ACTION
+            DbUpdateActions.INC_ACTION,
+            ReturnDocument.AFTER
         )
+
         return db_counter[ModelFields.COUNTER]
 
 

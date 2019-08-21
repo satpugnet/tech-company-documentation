@@ -11,12 +11,16 @@ class GithubCommitFileModel:
         return self.__path
 
     @property
+    def has_path_changed(self):
+        return self.__has_path_changed
+
+    @property
     def previous_path(self):
         return self.__previous_path
 
     @property
-    def has_path_changed(self):
-        return self.__has_path_changed
+    def patch(self):
+        return self.__patch
 
     @property
     def is_deleted(self):

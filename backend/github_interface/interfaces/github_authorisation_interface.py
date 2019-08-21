@@ -32,7 +32,7 @@ class GithubAuthorisationInterface:
         return user.login
 
     @staticmethod
-    def request_installation_access_token(installation_id, private_key):
+    def request_installation_token(installation_id, private_key):
         logger.get_logger().info("Retrieving installation access token for installation %s", installation_id)
 
         integration = GithubIntegration(str(GlobalConst.GITHUB_APP_IDENTIFIER), private_key)

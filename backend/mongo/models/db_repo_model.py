@@ -1,8 +1,8 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.jsonable import Jsonable
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-class DbRepoModel(Jsonable):
+class DbRepoModel(AbstractDbCollectionModel):
     """
     Represents a github repository
     """

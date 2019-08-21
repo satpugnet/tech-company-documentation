@@ -1,8 +1,8 @@
 from git_parser.git_diff_parser import GitDiffParser
 from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from mongo.collection_clients.db_document_client import DbDocumentClient
-from mongo.collection_clients.db_repo_client import DbRepoClient
-from mongo.collection_clients.db_github_file_client import DbGithubFileClient
+from mongo.collection_clients.clients.db_document_client import DbDocumentClient
+from mongo.collection_clients.clients.db_repo_client import DbRepoClient
+from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
 from mongo.constants.db_fields import ModelFields
 
 
@@ -15,7 +15,7 @@ class PushAndPRRequestHandler:
         commits = self.__get_commits_from_db_sha()
 
         for commit in commits:
-            DbRepoClient().upsert_sha_last_update_only(self.__github_account_login, self.__repo_interface.repo.name, commit.sha)
+            DbRepoClient().upsert_one_sha_last_update_only(self.__github_account_login, self.__repo_interface.repo.name, commit.sha)
             self.__update_db_files(commit.files)
 
     def enact_pull_request_opened_event(self, issue_number):
@@ -32,10 +32,11 @@ class PushAndPRRequestHandler:
     def __update_db_files(self, commit_files):
         for commit_file_path in [commit_file.path for commit_file in commit_files]:
             up_to_date_file = self.__repo_interface.get_fs_node_at_path(commit_file_path)
-            DbGithubFileClient().upsert(self.__github_account_login, self.__repo_interface.repo.name, up_to_date_file.dir_path,
+            DbGithubFileClient().update_one(self.__github_account_login, self.__repo_interface.repo.name, up_to_date_file.dir_path,
                                         up_to_date_file.name, up_to_date_file.type, up_to_date_file.content)
 
     # TODO: split the 2 utilities of the method in different functions or classes
+    # TODO: put the logic somewhere else
     def __apply_pr_or_commit_updates(self, commit_files, is_pull_request, issue_number_or_commit_sha, comment_message):
         name_commit_files = [commit_file.previous_path for commit_file in commit_files]
         affected_refs = []
@@ -61,12 +62,17 @@ class PushAndPRRequestHandler:
                 self.__repo_interface.post_commit_comment(issue_number_or_commit_sha, comment_message + '\n'.join(affected_refs))
 
     def __update_document_ref_state(self, commit_file, ref):
-        updated_line_range = GitDiffParser(commit_file).calculate_updated_line_range(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE])
-        DbDocumentClient().update_one_lines_ref(self.__github_account_login, ref[ModelFields.ID], updated_line_range[0], updated_line_range[1])
-        if commit_file.has_path_changed:
-            DbDocumentClient().update_one_path_ref(self.__github_account_login, ref[ModelFields.ID], commit_file.path)
-        if commit_file.is_deleted:
-            DbDocumentClient().update_one_is_deleted_ref(self.__github_account_login, ref[ModelFields.ID], True)
+        diff_parser = GitDiffParser(commit_file)
+        updated_line_range = diff_parser.calculate_updated_line_range(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE])
+
+        DbDocumentClient().update(
+            ref[ModelFields.ID],
+            self.__github_account_login,
+            updated_line_range["updated_start_line"],
+            updated_line_range["updated_end_line"],
+            commit_file.path,
+            commit_file.is_deleted
+        )
 
     def __is_ref_affected(self, ref, name_commit_files):
         return ref[ModelFields.GITHUB_ACCOUNT_LOGIN] == self.__repo_interface.repo.github_account_login and \

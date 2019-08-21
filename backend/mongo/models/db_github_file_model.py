@@ -1,8 +1,8 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.jsonable import Jsonable
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-class DbGithubFileModel(Jsonable):
+class DbGithubFileModel(AbstractDbCollectionModel):
     """
     Represents a file in github
     """

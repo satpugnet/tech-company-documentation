@@ -1,8 +1,9 @@
 from mongo.constants.db_fields import ModelFields
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 from utils.json.jsonable import Jsonable
 
 
-class DbDocumentModel(Jsonable):
+class DbDocumentModel(AbstractDbCollectionModel):
     """
     Represents a file of documentation, which will contain reference to code lines
     """

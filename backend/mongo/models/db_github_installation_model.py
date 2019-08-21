@@ -1,9 +1,9 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.jsonable import Jsonable
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
 # TODO create a parent class for all wrappers to avoid DRY
-class DbGithubInstallationModel(Jsonable):
+class DbGithubInstallationModel(AbstractDbCollectionModel):
     """
     Represents a github account installation with its associated token
     """

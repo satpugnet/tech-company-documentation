@@ -27,11 +27,14 @@ class GitDiffParser:
                     updated_end_line += hunk.count_line_changed_after_exclusive(start_line) + \
                                         hunk.count_line_changed_before_inclusive(start_line)
 
-        return updated_start_line, updated_end_line
+        return {
+            "updated_start_line": updated_start_line,
+            "updated_end_line": updated_end_line
+        }
 
     def has_line_range_changed(self, start_line, end_line):
         updated_line_range = self.calculate_updated_line_range(start_line, end_line)
-        return not(updated_line_range[0] == start_line and updated_line_range[1] == end_line)
+        return not(updated_line_range["updated_start_line"] == start_line and updated_line_range["updated_end_line"] == end_line)
 
     def __extract_hunks(self, raw_patch):
         if not raw_patch:

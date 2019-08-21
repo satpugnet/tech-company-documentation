@@ -8,7 +8,7 @@ from github_interface.constants.github_api_values import GithubApiValues
 from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from github_interface.interfaces.repo_github_interface import RepoGithubInterface
 from github_interface.wrappers.models.github_installation_model import GithubInstallationModel
-from mongo.collection_clients.db_user_client import DbUserClient
+from mongo.collection_clients.clients.db_user_client import DbUserClient
 
 
 # TODO: as much of this as possible should be done in the webhook_server

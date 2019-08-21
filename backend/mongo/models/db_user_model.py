@@ -1,8 +1,11 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.jsonable import Jsonable
+from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-class DbUserModel(Jsonable):
+class DbUserModel(AbstractDbCollectionModel):
+    """
+    Represents a user
+    """
 
     def __init__(self, login=None, token=None):
         self.__login = login
