@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
@@ -6,15 +6,23 @@ from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 from tools.json.jsonable import Jsonable
 
 
-class DbDocumentModel(AbstractDbCollectionModel):
+class DbDocModel(AbstractDbCollectionModel):
     """
     Represents a file of documentation, which will contain reference to code lines
     """
 
-    class DbFileReferenceModel(Jsonable):
+    class DbRefModel(Jsonable):
         """
         A FileReferenceModel is part of a Document, and references lines of code in repositories
         """
+
+        ID_FIELD = ModelFields.ID
+        GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
+        REPO_NAME_FIELD = ModelFields.REPO_NAME
+        PATH_FIELD = ModelFields.PATH
+        START_LINE_FIELD = ModelFields.START_LINE
+        END_LINE_FIELD = ModelFields.END_LINE
+        IS_DELETED_FIELD = ModelFields.IS_DELETED
 
         def __init__(self, id=None, github_account_login=None, repo_name=None, path=None, start_line=None, end_line=None, is_deleted=None):
             self.__id = id
@@ -55,26 +63,31 @@ class DbDocumentModel(AbstractDbCollectionModel):
 
         def to_json(self):
             return {
-                ModelFields.ID: self.id,
-                ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login,
-                ModelFields.REPO_NAME: self.repo_name,
-                ModelFields.PATH: self.path,
-                ModelFields.START_LINE: self.start_line,
-                ModelFields.END_LINE: self.end_line,
-                ModelFields.IS_DELETED: self.is_deleted
+                DbDocModel.DbRefModel.ID_FIELD: self.id,
+                DbDocModel.DbRefModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
+                DbDocModel.DbRefModel.REPO_NAME_FIELD: self.repo_name,
+                DbDocModel.DbRefModel.PATH_FIELD: self.path,
+                DbDocModel.DbRefModel.START_LINE_FIELD: self.start_line,
+                DbDocModel.DbRefModel.END_LINE_FIELD: self.end_line,
+                DbDocModel.DbRefModel.IS_DELETED_FIELD: self.is_deleted
             }
 
         @staticmethod
         def from_json(file_ref):
-            return DbDocumentModel.DbFileReferenceModel(
-                file_ref[ModelFields.ID],
-                file_ref[ModelFields.GITHUB_ACCOUNT_LOGIN],
-                file_ref[ModelFields.REPO_NAME],
-                file_ref[ModelFields.PATH],
-                int(file_ref[ModelFields.START_LINE]),
-                int(file_ref[ModelFields.END_LINE]),
-                file_ref[ModelFields.IS_DELETED]
+            return DbDocModel.DbRefModel(
+                file_ref[DbDocModel.DbRefModel.ID_FIELD],
+                file_ref[DbDocModel.DbRefModel.GITHUB_ACCOUNT_LOGIN_FIELD],
+                file_ref[DbDocModel.DbRefModel.REPO_NAME_FIELD],
+                file_ref[DbDocModel.DbRefModel.PATH_FIELD],
+                int(file_ref[DbDocModel.DbRefModel.START_LINE_FIELD]),
+                int(file_ref[DbDocModel.DbRefModel.END_LINE_FIELD]),
+                file_ref[DbDocModel.DbRefModel.IS_DELETED_FIELD]
             )
+
+    GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
+    NAME_FIELD = ModelFields.NAME
+    CONTENT_FIELD = ModelFields.CONTENT
+    REFS_FIELD = ModelFields.REFS
 
     def __init__(self, github_account_login=None, name=None, content=None, refs=None):
         self.__github_account_login = github_account_login
@@ -100,17 +113,17 @@ class DbDocumentModel(AbstractDbCollectionModel):
 
     def to_json(self):
         return {
-            ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login,
-            ModelFields.NAME: self.name,
-            ModelFields.CONTENT: self.content,
-            ModelFields.REFS: [ref.to_json() for ref in self.refs] if self.refs is not None else None,
+            DbDocModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
+            DbDocModel.NAME_FIELD: self.name,
+            DbDocModel.CONTENT_FIELD: self.content,
+            DbDocModel.REFS_FIELD: [ref.to_json() for ref in self.refs] if self.refs is not None else None,
         }
 
     @staticmethod
     def from_json(document):
-        return DbDocumentModel(
-            document[ModelFields.GITHUB_ACCOUNT_LOGIN],
-            document[ModelFields.NAME],
-            document[ModelFields.CONTENT],
-            [DbDocumentModel.DbFileReferenceModel.from_json(ref) for ref in document[ModelFields.REFS]]
+        return DbDocModel(
+            document[DbDocModel.GITHUB_ACCOUNT_LOGIN_FIELD],
+            document[DbDocModel.NAME_FIELD],
+            document[DbDocModel.CONTENT_FIELD],
+            [DbDocModel.DbRefModel.from_json(ref) for ref in document[DbDocModel.REFS_FIELD]]
         )

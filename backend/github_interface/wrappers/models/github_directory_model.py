@@ -1,9 +1,11 @@
 from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from tools.json.sensitive_jsonable import SensitiveJsonable
 
 
 class GithubDirectoryModel(AbstractGithubFSNode, SensitiveJsonable):
+
+    SUB_FS_NODES_FIELD = ModelFields.SUB_FS_NODES
 
     def __init__(self, path, type, sub_fs_nodes=None):
         AbstractGithubFSNode.__init__(self, path, type)
@@ -24,7 +26,7 @@ class GithubDirectoryModel(AbstractGithubFSNode, SensitiveJsonable):
         new_json = {}
         if self.is_initialised:
             new_json = {
-                ModelFields.SUB_FS_NODES: self.sub_fs_nodes
+                GithubDirectoryModel.SUB_FS_NODES_FIELD: self.sub_fs_nodes
             }
 
         return {**super().non_sensitive_data_to_json(), **new_json}

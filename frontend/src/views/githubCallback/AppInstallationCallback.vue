@@ -11,8 +11,8 @@
           this.$route.query.installation_id + "&setup_action=" +  this.$route.query.setup_action, "").then(response => {
           const r = this.keysToCamel(response.body);
 
-          if (typeof r.login !== 'undefined') {
-              this.$router.replace({path: '/' + r.login});
+          if (typeof r.githubAccountLogin !== 'undefined') {
+              this.$router.replace({path: '/' + r.githubAccountLogin});
           } else {
               this.$router.replace({ path: '/' });
           }

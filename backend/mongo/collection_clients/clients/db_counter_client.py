@@ -1,7 +1,6 @@
 from pymongo import ReturnDocument
 
 from mongo.collection_clients.abstract_db_collection_client import AbstractDbCollectionClient
-from mongo.constants.db_fields import ModelFields
 from mongo.constants.db_update_actions import DbUpdateActions
 from mongo.models.db_counter_model import DbCounterModel
 
@@ -35,7 +34,7 @@ class DbCounterClient(AbstractDbCollectionClient):
             ReturnDocument.AFTER
         )
 
-        return db_counter[ModelFields.COUNTER]
+        return db_counter[DbCounterModel.COUNTER_FIELD]
 
 
 # Always init the model before using it

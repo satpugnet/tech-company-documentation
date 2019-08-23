@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
@@ -6,6 +6,10 @@ class DbRepoModel(AbstractDbCollectionModel):
     """
     Represents a github repository
     """
+
+    GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
+    NAME_FIELD = ModelFields.NAME
+    SHA_LAST_UPDATE_FIELD = ModelFields.SHA_LAST_UPDATE
 
     def __init__(self, github_account_login=None, name=None, sha_last_update=None):
         self.__github_account_login = github_account_login
@@ -26,15 +30,15 @@ class DbRepoModel(AbstractDbCollectionModel):
 
     def to_json(self):
         return {
-            ModelFields.GITHUB_ACCOUNT_LOGIN: self.__github_account_login,
-            ModelFields.NAME: self.__name,
-            ModelFields.SHA_LAST_UPDATE: self.__sha_last_update
+            DbRepoModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.__github_account_login,
+            DbRepoModel.NAME_FIELD: self.__name,
+            DbRepoModel.SHA_LAST_UPDATE_FIELD: self.__sha_last_update
         }
 
     @staticmethod
     def from_json(repository):
         return DbRepoModel(
-            repository[ModelFields.GITHUB_ACCOUNT_LOGIN],
-            repository[ModelFields.NAME],
-            repository[ModelFields.SHA_LAST_UPDATE]
+            repository[DbRepoModel.GITHUB_ACCOUNT_LOGIN_FIELD],
+            repository[DbRepoModel.NAME_FIELD],
+            repository[DbRepoModel.SHA_LAST_UPDATE_FIELD]
         )

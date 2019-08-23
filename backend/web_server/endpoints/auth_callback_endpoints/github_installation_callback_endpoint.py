@@ -1,7 +1,7 @@
 from flask import session, request
 
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
-from mongo.constants.db_fields import ModelFields
+from mongo.models.db_github_installation_model import DbGithubInstallationModel
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 
@@ -19,5 +19,5 @@ class GithubInstallationCallbackEndpoint(AbstractEndpoint):
                 installation = user_installation
 
         return self._create_response({
-            ModelFields.LOGIN: installation.github_account_login
+            DbGithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD: installation.github_account_login
         })

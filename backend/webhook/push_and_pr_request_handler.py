@@ -1,9 +1,9 @@
 from git_parser.git_diff_parser import GitDiffParser
 from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
 from mongo.collection_clients.clients.db_document_client import DbDocumentClient
-from mongo.collection_clients.clients.db_repo_client import DbRepoClient
 from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
-from mongo.constants.db_fields import ModelFields
+from mongo.collection_clients.clients.db_repo_client import DbRepoClient
+from mongo.models.db_doc_model import DbDocModel
 
 
 class PushAndPRRequestHandler:
@@ -44,16 +44,16 @@ class PushAndPRRequestHandler:
         for document in DbDocumentClient().find(self.__github_account_login):
             document_json = document.to_json()
             has_refs_been_affected = False
-            for ref in document_json[ModelFields.REFS]:
+            for ref in document_json[DbDocModel.REFS_FIELD]:
                 if self.__is_ref_affected(ref, name_commit_files):
-                    commit_file = list(filter(lambda x: x.previous_path == ref[ModelFields.PATH], commit_files))[0]
+                    commit_file = list(filter(lambda x: x.previous_path == ref[DbDocModel.DbRefModel.PATH_FIELD], commit_files))[0]
                     has_refs_been_affected = True if \
-                        GitDiffParser(commit_file).has_line_range_changed(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE]) else has_refs_been_affected
+                        GitDiffParser(commit_file).has_line_range_changed(ref[DbDocModel.DbRefModel.START_LINE_FIELD], ref[DbDocModel.DbRefModel.END_LINE_FIELD]) else has_refs_been_affected
                     if not is_pull_request:
                         self.__update_document_ref_state(commit_file, ref)
             if has_refs_been_affected:
-                affected_refs.append("http://localhost:8080/" + str(document_json[ModelFields.GITHUB_ACCOUNT_LOGIN]) + "/docs/" +
-                                     str(document_json[ModelFields.NAME]).replace(" ", "-"))
+                affected_refs.append("http://localhost:8080/" + str(document_json[DbDocModel.GITHUB_ACCOUNT_LOGIN_FIELD]) + "/docs/" +
+                                     str(document_json[DbDocModel.NAME_FIELD]).replace(" ", "-"))
 
         if len(affected_refs) > 0:
             if is_pull_request:
@@ -63,10 +63,10 @@ class PushAndPRRequestHandler:
 
     def __update_document_ref_state(self, commit_file, ref):
         diff_parser = GitDiffParser(commit_file)
-        updated_line_range = diff_parser.calculate_updated_line_range(ref[ModelFields.START_LINE], ref[ModelFields.END_LINE])
+        updated_line_range = diff_parser.calculate_updated_line_range(ref[DbDocModel.DbRefModel.START_LINE_FIELD], ref[DbDocModel.DbRefModel.END_LINE_FIELD])
 
         DbDocumentClient().update(
-            ref[ModelFields.ID],
+            ref[DbDocModel.DbRefModel.ID_FIELD],
             self.__github_account_login,
             updated_line_range["updated_start_line"],
             updated_line_range["updated_end_line"],
@@ -75,6 +75,6 @@ class PushAndPRRequestHandler:
         )
 
     def __is_ref_affected(self, ref, name_commit_files):
-        return ref[ModelFields.GITHUB_ACCOUNT_LOGIN] == self.__repo_interface.repo.github_account_login and \
-               ref[ModelFields.REPO_NAME] == self.__repo_interface.repo.name and ref[ModelFields.PATH] in name_commit_files
+        return ref[DbDocModel.DbRefModel.GITHUB_ACCOUNT_LOGIN_FIELD] == self.__repo_interface.repo.github_account_login and \
+               ref[DbDocModel.DbRefModel.REPO_NAME_FIELD] == self.__repo_interface.repo.name and ref[DbDocModel.DbRefModel.PATH_FIELD] in name_commit_files
 

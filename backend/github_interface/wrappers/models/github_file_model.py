@@ -1,9 +1,11 @@
 from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from tools.json.sensitive_jsonable import SensitiveJsonable
 
 
 class GithubFileModel(AbstractGithubFSNode, SensitiveJsonable):
+
+    CONTENT_FIELD = ModelFields.CONTENT
 
     def __init__(self, path, type, content):
         AbstractGithubFSNode.__init__(self, path, type)
@@ -19,6 +21,6 @@ class GithubFileModel(AbstractGithubFSNode, SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         new_json = {
-            ModelFields.CONTENT: self.content
+            GithubFileModel.CONTENT_FIELD: self.content
         }
         return {**super().non_sensitive_data_to_json(), **new_json}

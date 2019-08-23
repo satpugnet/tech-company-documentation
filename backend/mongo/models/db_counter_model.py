@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
@@ -11,6 +11,9 @@ class DbCounterModel(AbstractDbCollectionModel):
 
     You can add multiple counters using this collection. Simply define an ID field.
     """
+
+    MONGO_ID_FIELD = ModelFields.MONGO_ID
+    COUNTER_FIELD = ModelFields.COUNTER
 
     def __init__(self, id=None, counter=None):
         self.__id = id
@@ -26,13 +29,13 @@ class DbCounterModel(AbstractDbCollectionModel):
 
     def to_json(self):
         return {
-            ModelFields.MONGO_ID: self.__id,
-            ModelFields.COUNTER: self.__counter
+            DbCounterModel.MONGO_ID_FIELD: self.__id,
+            DbCounterModel.COUNTER_FIELD: self.__counter
         }
 
     @staticmethod
     def from_json(counter):
         return DbCounterModel(
-            counter[ModelFields.MONGO_ID],
-            counter[ModelFields.COUNTER]
+            counter[DbCounterModel.MONGO_ID_FIELD],
+            counter[DbCounterModel.COUNTER_FIELD]
         )

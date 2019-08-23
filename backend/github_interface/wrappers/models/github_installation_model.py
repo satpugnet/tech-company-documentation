@@ -1,8 +1,11 @@
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from tools.json.sensitive_jsonable import SensitiveJsonable
 
 
 class GithubInstallationModel(SensitiveJsonable):
+
+    ID_FIELD = ModelFields.ID
+    GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
 
     def __init__(self, id, github_account_login):
         self.__id = id
@@ -18,6 +21,6 @@ class GithubInstallationModel(SensitiveJsonable):
 
     def non_sensitive_data_to_json(self):
         return {
-            ModelFields.ID: self.id,
-            ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login
+            GithubInstallationModel.ID_FIELD: self.id,
+            GithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login
         }

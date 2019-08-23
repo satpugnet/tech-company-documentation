@@ -1,4 +1,4 @@
-from mongo.constants.db_fields import ModelFields
+from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
@@ -7,6 +7,12 @@ class DbGithubInstallationModel(AbstractDbCollectionModel):
     """
     Represents a github account installation with its associated token
     """
+
+    MONGO_ID_FIELD = ModelFields.MONGO_ID
+    GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
+    ID_FIELD = ModelFields.ID
+    TOKEN_FIELD = ModelFields.TOKEN
+    EXPIRES_AT_FIELD = ModelFields.EXPIRES_AT
 
     def __init__(self, mongo_id=None, github_account_login=None, id=None, token=None, expires_at=None):
         self.__mongo_id = mongo_id
@@ -37,19 +43,19 @@ class DbGithubInstallationModel(AbstractDbCollectionModel):
 
     def to_json(self):
         return {
-            ModelFields.MONGO_ID: self.mongo_id,
-            ModelFields.GITHUB_ACCOUNT_LOGIN: self.github_account_login,
-            ModelFields.ID: self.id,
-            ModelFields.TOKEN: self.token,
-            ModelFields.EXPIRES_AT: self.expires_at
+            DbGithubInstallationModel.MONGO_ID_FIELD: self.mongo_id,
+            DbGithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD: self.github_account_login,
+            DbGithubInstallationModel.ID_FIELD: self.id,
+            DbGithubInstallationModel.TOKEN_FIELD: self.token,
+            DbGithubInstallationModel.EXPIRES_AT_FIELD: self.expires_at
         }
 
     @staticmethod
     def from_json(installation):
         return DbGithubInstallationModel(
-            installation[ModelFields.MONGO_ID],
-            installation[ModelFields.GITHUB_ACCOUNT_LOGIN],
-            installation[ModelFields.ID],
-            installation[ModelFields.TOKEN],
-            installation[ModelFields.EXPIRES_AT]
+            installation[DbGithubInstallationModel.MONGO_ID_FIELD],
+            installation[DbGithubInstallationModel.GITHUB_ACCOUNT_LOGIN_FIELD],
+            installation[DbGithubInstallationModel.ID_FIELD],
+            installation[DbGithubInstallationModel.TOKEN_FIELD],
+            installation[DbGithubInstallationModel.EXPIRES_AT_FIELD]
         )
