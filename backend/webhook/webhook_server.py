@@ -1,15 +1,16 @@
 import json
 
-from flask import jsonify, request, abort, Blueprint
+from flask import jsonify, request, Blueprint
+from flask_restful import abort
 
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.constants.github_api_values import GithubApiValues
 from github_interface.constants.github_event_values import GithubEventValues
 from github_interface.security.signature_validator import SignatureValidator
 from tools import logger
-from utils.global_constant import GlobalConst
-from webhook_endpoints.installation_request_handler import InstallationRequestHandler
-from webhook_endpoints.push_and_pr_request_handler import PushAndPRRequestHandler
+from utils.secret_constant import SecretConstant
+from webhook.installation_request_handler import InstallationRequestHandler
+from webhook.push_and_pr_request_handler import PushAndPRRequestHandler
 
 webhook_server = Blueprint('webhook_server', __name__)
 
@@ -21,7 +22,7 @@ def webhook_handler():
                              data[GithubApiFields.ACTION] if GithubApiFields.ACTION in data else "")
 
     if not __signature_valid():
-        abort(401)
+        abort(401, message="Invalid signature")
 
     event_type = request.headers['x-github-event']
 
@@ -62,7 +63,7 @@ def manually_update_db(github_account_login, repo_name):
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']
     body = request.get_data()
-    return SignatureValidator().verify_signature(signature, body, GlobalConst.GITHUB_WEBHOOK_SECRET)
+    return SignatureValidator().verify_signature(signature, body, SecretConstant.GITHUB_WEBHOOK_SECRET)
 
 def __is_branch_master(ref):
     return ref[ref.rfind('/') + 1:] == "master"

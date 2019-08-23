@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from mongo.constants.db_fields import ModelFields
-from utils.json.sensitive_jsonable import SensitiveJsonable
+from tools.json.sensitive_jsonable import SensitiveJsonable
 from utils.path_manipulator import PathManipulator
 
 

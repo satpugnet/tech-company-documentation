@@ -13,25 +13,25 @@
 <script>
   export default {
     props: {
-      name: String,
+      repoName: String,
       content: String,
-      refs: Object
+      refs: Array
     },
 
     methods: {
       renderMarkdown(markdown) {
         let renderedMarkdown = markdown;
 
-        for (let refId in this.refs) {
+        for (const ref of this.refs) {
           // Replace all code references in the rendered markdown with the actual code
-          const codeToInsert = '\n' + this.refs[refId].code + '\n';
-          renderedMarkdown = renderedMarkdown.replace(this._generate_reference(refId), codeToInsert)
+          const codeToInsert = '\n' + ref.code + '\n';
+          renderedMarkdown = renderedMarkdown.replace(this._generateReference(ref.id), codeToInsert)
         }
 
         return renderedMarkdown;
       },
 
-      _generate_reference(referenceId) {
+      _generateReference(referenceId) {
         return `[code-reference:${referenceId}]`;
       },
     }

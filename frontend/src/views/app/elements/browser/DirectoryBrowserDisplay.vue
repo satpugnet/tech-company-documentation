@@ -13,9 +13,9 @@
     },
 
     methods: {
-      select(fs_node_name) {
+      select(fsNodeName) {
         this.$emit('select', {
-          path: fs_node_name
+          path: fsNodeName
         });
       }
     }

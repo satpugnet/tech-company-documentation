@@ -34,7 +34,7 @@
 
     created() {
       this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/docs').then(response => {
-        this.documents = response.body;
+        this.documents = this.keysToCamel(response.body);
         this.loading = false;
       }, error => {
         this.loading = false;

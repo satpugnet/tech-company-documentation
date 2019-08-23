@@ -2,7 +2,7 @@ from mongo.collection_clients.db_operations.abstract_db_operation import Abstrac
 from tools import logger
 
 
-class DbFindOperation(AbstractDbOperation):
+class DbReadOperation(AbstractDbOperation):
 
     def __init__(self, collection_client, filter_model):
         super().__init__(collection_client)
@@ -10,7 +10,7 @@ class DbFindOperation(AbstractDbOperation):
 
     def find(self):
         try:
-            return self._collection_client.find({})
+            return self._collection_client.find(self.__filter_query)
         except Exception:
             logger.get_logger().error("Failed to find with query %s", self.__filter_query)
 

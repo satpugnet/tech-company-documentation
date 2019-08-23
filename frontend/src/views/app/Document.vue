@@ -6,7 +6,7 @@
 
         <MarkdownFile
           v-if="content"
-          :name="name"
+          :repoName="repoName"
           :content="content"
           :refs="refs"
           />
@@ -32,9 +32,9 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/render?name=' + encodeURIComponent(this.name)).then(response => {
-        const r = response.body;
-        this.name = r.name;
+      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/render?repo_name=' + encodeURIComponent(this.repoName)).then(response => {
+        const r = this.keysToCamel(response.body);
+        this.repoName = r.repoName;
         this.content = r.content;
         this.refs = r.refs;
 
@@ -52,7 +52,7 @@
 
     data() {
       return {
-        name: this.$route.params.docName,
+        repoName: this.$route.params.docName,
         content: null,
         refs: {},
 

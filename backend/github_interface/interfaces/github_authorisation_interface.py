@@ -2,7 +2,7 @@ import requests
 from github import GithubIntegration, Github
 
 from tools import logger
-from utils.global_constant import GlobalConst
+from utils.secret_constant import SecretConstant
 
 
 class GithubAuthorisationInterface:
@@ -35,7 +35,7 @@ class GithubAuthorisationInterface:
     def request_installation_token(installation_id, private_key):
         logger.get_logger().info("Retrieving installation access token for installation %s", installation_id)
 
-        integration = GithubIntegration(str(GlobalConst.GITHUB_APP_IDENTIFIER), private_key)
+        integration = GithubIntegration(str(SecretConstant.GITHUB_APP_IDENTIFIER), private_key)
         installation_token = integration.get_access_token(installation_id)
 
         return installation_token.token, installation_token.expires_at

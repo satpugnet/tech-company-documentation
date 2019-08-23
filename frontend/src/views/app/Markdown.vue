@@ -69,7 +69,7 @@
       return {
         title: '',
         content: '',
-        refs: {},
+        refs: [],
         currentReference: {}
       }
     },
@@ -84,19 +84,11 @@
         $('.modal').modal('hide');
 
         if (this.currentReference.startLine && this.currentReference.endLine) {
-          let url = this._generate_url(this.currentReference);
+          let url = this._generateUrl(this.currentReference);
           this.$http.get(url).then(response => {
-            const r = response.body;
-
+            const r = this.keysToCamel(response.body)
             // Save the reference and the content
-            this.refs[r.id] = {
-              code: r.code,
-              github_account_login: r.github_account_login,
-              repo_name: r.repo_name,
-              path: r.path,
-              startLine: r.startLine,
-              endLine: r.endLine,
-            };
+            this.refs.push(r);
 
             // Add the reference in the markdown
             this._addAtCursor(r.id);
@@ -126,16 +118,14 @@
 
         let references = [];
 
-        for (let refId in this.refs) {
-          const content = this.refs[refId];
-
+        for (const ref of this.refs) {
           references.push({
-            'id': refId,
-            'github_account_login': content.github_account_login,
-            'repo_name': content.repo_name,
-            'path': content.path,
-            'start_line': content.startLine,
-            'end_line': content.endLine,
+            'id': ref.id,
+            'github_account_login': ref.githubAccountLogin,
+            'repo_name': ref.repoName,
+            'path': ref.path,
+            'start_line': ref.startLine,
+            'end_line': ref.endLine,
             'is_deleted': false
           })
         }
@@ -152,7 +142,6 @@
             autoHideDelay: 2000,
             variant: 'success',
           });
-
         }, error => {
           this.$bvToast.toast("An error has occurred while saving", {
             title: 'Error',
@@ -167,22 +156,21 @@
 
         const before = this.content.substring(0, cursorPosition);
         const after = this.content.substring(cursorPosition, this.content.length);
-        const ref = this._generate_reference(referenceId);
+        const ref = this._generateReference(referenceId);
 
         this.content = before + ref + after;
       },
 
-      _generate_reference(referenceId) {
+      _generateReference(referenceId) {
         return `[code-reference:${referenceId}]`;
       },
 
-      _generate_url(reference) {
+      _generateUrl(reference) {
         return '/api/' + this.$route.params.githubAccountLogin + '/lines?'
-          + 'file_github_account_login=' + encodeURIComponent(reference.repo.github_account_login)
           + '&repo_name=' + encodeURIComponent(reference.repo.name)
           + '&path=' + encodeURIComponent(reference.path)
-          + '&startLine=' + encodeURIComponent(reference.startLine)
-          + '&endLine=' + encodeURIComponent(reference.endLine);
+          + '&start_line=' + encodeURIComponent(reference.startLine)
+          + '&end_line=' + encodeURIComponent(reference.endLine);
       }
     }
   }

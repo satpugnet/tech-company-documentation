@@ -1,6 +1,6 @@
 from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
 from mongo.constants.db_fields import ModelFields
-from utils.json.sensitive_jsonable import SensitiveJsonable
+from tools.json.sensitive_jsonable import SensitiveJsonable
 
 
 class GithubFileModel(AbstractGithubFSNode, SensitiveJsonable):

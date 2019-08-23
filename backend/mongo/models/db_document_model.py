@@ -1,6 +1,9 @@
 from mongo.constants.db_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
-from utils.json.jsonable import Jsonable
+
+
+# TODO: those could be simplify much further using marshmallow library or the **kwargs and a dictionary to create a generic function
+from tools.json.jsonable import Jsonable
 
 
 class DbDocumentModel(AbstractDbCollectionModel):

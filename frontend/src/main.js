@@ -1,12 +1,12 @@
 import Vue from 'vue'
-import App from "./App.vue"
 import BootstrapVue from 'bootstrap-vue'
 import VueShowdown from 'vue-showdown'
 import VueResource from 'vue-resource'
 import router, { mainRoute } from './router'
 import fontAwesome from './font-awesome'
 import store from './store'
-import Home from "./Home";
+
+import './utils'
 
 Vue.config.productionTip = false;
 

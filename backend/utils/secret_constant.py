@@ -1,4 +1,5 @@
-class GlobalConst:
+# TODO: put in env variables
+class SecretConstant:
     CLIENT_ID = "Iv1.82c79af55b4c6b95"
     CLIENT_SECRET = "62226729b900229f67ba534a2eb54f74abeadd4b"
     GITHUB_APP_IDENTIFIER = "33713"

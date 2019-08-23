@@ -3,7 +3,7 @@ from github_interface.interfaces.non_authenticated_github_interface import NonAu
 from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
-from utils.file_system_interface import FileSystemInterface
+from tools.file_system_interface import FileSystemInterface
 
 
 class InstallationRequestHandler:

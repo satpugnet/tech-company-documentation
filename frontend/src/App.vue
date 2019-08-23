@@ -24,10 +24,10 @@
 
                       <!-- All possible installations -->
                       <a v-for="installation in installations"
-                         @click="redirectInstallation(installation.github_account_login)"
+                         @click="redirectInstallation(installation.githubAccountLogin)"
                          class="dropdown-item"
-                         :class="{'active': iscurrentGithubAccountLogin(installation.github_account_login)}">
-                        {{ installation.github_account_login }}
+                         :class="{'active': iscurrentGithubAccountLogin(installation.githubAccountLogin)}">
+                        {{ installation.githubAccountLogin }}
                       </a>
                       <div class="dropdown-divider"></div>
                       <a @click="redirectGithubNewInstallation()" class="dropdown-item">
@@ -120,14 +120,14 @@
       },
 
       userLogin () {
-        return this.$store.state.user.user_login;
+        return this.$store.state.user.userLogin;
       }
     },
 
     // TODO: copy pasted, to refactor
     created() {
-      this.$http.post('/api/installs', "").then(response => {
-        const installations = response.body.installations;
+      this.$http.get('/api/installs', "").then(response => {
+        const installations = this.keysToCamel(response.body);
         this.$store.commit('user/setInstallations', installations);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations.", {
@@ -138,8 +138,9 @@
       });
 
       this.$http.get('/api/user', "").then(response => {
-        const user_login = response.body.user_login;
-        this.$store.commit('user/setUser', user_login);
+        const r = this.keysToCamel(response.body);
+        const userLogin = r.userLogin;
+        this.$store.commit('user/setUser', userLogin);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the user infromation.", {
           title: 'Error',

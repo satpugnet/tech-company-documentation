@@ -1,4 +1,4 @@
-from server.configuration.base_config import BaseConfig
+from web_server.configuration.base_config import BaseConfig
 
 
 class ProdConfig(BaseConfig):

@@ -15,7 +15,7 @@
       @select="selectRepo($event.repo)"/>
 
     <DirectoryBrowserDisplay
-      :files="sub_fs_nodes"
+      :files="subFsNodes"
       v-if="!loading && repo && isDirectory()"
       @select="selectPath($event.path)"/>
 
@@ -50,7 +50,7 @@
 
     created() {
       this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/repos').then(response => {
-        this.repos = response.body;
+        this.repos = this.keysToCamel(response.body);
         this.loading = false;
 
       }, error => {
@@ -69,7 +69,7 @@
         repos: [],
         currentPath: [],
         contentType: '',
-        sub_fs_nodes: [],
+        subFsNodes: [],
         fileContent: "",
         loading: true,
       }
@@ -81,11 +81,11 @@
         this.getContentForPath();
       },
 
-      selectPath(fs_node_name) {
-        if (this.sub_fs_nodes.some(sub_fs_node => sub_fs_node.name === fs_node_name)) {
+      selectPath(fsNodeName) {
+        if (this.subFsNodes.some(subFsNode => subFsNode.name === fsNodeName)) {
           // check that we can move forward in the repo browsing
           // if we select a path that is not currently shown, something is off so we just reload the content for the path
-          this.currentPath.push(fs_node_name);
+          this.currentPath.push(fsNodeName);
         }
         this.getContentForPath(true);
       },
@@ -94,11 +94,12 @@
         this.loading = true;
         let filePath = this.currentPath.join('/');
         let url = '/api/' + this.$route.params.githubAccountLogin + '/file?repo_name=' + encodeURIComponent(this.repo.name) +
-            '&path=' + encodeURIComponent(filePath) + '&file_github_account_login=' + encodeURIComponent(this.repo.github_account_login);
+            '&path=' + encodeURIComponent(filePath);
         this.$http.get(url).then(response => {
-          this.contentType = response.body.type;
-          this.sub_fs_nodes = response.body.sub_fs_nodes;
-          this.fileContent = response.body.content;
+          const r = this.keysToCamel(response.body);
+          this.contentType = r.type;
+          this.subFsNodes = r.subFsNodes;
+          this.fileContent = r.content;
           this.loading = false;
         }, error => {
           this.loading = false;

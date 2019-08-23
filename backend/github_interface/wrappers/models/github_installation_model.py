@@ -1,5 +1,5 @@
 from mongo.constants.db_fields import ModelFields
-from utils.json.sensitive_jsonable import SensitiveJsonable
+from tools.json.sensitive_jsonable import SensitiveJsonable
 
 
 class GithubInstallationModel(SensitiveJsonable):

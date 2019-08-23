@@ -6,7 +6,7 @@ from mongo.collection_clients.clients.db_github_installation_client import DbGit
 from tools import logger
 from datetime import datetime, timezone
 
-from utils.file_system_interface import FileSystemInterface
+from tools.file_system_interface import FileSystemInterface
 
 
 class NonAuthenticatedGithubInterface:

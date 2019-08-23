@@ -6,8 +6,37 @@ import time
 from github import Github, GithubIntegration, BadCredentialsException
 
 from git_parser.git_diff_parser import GitDiffParser
+from mongo.models.db_github_file_model import DbGithubFileModel
 from mongo.models.db_user_model import DbUserModel
-from utils.json.custom_json_encoder import CustomJsonEncoder
+from tools.json import CustomJsonEncoder
+
+
+
+class Test:
+
+    def __init__(self, github_account_login=None, repo_name=None):
+        self.github_account_login = github_account_login
+        self.repo_name = repo_name
+
+
+    @staticmethod
+    def from_json(dictionary):
+        return Test(**dictionary)
+
+print(DbGithubFileModel.from_json(
+    {
+        "github_account_login": "test1",
+        "repo_name": "test2",
+        "dir_path": "test3",
+        "filename": "test4",
+        "type": "test5",
+        "content": "test6"
+    }
+).content)
+
+
+
+
 
 
 x = DbUserModel

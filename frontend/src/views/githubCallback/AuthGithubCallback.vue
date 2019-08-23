@@ -10,12 +10,13 @@
       this.$http.post('/api/auth/github/callback?code=' + this.$route.query.code + "&state=" +
           this.$route.query.state, "").then(response => {
 
-        this.$http.post('/api/installs', "").then(response => {
-            const installations = response.body.installations;
+        this.$http.get('/api/installs', "").then(response => {
+            const installations = this.keysToCamel(response.body);
+
             if (installations === undefined || installations.length === 0) {
                 window.location = "https://github.com/apps/tech-documentation/installations/new";
             } else {
-                this.$router.replace({ path: '/app/' + installations[0].github_account_login });
+                this.$router.replace({ path: '/app/' + installations[0].githubAccountLogin });
             }
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching the installations", {
