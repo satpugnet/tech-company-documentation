@@ -84,14 +84,20 @@
         $('.modal').modal('hide');
 
         if (this.currentReference.startLine && this.currentReference.endLine) {
+
           let url = this._generateUrl(this.currentReference);
+
           this.$http.get(url).then(response => {
-            const r = this.keysToCamel(response.body)
+            const r = this.keysToCamel(response.body);
+
+            this.currentReference.id = r.id;
+            this.currentReference.code = r.code;
+
             // Save the reference and the content
-            this.refs.push(r);
+            this.refs.push(this.currentReference);
 
             // Add the reference in the markdown
-            this._addAtCursor(r.id);
+            this._addAtCursor(this.currentReference.id);
 
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching github lines", {
@@ -156,18 +162,18 @@
 
         const before = this.content.substring(0, cursorPosition);
         const after = this.content.substring(cursorPosition, this.content.length);
-        const ref = this._generateReference(referenceId);
+        const ref = this._generateRef(referenceId);
 
         this.content = before + ref + after;
       },
 
-      _generateReference(referenceId) {
+      _generateRef(referenceId) {
         return `[code-reference:${referenceId}]`;
       },
 
       _generateUrl(reference) {
         return '/api/' + this.$route.params.githubAccountLogin + '/lines?'
-          + '&repo_name=' + encodeURIComponent(reference.repo.name)
+          + '&repo_name=' + encodeURIComponent(reference.repoName)
           + '&path=' + encodeURIComponent(reference.path)
           + '&start_line=' + encodeURIComponent(reference.startLine)
           + '&end_line=' + encodeURIComponent(reference.endLine);

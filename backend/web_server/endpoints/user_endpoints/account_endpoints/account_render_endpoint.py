@@ -1,4 +1,5 @@
 from flask import request, session
+from marshmallow import Schema, fields
 
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
 from mongo.collection_clients.clients.db_document_client import DbDocumentClient
@@ -10,16 +11,26 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 class AccountRenderEndpoint(AbstractAccountEndpoint):
 
+    def __init__(self):
+        super().__init__()
+        self._get_output_schema_instance = Schema.from_dict({
+            ModelFields.CONTENT: fields.Str(required=True),
+            ModelFields.REFS: fields.Nested(Schema.from_dict({
+                ModelFields.ID: fields.Str(required=True),
+                ModelFields.CODE: fields.Str(required=True)
+            }), required=True, many=True)
+        })()
+
     def get(self, github_account_login):
 
-        name = request.args[ModelFields.REPO_NAME]
+        doc_name = request.args[ModelFields.DOC_NAME]
 
         # Get the documentation doc
-        doc = DbDocumentClient().find_one(github_account_login, name)
+        doc = DbDocumentClient().find_one(github_account_login, doc_name)
 
         refs = []
         for ref in doc.refs:
-            repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.USER_LOGIN_FIELD])\
+            repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD])\
                 .request_repo(ref.github_account_login,ref.repo_name)
 
             lines_from_file_content = repo_interface.get_fs_node_at_path(ref.path).content.splitlines()[
@@ -31,11 +42,10 @@ class AccountRenderEndpoint(AbstractAccountEndpoint):
             # TODO: create a function on object sent to the frontend to populate all the non sensitive information that it
             #  contains (to send to the frontend) so that we don't do it manually
             ref_json = ref.to_json()
-            ref_json['code'] = formatted_code
-            refs.append(ref_json)
+            ref_json[ModelFields.CODE] = formatted_code
+            refs.append(ref_json)  # only id and code are used
 
-        return self._create_response({
-            'name': name,
-            'content': doc.content,
-            'refs': refs
+        return self._create_validated_response({
+            ModelFields.CONTENT: doc.content,
+            ModelFields.REFS: refs
         })

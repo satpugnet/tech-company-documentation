@@ -15,7 +15,7 @@
       @select="selectRepo($event.repo)"/>
 
     <DirectoryBrowserDisplay
-      :files="subFsNodes"
+      :fsNodes="subFsNodes"
       v-if="!loading && repo && isDirectory()"
       @select="selectPath($event.path)"/>
 
@@ -93,7 +93,7 @@
       getContentForPath(newPath=false) {
         this.loading = true;
         let filePath = this.currentPath.join('/');
-        let url = '/api/' + this.$route.params.githubAccountLogin + '/file?repo_name=' + encodeURIComponent(this.repo.name) +
+        let url = '/api/' + this.$route.params.githubAccountLogin + '/fs_nodes?repo_name=' + encodeURIComponent(this.repo.name) +
             '&path=' + encodeURIComponent(filePath);
         this.$http.get(url).then(response => {
           const r = this.keysToCamel(response.body);
@@ -134,7 +134,8 @@
 
       sendFileReference(lineReference) {
         let fileReference = {
-          repo: this.repo,
+          githubAccountLogin: this.repo.githubAccountLogin,
+          repoName: this.repo.name,
           path: this.currentPath.join('/'),
           startLine: lineReference.startLine,
           endLine: lineReference.endLine

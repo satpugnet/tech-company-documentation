@@ -22,3 +22,6 @@ class ModelFields:
     PRIVATE = "private"
     SUB_FS_NODES = "sub_fs_nodes"
     TOKEN = "token"
+    CODE = "code"
+    DOC_NAME = "doc_name"
+    USER_LOGIN = "user_login"

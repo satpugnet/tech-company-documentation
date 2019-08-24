@@ -1,6 +1,7 @@
 import uuid
 
 from flask import request, session
+from marshmallow import Schema, fields
 
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
 from mongo.constants.model_fields import ModelFields
@@ -11,6 +12,13 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 class AccountLinesEndpoint(AbstractAccountEndpoint):
 
+    def __init__(self):
+        super().__init__()
+        self._get_output_schema_instance = Schema.from_dict({
+            ModelFields.ID: fields.UUID(required=True),
+            ModelFields.CODE: fields.Str(required=True)
+        })()
+
     def get(self, github_account_login):
 
         repo_name = request.args[ModelFields.REPO_NAME]
@@ -18,19 +26,14 @@ class AccountLinesEndpoint(AbstractAccountEndpoint):
         start_line = int(request.args[ModelFields.START_LINE])
         end_line = int(request.args[ModelFields.END_LINE])
 
-        repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
+        repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
 
         fs_node = repo_interface.get_fs_node_at_path(path)
         content = ''.join(fs_node.content.splitlines(keepends=True)[start_line - 1: end_line])
 
         code = CodeFormatter().format(path, content, start_line)
 
-        return self._create_response({
-            'id': str(uuid.uuid1()),  # generate a unique id for the reference
-            'code': code,
-            'github_account_login': github_account_login,
-            'repo_name': repo_name,
-            'path': path,
-            'start_line': start_line,
-            'end_line': end_line,
+        return self._create_validated_response({
+            ModelFields.ID: str(uuid.uuid1()),  # generate a unique id for the reference
+            ModelFields.CODE: code
         })

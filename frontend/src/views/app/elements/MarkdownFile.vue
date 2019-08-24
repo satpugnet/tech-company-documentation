@@ -13,7 +13,7 @@
 <script>
   export default {
     props: {
-      repoName: String,
+      name: String,
       content: String,
       refs: Array
     },
@@ -25,14 +25,14 @@
         for (const ref of this.refs) {
           // Replace all code references in the rendered markdown with the actual code
           const codeToInsert = '\n' + ref.code + '\n';
-          renderedMarkdown = renderedMarkdown.replace(this._generateReference(ref.id), codeToInsert)
+          renderedMarkdown = renderedMarkdown.replace(this._generateRef(ref.id), codeToInsert)
         }
 
         return renderedMarkdown;
       },
 
-      _generateReference(referenceId) {
-        return `[code-reference:${referenceId}]`;
+      _generateRef(refId) {
+        return `[code-reference:${refId}]`;
       },
     }
   }

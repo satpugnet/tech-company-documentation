@@ -9,9 +9,12 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 class AuthGithubCallbackEndpoint(AbstractEndpoint):
 
+    CODE_FIELD = "code"
+    STATE_FIELD = "state"
+
     def post(self):
-        temporary_code = request.args['code']
-        state = request.args['state']
+        temporary_code = request.args[self.CODE_FIELD]
+        state = request.args[self.STATE_FIELD]
 
         if state != SecretConstant.SECRET_PASSWORD_FORGERY:
             abort(401, message="Unauthenticated request")
@@ -19,9 +22,9 @@ class AuthGithubCallbackEndpoint(AbstractEndpoint):
         user_token = GithubAuthorisationInterface.request_user_token(SecretConstant.CLIENT_ID, SecretConstant.CLIENT_SECRET,
                                                                      temporary_code, SecretConstant.REDIRECT_URL_LOGIN)
 
-        session[AbstractEndpoint.USER_LOGIN_FIELD] = GithubAuthorisationInterface.request_user_login(user_token)
+        session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD] = GithubAuthorisationInterface.request_user_login(user_token)
 
         # TODO: remove the upsert one line once the upsert one is changed into an insert and done in the webhook
-        DbUserClient().upsert_one_user_token(session[AbstractEndpoint.USER_LOGIN_FIELD], user_token)
+        DbUserClient().upsert_one_user_token(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD], user_token)
 
-        return self._create_response({})
+        return self._create_empty_response()

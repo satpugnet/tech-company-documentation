@@ -7,7 +7,11 @@ from tools import logger
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 
-class _UserLoginVerifier:
+class AbstractUserEndpoint(AbstractEndpoint):
+
+    def __init__(self):
+        super(AbstractUserEndpoint, self).__init__()
+        self.method_decorators = [AbstractUserEndpoint.login_required] + self.method_decorators
 
     @staticmethod
     def login_required(f):
@@ -15,7 +19,7 @@ class _UserLoginVerifier:
         @wraps(f)
         def wrap(*args, **kwargs):
 
-            if not _UserLoginVerifier.__is_user_authorised():
+            if not AbstractUserEndpoint.__is_user_authorised():
                 logger.get_logger().warning("User not authorised for %s", request.path)
                 return abort(403, message="Unauthorised user")
 
@@ -25,13 +29,6 @@ class _UserLoginVerifier:
     @staticmethod
     def __is_user_authorised():
 
-        authorised = AbstractEndpoint.USER_LOGIN_FIELD in session
+        authorised = AbstractEndpoint.COOKIE_USER_LOGIN_FIELD in session
 
         return authorised
-
-
-class AbstractUserEndpoint(AbstractEndpoint):
-
-    def __init__(self):
-        super(AbstractUserEndpoint, self).__init__()
-        self.method_decorators = [_UserLoginVerifier.login_required]

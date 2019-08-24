@@ -1,5 +1,6 @@
 from flask import session, request
 from flask_restful import abort
+from marshmallow import fields, Schema
 
 from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
 from mongo.constants.model_fields import ModelFields
@@ -8,7 +9,17 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account_endpoint import AbstractAccountEndpoint
 
 
-class AccountFileEndpoint(AbstractAccountEndpoint):
+class AccountFSNodeEndpoint(AbstractAccountEndpoint):
+
+    def __init__(self):
+        super().__init__()
+        self._get_output_schema_instance = Schema.from_dict({
+            ModelFields.TYPE: fields.Str(required=True),
+            ModelFields.CONTENT: fields.Str(required=False),
+            ModelFields.SUB_FS_NODES: fields.Nested(Schema.from_dict({
+                ModelFields.NAME: fields.Str(required=True)
+            }), required=False, many=True)
+        })()
 
     def get(self, github_account_login):
 
@@ -21,7 +32,7 @@ class AccountFileEndpoint(AbstractAccountEndpoint):
             return abort(400, message="A repo should be specified")
 
         repo_interface = AuthenticatedGithubInterface(
-            session[AbstractEndpoint.USER_LOGIN_FIELD]
+            session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]
         ).request_repo(github_account_login, repo_name)
 
         # TODO: fix this so we don't have to deepcopy
@@ -33,4 +44,4 @@ class AccountFileEndpoint(AbstractAccountEndpoint):
 
         # Return the response
         # TODO: return only the necessary fields, not the entire repo object
-        return self._create_response(fs_node)
+        return self._create_validated_response(fs_node)

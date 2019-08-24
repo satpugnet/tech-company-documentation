@@ -5,7 +5,7 @@ from web_server.endpoints.auth_callback_endpoints.auth_github_callback_endpoint 
 from web_server.endpoints.auth_callback_endpoints.github_installation_callback_endpoint import \
     GithubInstallationCallbackEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.account_docs_endpoint import AccountDocsEndpoint
-from web_server.endpoints.user_endpoints.account_endpoints.account_file_endpoint import AccountFileEndpoint
+from web_server.endpoints.user_endpoints.account_endpoints.account_fs_node_endpoint import AccountFSNodeEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.account_lines_endpoint import AccountLinesEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.account_render_endpoint import AccountRenderEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.account_repos_endpoint import AccountReposEndpoint
@@ -26,7 +26,7 @@ api.add_resource(UserLogoutEndpoint, "/logout")
 api.add_resource(UserInstallsEndpoint, "/installs")
 
 api.add_resource(AccountReposEndpoint, "/<string:github_account_login>/repos")
-api.add_resource(AccountFileEndpoint, "/<string:github_account_login>/file")
+api.add_resource(AccountFSNodeEndpoint, "/<string:github_account_login>/fs_nodes")
 api.add_resource(AccountSaveEndpoint, "/<string:github_account_login>/save")
 api.add_resource(AccountDocsEndpoint, "/<string:github_account_login>/docs")
 api.add_resource(AccountRenderEndpoint, "/<string:github_account_login>/render")

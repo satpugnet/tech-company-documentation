@@ -43,15 +43,19 @@ def webhook_handler():
 
     return jsonify({})
 
+
 def manually_update_db(github_account_login, repo_name):
     data = {}
     data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN] = github_account_login
     data[GithubApiFields.REPOSITORY][GithubApiFields.NAME] = repo_name
+
     PushHandler(data).enact()
+
 
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']
     body = request.get_data()
+
     return SignatureValidator().verify_signature(signature, body, SecretConstant.GITHUB_WEBHOOK_SECRET)
 
 
