@@ -1,6 +1,6 @@
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
-from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
+from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
 from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
@@ -43,7 +43,7 @@ class InstallationCreatedHandler(AbstractRequestHandler):
 
     def __insert_db_github_files(self):
         for repo_name in self.__repos_name:
-            installation_repo = NonAuthenticatedGithubInterface(self.__github_account_login).request_repo(repo_name)
+            installation_repo = WebhookGithubInterface(self.__github_account_login).request_repo(repo_name)
             flat_files = installation_repo.get_all_files_flat()
 
             for file in flat_files:

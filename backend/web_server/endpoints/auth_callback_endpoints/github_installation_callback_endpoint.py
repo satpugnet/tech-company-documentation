@@ -1,7 +1,7 @@
 from flask import session, request
 from marshmallow import Schema, fields
 
-from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
+from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from mongo.constants.model_fields import ModelFields
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
@@ -22,7 +22,7 @@ class GithubInstallationCallbackEndpoint(AbstractEndpoint):
         setup_action = request.args[self.SETUP_ACTION_FIELD]
 
         installation = {}
-        user_installations = AuthenticatedGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_installations()
+        user_installations = WebServerGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_installations()
         for user_installation in user_installations:
             if int(user_installation.id) == int(installation_id):
                 installation = user_installation

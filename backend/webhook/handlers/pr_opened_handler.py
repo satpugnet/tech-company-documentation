@@ -1,5 +1,5 @@
 from github_interface.constants.github_api_fields import GithubApiFields
-from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
+from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
 from webhook.handlers.abstract_request_handler import AbstractRequestHandler
 from webhook.handlers.actions.compute_affected_docs_action import ComputeAffectedDocsAction
 from webhook.handlers.actions.post_comment_to_github_action import PostCommentToGithubAction
@@ -13,7 +13,7 @@ class PROpenedHandler(AbstractRequestHandler):
 
         self.__github_account_login = data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN]
 
-        self.__repo_interface = NonAuthenticatedGithubInterface(self.__github_account_login).request_repo(
+        self.__repo_interface = WebhookGithubInterface(self.__github_account_login).request_repo(
             data[GithubApiFields.REPOSITORY][GithubApiFields.NAME]
         )
 

@@ -1,5 +1,5 @@
 from github_interface.constants.github_api_fields import GithubApiFields
-from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
+from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
 from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
 from utils.path_manipulator import PathManipulator
@@ -15,7 +15,7 @@ class PushHandler(AbstractRequestHandler):
         super().__init__()
         self.__branch = PathManipulator().dissociate_dir_path_from_fs_node_name(data[GithubApiFields.REF]).fs_node_name
         self.__github_account_login = data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN]
-        self.__repo_interface = NonAuthenticatedGithubInterface(self.__github_account_login).request_repo(
+        self.__repo_interface = WebhookGithubInterface(self.__github_account_login).request_repo(
             data[GithubApiFields.REPOSITORY][GithubApiFields.NAME]
         )
 

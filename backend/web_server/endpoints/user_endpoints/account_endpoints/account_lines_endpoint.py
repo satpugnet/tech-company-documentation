@@ -3,7 +3,7 @@ import uuid
 from flask import request, session
 from marshmallow import Schema, fields
 
-from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
+from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from mongo.constants.model_fields import ModelFields
 from utils.code_formatter import CodeFormatter
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
@@ -26,7 +26,7 @@ class AccountLinesEndpoint(AbstractAccountEndpoint):
         start_line = int(request.args[ModelFields.START_LINE])
         end_line = int(request.args[ModelFields.END_LINE])
 
-        repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
+        repo_interface = WebServerGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
 
         fs_node = repo_interface.get_fs_node_at_path(path)
         content = ''.join(fs_node.content.splitlines(keepends=True)[start_line - 1: end_line])

@@ -2,7 +2,7 @@ from flask import session, request
 from flask_restful import abort
 from marshmallow import fields, Schema
 
-from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
+from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from mongo.constants.model_fields import ModelFields
 from utils.code_formatter import CodeFormatter
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
@@ -31,7 +31,7 @@ class AccountFSNodeEndpoint(AbstractAccountEndpoint):
         if not repo_name:
             return abort(400, message="A repo should be specified")
 
-        repo_interface = AuthenticatedGithubInterface(
+        repo_interface = WebServerGithubInterface(
             session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]
         ).request_repo(github_account_login, repo_name)
 

@@ -5,45 +5,51 @@ from github import Github, UnknownObjectException
 
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.constants.github_api_values import GithubApiValues
-from github_interface.interfaces.non_authenticated_github_interface import NonAuthenticatedGithubInterface
-from github_interface.interfaces.repo_github_interface import RepoGithubInterface
+from github_interface.interfaces.helper_interfaces.repo_github_interface import RepoGithubInterface
+from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
 from github_interface.wrappers.models.github_installation_model import GithubInstallationModel
 from mongo.collection_clients.clients.db_user_client import DbUserClient
-
-
-# TODO: as much of this as possible should be done in the webhook_server
 from tools import logger
 
 
-class AuthenticatedGithubInterface:
+class WebServerGithubInterface:
     def __init__(self, user_login):
         self.__user_login = user_login
         self.__user_github_account = Github(DbUserClient().find_one(self.__user_login).token)
 
     def request_repo(self, github_account_login, repo_name):
-        installation_authorised_repo_interface = NonAuthenticatedGithubInterface(github_account_login).request_repo(repo_name)
+        installation_authorised_repo_interface = WebhookGithubInterface(github_account_login).request_repo(repo_name)
         user_authorised_repo_interface = self.__get_user_authorised_repo(installation_authorised_repo_interface.repo.full_name)
 
         return self.__get_repo_in_common(installation_authorised_repo_interface, user_authorised_repo_interface)
 
     def request_repos(self, github_account_login):
-        installation_authorised_repos_interface = NonAuthenticatedGithubInterface(github_account_login).request_repos()
+        installation_authorised_repos_interface = WebhookGithubInterface(github_account_login).request_repos()
         user_authorised_repos_interface = []
-        if len(installation_authorised_repos_interface) > 0:
-            user_authorised_repos_interface = self.__get_user_authorised_repos(installation_authorised_repos_interface, github_account_login,
-                                                                     installation_authorised_repos_interface[0].repo.owner_type)
 
-        return self.__get_repos_in_common(installation_authorised_repos_interface, user_authorised_repos_interface)
+        if len(installation_authorised_repos_interface) > 0:
+            user_authorised_repos_interface = self.__get_user_authorised_repos(
+                installation_authorised_repos_interface,
+                github_account_login,
+                installation_authorised_repos_interface[0].repo.owner_type
+            )
+
+        return self.__get_repos_in_common(
+            installation_authorised_repos_interface,
+            user_authorised_repos_interface
+        )
 
     def request_installations(self):
         logger.get_logger().info("Requesting user installations for %s", self.__user_login)
 
         user_token = DbUserClient().find_one(self.__user_login).token
+
         response = requests.get(url="https://api.github.com/user/installations",
                                 headers={
                                     "Authorization": "token " + user_token,
                                     "Accept": "application/vnd.github.machine-man-preview+json"
                                 })
+
         filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS])
 
         return [
@@ -79,8 +85,10 @@ class AuthenticatedGithubInterface:
 
     def __get_user_repos_in_parallel(self, repos):
         pool = mp.Pool()
+
         repos_full_name = [repo.full_name for repo in repos]
         raw_repos = list(filter(None, pool.map(self.__get_user_authorised_repo, repos_full_name)))
+
         pool.close()
 
         return raw_repos
@@ -100,7 +108,10 @@ class AuthenticatedGithubInterface:
         return returned_user_installations
 
     def __get_repo_in_common(self, repo_interfaces1, repo_interfaces2):
-        repo_interfaces = self.__get_repos_in_common([repo_interfaces1], [repo_interfaces2])
+        repo_interfaces = self.__get_repos_in_common(
+            [repo_interfaces1],
+            [repo_interfaces2]
+        )
 
         return repo_interfaces[0] if len(repo_interfaces) == 1 else None
 

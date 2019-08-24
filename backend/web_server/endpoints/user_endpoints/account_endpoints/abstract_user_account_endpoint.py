@@ -3,7 +3,7 @@ from functools import wraps
 from flask import session
 from flask_restful import abort
 
-from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
+from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from tools import logger
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 from web_server.endpoints.user_endpoints.abstract_user_endpoint import AbstractUserEndpoint
@@ -32,7 +32,7 @@ class AbstractAccountEndpoint(AbstractUserEndpoint):
 
     @staticmethod
     def __can_user_access_github_account(github_account_login):
-        user_installations = AuthenticatedGithubInterface(
+        user_installations = WebServerGithubInterface(
             session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_installations()
 
         for installation in user_installations:

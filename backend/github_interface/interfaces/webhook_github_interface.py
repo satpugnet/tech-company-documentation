@@ -1,15 +1,15 @@
+from datetime import datetime, timezone
+
 from github import Github
 
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
-from github_interface.interfaces.repo_github_interface import RepoGithubInterface
+from github_interface.interfaces.helper_interfaces.repo_github_interface import RepoGithubInterface
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from tools import logger
-from datetime import datetime, timezone
-
 from tools.file_system_interface import FileSystemInterface
 
 
-class NonAuthenticatedGithubInterface:
+class WebhookGithubInterface:
     def __init__(self, github_account_login):
         installation_token = self.__request_cached_installation_token(github_account_login)
         self.__github_account_login = github_account_login

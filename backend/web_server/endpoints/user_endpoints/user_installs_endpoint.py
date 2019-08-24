@@ -1,7 +1,7 @@
 from flask import session
 from marshmallow import Schema, fields
 
-from github_interface.interfaces.authenticated_github_interface import AuthenticatedGithubInterface
+from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from mongo.constants.model_fields import ModelFields
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 from web_server.endpoints.user_endpoints.abstract_user_endpoint import AbstractUserEndpoint
@@ -16,6 +16,6 @@ class UserInstallsEndpoint(AbstractUserEndpoint):
         })(many=True)
 
     def get(self):
-        user_installations = AuthenticatedGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_installations()
+        user_installations = WebServerGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_installations()
 
         return self._create_validated_response(user_installations)
