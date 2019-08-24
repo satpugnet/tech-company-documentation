@@ -1,4 +1,6 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+
+from marshmallow import EXCLUDE
 
 from tools.json.jsonable import Jsonable
 
@@ -8,6 +10,8 @@ class AbstractDbCollectionModel(Jsonable, ABC):
     DOT_SIGN = "."
     DOT_DOLLAR_DOT_SIGN = ".$."
     DOLLAR_SIGN = "$"
+
+    schema_class = None
 
     def to_db_json_filter_query(self):
         json_without_none = self.__remove_none_fields(self.to_json())
@@ -44,3 +48,10 @@ class AbstractDbCollectionModel(Jsonable, ABC):
                 model_json[key] = value
 
         return model_json
+
+    def to_json(self):
+        return self.schema_class().dump(self)
+
+    @classmethod
+    def from_json(cls, json):
+        return cls.schema_class(unknown=EXCLUDE).load(json)
