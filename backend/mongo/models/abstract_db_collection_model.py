@@ -24,8 +24,12 @@ class AbstractDbCollectionModel(Jsonable, ABC):
     def to_db_json_insert_query(self):
         return self.__remove_none_fields(self.to_json())
 
-    def __remove_none_fields(self, dict):
-        return {k: v for k, v in dict.items() if v is not None}
+    def __remove_none_fields(self, d):
+        if not isinstance(d, (dict, list)):
+            return d
+        if isinstance(d, list):
+            return [v for v in (self.__remove_none_fields(v) for v in d) if v is not None]
+        return {k: v for k, v in ((k, self.__remove_none_fields(v)) for k, v in d.items()) if v is not None}
 
     def __transform_list_values(self, model, string_between_key_values):
         model_json = {}

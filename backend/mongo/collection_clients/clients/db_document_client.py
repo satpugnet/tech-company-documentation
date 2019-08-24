@@ -39,12 +39,14 @@ class DbDocumentClient(AbstractDbCollectionClient):
                 ]
             ),
             DbDocModel(
-                refs=DbDocModel.DbRefModel(
-                    path=path,
-                    start_line=start_line,
-                    end_line=end_line,
-                    is_deleted=is_deleted
-                )
+                refs=[
+                    DbDocModel.DbRefModel(
+                        path=path,
+                        start_line=start_line,
+                        end_line=end_line,
+                        is_deleted=is_deleted
+                    )
+                ]
             ),
             DbUpdateActions.SET_ACTION
         )

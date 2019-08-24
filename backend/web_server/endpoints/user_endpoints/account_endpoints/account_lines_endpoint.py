@@ -20,8 +20,8 @@ class AccountLinesEndpoint(AbstractAccountEndpoint):
 
         repo_interface = AuthenticatedGithubInterface(session[AbstractEndpoint.USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
 
-        content = ''.join(
-            repo_interface.get_fs_node_at_path(path).content.splitlines(keepends=True)[start_line - 1: end_line])
+        fs_node = repo_interface.get_fs_node_at_path(path)
+        content = ''.join(fs_node.content.splitlines(keepends=True)[start_line - 1: end_line])
 
         code = CodeFormatter().format(path, content, start_line)
 

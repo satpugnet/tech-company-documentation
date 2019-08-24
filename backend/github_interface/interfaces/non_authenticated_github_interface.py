@@ -16,7 +16,7 @@ class NonAuthenticatedGithubInterface:
         self.__installation_github_account = Github(installation_token)
 
     def request_repo(self, repo_name):
-        logger.get_logger().info("Requesting a single repo: %s/%s", self.__github_account_login, str(repo_name))
+        logger.get_logger().info("Requesting a single repo: %s/%s", str(self.__github_account_login), str(repo_name))
 
         repo_full_name = str(self.__github_account_login) + "/" + str(repo_name)
 

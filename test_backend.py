@@ -1,3 +1,4 @@
+import collections
 import datetime
 import json
 import sys
@@ -8,8 +9,20 @@ from github import Github, GithubIntegration, BadCredentialsException
 from git_parser.git_diff_parser import GitDiffParser
 from mongo.models.db_github_file_model import DbGithubFileModel
 from mongo.models.db_user_model import DbUserModel
-from tools.json import CustomJsonEncoder
 
+
+
+def action():
+    print("working")
+
+
+def exec_action(actions):
+    for action in actions:
+        action()
+
+exec_action([action])
+
+print(isinstance(action, collections.Callable))
 
 
 class Test:

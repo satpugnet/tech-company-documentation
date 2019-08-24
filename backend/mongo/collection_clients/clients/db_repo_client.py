@@ -28,7 +28,7 @@ class DbRepoClient(AbstractDbCollectionClient):
             DbUpdateActions.SET_ACTION
         )
 
-    def upsert_one_sha_last_update_only(self, github_account_login, name, sha_last_update):
+    def upsert_one_sha_last_update(self, github_account_login, name, sha_last_update):
         return self._upsert_one(
             DbRepoModel(
                 github_account_login=github_account_login,

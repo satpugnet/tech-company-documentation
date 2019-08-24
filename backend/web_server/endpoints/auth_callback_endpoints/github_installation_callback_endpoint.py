@@ -8,7 +8,6 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 class GithubInstallationCallbackEndpoint(AbstractEndpoint):
 
     def post(self):
-        super().post()
         installation_id = request.args['installation_id']
         setup_action = request.args['setup_action']
 

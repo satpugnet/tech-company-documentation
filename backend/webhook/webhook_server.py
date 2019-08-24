@@ -9,10 +9,13 @@ from github_interface.constants.github_event_values import GithubEventValues
 from github_interface.security.signature_validator import SignatureValidator
 from tools import logger
 from utils.secret_constant import SecretConstant
-from webhook.installation_request_handler import InstallationRequestHandler
-from webhook.push_and_pr_request_handler import PushAndPRRequestHandler
+from webhook.handlers.installation_created_handler import InstallationCreatedHandler
+from webhook.handlers.installation_deleted_handler import InstallationDeletedHandler
+from webhook.handlers.pr_opened_handler import PROpenedHandler
+from webhook.handlers.push_handler import PushHandler
 
 webhook_server = Blueprint('webhook_server', __name__)
+
 
 # TODO: create an interface for each different options that the class inherits and then add an enact to execute it
 @webhook_server.route("/webhook_handler", methods=['POST'])
@@ -26,44 +29,29 @@ def webhook_handler():
 
     event_type = request.headers['x-github-event']
 
-    if __is_push_event(event_type):
-        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN], data[GithubApiFields.REPOSITORY][GithubApiFields.NAME])
-        if __is_branch_master(data[GithubApiFields.REF]):
-            request_handler.enact_push_event()
+    if event_type == GithubEventValues.PUSH:
+        PushHandler(data).enact()
 
-    elif __is_pull_request_opened_event(event_type, data):
-        request_handler = PushAndPRRequestHandler(data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN], data[GithubApiFields.REPOSITORY][GithubApiFields.NAME])
-        request_handler.enact_pull_request_opened_event(data[GithubApiFields.NUMBER])
+    elif event_type == GithubEventValues.PULL_REQUEST and data[GithubApiFields.ACTION] == GithubApiValues.OPENED:
+        PROpenedHandler(data).enact()
 
-    elif __is_installation_created_event(event_type, data):
-        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION][GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
-        request_handler.enact_installation_created_event([data_repo[GithubApiFields.NAME] for data_repo in data[GithubApiFields.REPOSITORIES]], data[GithubApiFields.INSTALLATION][GithubApiFields.ID])
+    elif event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.CREATED:
+        InstallationCreatedHandler(data).enact()
 
-    elif __is_installation_deleted_event(event_type, data):
-        request_handler = InstallationRequestHandler(data[GithubApiFields.INSTALLATION][GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
-        request_handler.enact_installation_deleted_event()
+    elif event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.DELETED:
+        InstallationDeletedHandler(data).enact()
 
     return jsonify({})
 
-def __is_push_event(event_type):
-    return event_type == GithubEventValues.PUSH
-
-def __is_pull_request_opened_event(event_type, data):
-    return event_type == GithubEventValues.PULL_REQUEST and data[GithubApiFields.ACTION] == GithubApiValues.OPENED
-
-def __is_installation_created_event(event_type, data):
-    return event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.CREATED
-
-def __is_installation_deleted_event(event_type, data):
-    return event_type == GithubEventValues.INSTALLATION and data[GithubApiFields.ACTION] == GithubApiValues.DELETED
-
 def manually_update_db(github_account_login, repo_name):
-    PushAndPRRequestHandler(github_account_login, repo_name).enact_push_event()
+    data = {}
+    data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN] = github_account_login
+    data[GithubApiFields.REPOSITORY][GithubApiFields.NAME] = repo_name
+    PushHandler(data).enact()
 
 def __signature_valid():
     signature = request.headers['X-Hub-Signature']
     body = request.get_data()
     return SignatureValidator().verify_signature(signature, body, SecretConstant.GITHUB_WEBHOOK_SECRET)
 
-def __is_branch_master(ref):
-    return ref[ref.rfind('/') + 1:] == "master"
+

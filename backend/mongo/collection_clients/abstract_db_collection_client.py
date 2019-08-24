@@ -33,7 +33,7 @@ class AbstractDbCollectionClient(ABC):
         return DbUpdateOperation(self.__client, filter_model, update_model, update_action).upsert_one()
 
     def _update_one(self, filter_model, update_model, update_action):
-        return DbUpdateOperation(self.__client, filter_model, update_model, update_action)
+        return DbUpdateOperation(self.__client, filter_model, update_model, update_action).update_one()
 
     def _remove(self, filter_model):
         return DbDeleteOperation(self.__client, filter_model).remove()

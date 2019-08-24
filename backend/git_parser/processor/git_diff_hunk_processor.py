@@ -14,10 +14,10 @@ class GitDiffHunk:
         raw_hunk_lines = raw_hunk.splitlines()
         heading_search = re.search(GitDiffHunk.HUNK_HEADING_REGEX, raw_hunk_lines[0])
 
-        self.__old_start_line = heading_search.group(1)
-        self.__old_length = heading_search.group(2)
-        self.__new_start_line = heading_search.group(3)
-        self.__new_length = heading_search.group(4)
+        self.__old_start_line = int(heading_search.group(1))
+        self.__old_length = int(heading_search.group(2))
+        self.__new_start_line = int(heading_search.group(3))
+        self.__new_length = int(heading_search.group(4))
         self.__code_lines = list(map(self.__convert_to_code_line, raw_hunk_lines[1:]))
 
     @property
