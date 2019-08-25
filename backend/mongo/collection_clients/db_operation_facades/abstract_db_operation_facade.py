@@ -1,9 +1,10 @@
 from abc import ABC
 
 
-class AbstractDbOperation(ABC):
+class AbstractDbOperationFacade(ABC):
     """
-    Abstract class for db operations.
+    A facade for communicating with the mongo database.
+    ALL CALLS TO THE MONGO DATABASE API SHOULD BE MADE USING THIS CLASS AND SUBCLASSES.
     """
 
     def __init__(self, collection_name, collection_client):

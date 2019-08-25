@@ -1,11 +1,11 @@
 import multiprocessing as mp
 
-import requests
-from github import Github, UnknownObjectException
+from github import UnknownObjectException
 
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.constants.github_api_values import GithubApiValues
-from github_interface.interfaces.helper_interfaces.repo_github_interface import RepoGithubInterface
+from github_interface.interfaces.github_facade.raw_github_facade import RawGithubFacade
+from github_interface.interfaces.internal_interfaces.repo_github_interface import RepoGithubInterface
 from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
 from github_interface.wrappers.models.github_installation_model import GithubInstallationModel
 from mongo.collection_clients.clients.db_user_client import DbUserClient
@@ -23,13 +23,13 @@ class WebServerGithubInterface:
 
     def __init__(self, user_login):
         self.__user_login = user_login
-        self.__user_github_account = Github(DbUserClient().find_one(self.__user_login).token)
+        self.__raw_user_github_facade = RawGithubFacade.UserFacade(DbUserClient().find_one(self.__user_login).token)
 
     def request_repo(self, github_account_login, repo_name):
         """
         :return: Returns a single repo (an interface) which the user and the Github app are allowed to access.
         """
-        logger.get_logger().warning("Getting repository %s/%s for user %s, filtered using user token and installation token", github_account_login, repo_name, self.__user_login)
+        logger.get_logger().info("Getting repository %s/%s for user %s, filtered using user token and installation token", github_account_login, repo_name, self.__user_login)
 
         installation_authorised_repo_interface = WebhookGithubInterface(github_account_login).request_repo(repo_name)
         user_authorised_repo_interface = self.__get_user_authorised_repo(installation_authorised_repo_interface.repo.full_name)
@@ -40,7 +40,7 @@ class WebServerGithubInterface:
         """
         :return: Returns all repos (as a list of interfaces) under this account and accessible by the user.
         """
-        logger.get_logger().warning("Getting all repositories for account %s for user %s, filtered using user token and installation token", github_account_login, self.__user_login)
+        logger.get_logger().info("Getting all repositories for account %s for user %s, filtered using user token and installation token", github_account_login, self.__user_login)
 
         installation_authorised_repos_interface = WebhookGithubInterface(github_account_login).request_repos()
         user_authorised_repos_interface = []
@@ -63,13 +63,7 @@ class WebServerGithubInterface:
         """
         logger.get_logger().info("Requesting user installations for %s", self.__user_login)
 
-        user_token = DbUserClient().find_one(self.__user_login).token
-
-        response = requests.get(url="https://api.github.com/user/installations",
-                                headers={
-                                    "Authorization": "token " + user_token,
-                                    "Accept": "application/vnd.github.machine-man-preview+json"
-                                })
+        response = self.__raw_user_github_facade.get_user_installations()
 
         filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS])
 
@@ -84,7 +78,7 @@ class WebServerGithubInterface:
         """
 
         try:
-            raw_user_authorised_repo = self.__user_github_account.get_repo(repo_full_name)
+            raw_user_authorised_repo = self.__raw_user_github_facade.get_repo(repo_full_name)
             return RepoGithubInterface(raw_user_authorised_repo)
 
         except UnknownObjectException:
@@ -102,14 +96,14 @@ class WebServerGithubInterface:
         raw_private_repos = []
 
         if account_type == GithubApiValues.ORGANISATION:
-            raw_github_account_repos = list(self.__user_github_account.get_organization(github_account_login).get_repos())
+            raw_github_account_repos = list(self.__raw_user_github_facade.get_organization_repos(github_account_login))
 
         elif github_account_login == self.__user_login:
-            raw_github_account_repos = list(self.__user_github_account.get_user().get_repos())
+            raw_github_account_repos = list(self.__raw_user_github_facade.get_current_user_repos())
 
         else:
             installation_private_repos = list(filter(lambda repo_interface: repo_interface.repo.private, installation_authorised_repos))
-            raw_github_account_repos = list(self.__user_github_account.get_user(github_account_login).get_repos())
+            raw_github_account_repos = list(self.__raw_user_github_facade.get_repos(github_account_login))
             raw_private_repos = self.__get_user_repos_in_parallel(installation_private_repos)
 
         authorised_repos = [RepoGithubInterface(raw_repo) for raw_repo in raw_github_account_repos] + raw_private_repos

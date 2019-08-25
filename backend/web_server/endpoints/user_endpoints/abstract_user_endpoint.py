@@ -23,10 +23,11 @@ class AbstractUserEndpoint(AbstractEndpoint):
         def wrap(*args, **kwargs):
 
             if not AbstractUserEndpoint.__is_user_authorised():
-                logger.get_logger().warning("User not authorised for %s", request.path)
+                logger.get_logger().error("User not authorised for %s", request.path)
                 return abort(403, message="Unauthorised user")
 
             return f(*args, **kwargs)
+
         return wrap
 
     @staticmethod

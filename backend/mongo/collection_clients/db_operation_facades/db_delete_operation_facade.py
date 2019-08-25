@@ -1,8 +1,8 @@
-from mongo.collection_clients.db_operations.abstract_db_operation import AbstractDbOperation
+from mongo.collection_clients.db_operation_facades.abstract_db_operation_facade import AbstractDbOperationFacade
 from tools import logger
 
 
-class DbDeleteOperation(AbstractDbOperation):
+class DbDeleteOperationFacade(AbstractDbOperationFacade):
     """
     A class representing all the database delete operations.
     """

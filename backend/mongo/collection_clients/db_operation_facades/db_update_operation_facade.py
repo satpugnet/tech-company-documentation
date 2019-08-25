@@ -1,8 +1,8 @@
-from mongo.collection_clients.db_operations.abstract_db_operation import AbstractDbOperation
+from mongo.collection_clients.db_operation_facades.abstract_db_operation_facade import AbstractDbOperationFacade
 from tools import logger
 
 
-class DbUpdateOperation(AbstractDbOperation):
+class DbUpdateOperationFacade(AbstractDbOperationFacade):
     """
     A class representing all the database update operations.
     """

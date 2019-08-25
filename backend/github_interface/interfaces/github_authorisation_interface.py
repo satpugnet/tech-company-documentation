@@ -1,6 +1,6 @@
 import requests
-from github import GithubIntegration, Github
 
+from github_interface.interfaces.github_facade.raw_github_facade import RawGithubFacade
 from tools import logger
 from utils.secret_constant import SecretConstant
 
@@ -30,16 +30,17 @@ class GithubAuthorisationInterface:
     def request_user_login(user_token):
         logger.get_logger().info("Requesting the user login")
 
-        github_account = Github(user_token)
-        user = github_account.get_user()
+        user = RawGithubFacade.UserFacade(user_token).get_user()
 
         return user.login
 
     @staticmethod
     def request_installation_token(installation_id, private_key):
-        logger.get_logger().info("Retrieving installation access token for installation id %s", installation_id)
 
-        integration = GithubIntegration(str(SecretConstant.GITHUB_APP_IDENTIFIER), private_key)
-        installation_token = integration.get_access_token(installation_id)
+        installation_token = RawGithubFacade.get_access_token(
+            str(SecretConstant.GITHUB_APP_IDENTIFIER),
+            private_key,
+            installation_id
+        )
 
         return installation_token.token, installation_token.expires_at

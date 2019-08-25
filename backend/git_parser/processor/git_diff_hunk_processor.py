@@ -2,7 +2,6 @@ import re
 
 from git_parser.constants.git_diff_code_line_states import GitDiffCodeLineStates
 from git_parser.models.git_patch_code_line_model import GitPatchCodeLineModel
-from tools import logger
 
 
 class GitDiffHunk:
@@ -46,14 +45,14 @@ class GitDiffHunk:
         return self.__code_lines
 
     def count_line_changed_before_inclusive(self, line_number):
-        return self.__count_line_changed_helper(line_number, True)
+        return self.__count_line_changed_after_or_before(line_number, True)
 
     def count_line_changed_after_exclusive(self, line_number):
-        return self.__count_line_changed_helper(line_number, False)
+        return self.__count_line_changed_after_or_before(line_number, False)
 
     # TODO: check what happen if the end (or beginning) is replaced and whether after a REMOVED on the line_number,
     #  we should keep looking for addition after
-    def __count_line_changed_helper(self, line_number, is_count_before_line):
+    def __count_line_changed_after_or_before(self, line_number, is_count_before_line):
         """
         Count the number of lines changed by the hunk.
         """
