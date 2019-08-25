@@ -1,6 +1,9 @@
+from tools import logger
+
+
 class FileSystemInterface:
     """
-    An interfacr to access the local file system.
+    An interface to access the local file system.
     """
 
     @staticmethod
@@ -8,6 +11,7 @@ class FileSystemInterface:
         """
         :return: The private key for our Github App.
         """
+        logger.get_logger().info("Loading the private key from the file system.")
 
         with open('backend/ressources/github-private-key.pem', 'rb') as file:
             private_key = file.read()

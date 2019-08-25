@@ -1,6 +1,7 @@
 import re
 
 from git_parser.processor.git_diff_hunk_processor import GitDiffHunk
+from tools import logger
 
 
 class GitPatchParser:
@@ -8,17 +9,19 @@ class GitPatchParser:
     A parser for a patch which can computes useful information from it.
     """
 
-    def __init__(self, patch):
+    def __init__(self, commit_file):
         """
         Hunks are the sub parts of a patch which represent a single change in the patch.
         """
-        self.__hunks = self.__extract_hunks(patch)
+        self.__hunks = self.__extract_hunks(commit_file.patch)
+        self.__commit_file_path = commit_file.path
 
     def calculate_updated_line_range(self, start_line, end_line):
         """
         Given an initial start line and end line, this function will calculate how those have changed for the file in
         response to the patch.
         """
+        logger.get_logger().info("Caculating the updated line range for %s for lines %s to %s", str(self.__commit_file_path), str(start_line), str(end_line))
 
         updated_start_line = start_line
         updated_end_line = end_line
@@ -45,6 +48,8 @@ class GitPatchParser:
                     updated_end_line += hunk.count_line_changed_after_exclusive(start_line) + \
                                         hunk.count_line_changed_before_inclusive(start_line)
 
+        logger.get_logger().info("The updated line range for %s is %s to %s", str(self.__commit_file_path), str(updated_start_line), str(updated_end_line))
+
         return {
             "updated_start_line": updated_start_line,
             "updated_end_line": updated_end_line
@@ -54,6 +59,7 @@ class GitPatchParser:
         """
         Whether the line range provided has been affected by the patch
         """
+        logger.get_logger().info("Checking if line range has changed for %s, for lines %s to %s", str(str(self.__commit_file_path)), str(start_line), str(end_line))
 
         updated_line_range = self.calculate_updated_line_range(start_line, end_line)
         return not(updated_line_range["updated_start_line"] == start_line and updated_line_range["updated_end_line"] == end_line)

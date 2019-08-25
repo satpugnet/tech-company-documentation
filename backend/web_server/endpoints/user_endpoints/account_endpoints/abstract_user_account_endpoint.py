@@ -26,8 +26,7 @@ class AbstractAccountEndpoint(AbstractUserEndpoint):
         @wraps(f)
         def wrap(*args, **kwargs):
             if not AbstractAccountEndpoint.__can_user_access_github_account(kwargs["github_account_login"]):
-                logger.get_logger().warning('User is not authorised to access this installation for %s',
-                                            kwargs["github_account_login"])
+                logger.get_logger().warning('User is not authorised to access this installation for %s', kwargs["github_account_login"])
                 return abort(403, message="Unauthorised access to this account by the user")
 
             return f(*args, **kwargs)

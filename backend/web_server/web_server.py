@@ -15,19 +15,21 @@ from web_server.endpoints.user_endpoints.user_installs_endpoint import UserInsta
 
 
 # Routing for the webserver using the Flask restful library
-
 web_server = Blueprint('web_server', __name__)
 api = Api(web_server)
 
+# Routing the authentication and authorisation endpoints
 api.add_resource(AuthGithubCallbackEndpoint, "/auth/github/callback")
 api.add_resource(GithubInstallationCallbackEndpoint, "/github_app_installation_callback")
 
+# Routing the user endpoints
 api.add_resource(UserEndpoint, "/user", "logout")
 api.add_resource(UserInstallsEndpoint, "/installs")
 
+# Routing the github account endpoints
 api.add_resource(AccountReposEndpoint, "/<string:github_account_login>/repos")
 api.add_resource(AccountFSNodeEndpoint, "/<string:github_account_login>/fs_nodes")
 api.add_resource(AccountSaveEndpoint, "/<string:github_account_login>/save")
 api.add_resource(AccountDocsEndpoint, "/<string:github_account_login>/docs")
 api.add_resource(AccountRenderEndpoint, "/<string:github_account_login>/render")
-api.add_resource(AccountLinesEndpoint, "/<string:github_account_login>/lines") # TODO: similar to render -> refactor later
+api.add_resource(AccountLinesEndpoint, "/<string:github_account_login>/lines")

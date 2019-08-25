@@ -27,7 +27,7 @@ class WebhookGithubInterface:
         """
         Fetch a single repo from github and returns an interface for accessing information about this repo.
         """
-        logger.get_logger().info("Requesting a single repo: %s/%s", str(self.__github_account_login), str(repo_name))
+        logger.get_logger().warning("Getting a single repo, without user filtering: %s/%s", self.__github_account_login, repo_name)
 
         repo_full_name = str(self.__github_account_login) + "/" + str(repo_name)
 
@@ -37,7 +37,7 @@ class WebhookGithubInterface:
         """
         Fetch all repos from github under this installation and returns a list of interfaces to access them.
         """
-        logger.get_logger().info("Requesting repos for %s", self.__github_account_login)
+        logger.get_logger().warning("Getting all repos, without user filtering, for %s", self.__github_account_login)
 
         raw_installation_repos = self.__installation_github_account.get_installation(-1).get_repos()
 

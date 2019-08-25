@@ -1,3 +1,4 @@
+from tools import logger
 from webhook.handlers.actions.abstract_webhook_action import AbstractWebhookAction
 
 
@@ -20,8 +21,9 @@ class PostCommentToGithubAction(AbstractWebhookAction):
 
     def perform(self):
         message_lines = []
+
         for doc in self.__affected_docs:
-            current_line = "http://localhost:8080/" + str(doc.github_account_login) + "/docs/" + str(doc.name)
+            current_line = "http://localhost:8080/app/" + str(doc.github_account_login) + "/docs/" + str(doc.name)
             message_lines.append(current_line.replace(" ", "-"))
 
         if self.__is_pull_request:
@@ -29,6 +31,8 @@ class PostCommentToGithubAction(AbstractWebhookAction):
                 comment = PostCommentToGithubAction.PR_COMMENT_MESSAGE + '\n' + '\n'.join(message_lines)
             else:
                 comment = PostCommentToGithubAction.PUSH_NO_FILE_AFFECTED_COMMENT
+
+            logger.get_logger().info("Posting a comment on pull request number %s stating: %s", str(self.__issue_number_or_commit_sha), str(comment))
 
             self.__repo_interface.post_pull_request_comment(
                 self.__issue_number_or_commit_sha,
@@ -40,6 +44,8 @@ class PostCommentToGithubAction(AbstractWebhookAction):
 
             else:
                 comment = PostCommentToGithubAction.PR_NO_FILE_AFFECTED_COMMENT
+
+            logger.get_logger().info("Posting a comment commit with sha %s stating: %s", str(self.__issue_number_or_commit_sha), str(comment))
 
             self.__repo_interface.post_commit_comment(
                 self.__issue_number_or_commit_sha,

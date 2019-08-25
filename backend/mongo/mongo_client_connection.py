@@ -6,7 +6,6 @@ from tools import logger
 
 
 # Initialising the database
-
 DEFAULT_URL = 'mongodb://localhost:27017/'
 MONGO_URL = os.getenv('MONGO_URL', DEFAULT_URL)
 
@@ -18,4 +17,5 @@ client = MongoClient(
     serverSelectionTimeoutMS=3000  # Client timeout
 )
 
-DB = client['documentation']  # use the documentation database
+# Use the documentation database
+DB = client['documentation']

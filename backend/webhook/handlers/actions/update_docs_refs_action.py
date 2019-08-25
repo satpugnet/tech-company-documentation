@@ -1,5 +1,6 @@
 from git_parser.git_patch_parser import GitPatchParser
 from mongo.collection_clients.clients.db_doc_client import DbDocClient
+from tools import logger
 from webhook.handlers.actions.abstract_webhook_action import AbstractWebhookAction
 
 
@@ -8,9 +9,8 @@ class UpdateDocsRefsAction(AbstractWebhookAction):
     Update the database references according to the commit files and how they affected those references.
     """
 
-    def __init__(self, github_account_login, repo, ref_commit_file_pairs):
+    def __init__(self, github_account_login, ref_commit_file_pairs):
         self.__github_account_login = github_account_login
-        self.__repo = repo
         self.__ref_commit_file_pairs = ref_commit_file_pairs
 
     def perform(self):
@@ -22,7 +22,10 @@ class UpdateDocsRefsAction(AbstractWebhookAction):
             )
 
     def __update_db_ref_state(self, github_account_login, ref, commit_file):
-        diff_parser = GitPatchParser(commit_file.patch)
+        logger.get_logger().info("Updating the documents references for github account login %s and references commit file pairs %s",
+                                 str(self.__github_account_login), str(self.__ref_commit_file_pairs))
+
+        diff_parser = GitPatchParser(commit_file)
         updated_line_range = diff_parser.calculate_updated_line_range(ref.start_line,
                                                                       ref.end_line)
 

@@ -25,12 +25,16 @@ class AbstractEndpoint(Resource):
 
         if self._get_output_schema_instance and request.method == "GET":
             response = self._get_output_schema_instance.dump(json_or_object)
+
         elif self._post_output_schema_instance and request.method == "POST":
             response = self._post_output_schema_instance.dump(json_or_object)
+
         elif self._put_output_schema_instance and request.method == "PUT":
             response = self._put_output_schema_instance.dump(json_or_object)
+
         elif self._patch_output_schema_instance and request.method == "PATCH":
             response = self._patch_output_schema_instance.dump(json_or_object)
+
         elif self._delete_output_schema_instance and request.method == "DELETE":
             response = self._delete_output_schema_instance.dump(json_or_object)
 

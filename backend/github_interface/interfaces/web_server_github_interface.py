@@ -29,6 +29,7 @@ class WebServerGithubInterface:
         """
         :return: Returns a single repo (an interface) which the user and the Github app are allowed to access.
         """
+        logger.get_logger().warning("Getting repository %s/%s for user %s, filtered using user token and installation token", github_account_login, repo_name, self.__user_login)
 
         installation_authorised_repo_interface = WebhookGithubInterface(github_account_login).request_repo(repo_name)
         user_authorised_repo_interface = self.__get_user_authorised_repo(installation_authorised_repo_interface.repo.full_name)
@@ -39,6 +40,7 @@ class WebServerGithubInterface:
         """
         :return: Returns all repos (as a list of interfaces) under this account and accessible by the user.
         """
+        logger.get_logger().warning("Getting all repositories for account %s for user %s, filtered using user token and installation token", github_account_login, self.__user_login)
 
         installation_authorised_repos_interface = WebhookGithubInterface(github_account_login).request_repos()
         user_authorised_repos_interface = []
@@ -59,7 +61,6 @@ class WebServerGithubInterface:
         """
         :return: A list of Github app installations which the user has access to.
         """
-
         logger.get_logger().info("Requesting user installations for %s", self.__user_login)
 
         user_token = DbUserClient().find_one(self.__user_login).token

@@ -36,7 +36,7 @@ export default new Router({
       component: AuthGithubCallback
     },
     {
-      path: '/auth/github/appInstallationCallback',
+      path: '/auth/github/app_installation_callback',
       name: 'appInstallationCallback',
       component: AppInstallationCallback
     },

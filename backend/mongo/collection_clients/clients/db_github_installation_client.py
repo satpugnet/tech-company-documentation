@@ -16,6 +16,7 @@ class DbGithubInstallationClient(AbstractDbCollectionClient):
         super().__init__('github_installation', DbGithubInstallationModel)
 
     def find_one(self, github_account_login):
+
         return self._find_one(
             DbGithubInstallationModel(
                 github_account_login=github_account_login

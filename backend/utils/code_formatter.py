@@ -4,6 +4,8 @@ from pygments.lexers import get_lexer_for_filename
 from pygments.lexers.special import TextLexer
 from pygments.util import ClassNotFound
 
+from tools import logger
+
 
 class CodeFormatter:
     """
@@ -11,6 +13,8 @@ class CodeFormatter:
     """
 
     def format(self, path, code, start_line=1):
+        logger.get_logger().info("Format of the code %s for the path %s at the start line %s", code, path, start_line)
+
         try:
             lexer = get_lexer_for_filename(path)
 

@@ -2,6 +2,7 @@ import re
 
 from git_parser.constants.git_diff_code_line_states import GitDiffCodeLineStates
 from git_parser.models.git_patch_code_line_model import GitPatchCodeLineModel
+from tools import logger
 
 
 class GitDiffHunk:

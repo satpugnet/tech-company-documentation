@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class GithubEventValues(Enum):
+class GithubEventValues:
     """
     The different type of webhook events.
     """

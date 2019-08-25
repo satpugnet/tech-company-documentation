@@ -7,12 +7,15 @@ class DbCreateOperation(AbstractDbOperation):
     A class representing all the database create operations.
     """
 
-    def __init__(self, collection_client, update_model):
-        super().__init__(collection_client)
-        self.__insert_query = update_model.to_db_json_insert_query()
+    def __init__(self, collection_name, collection_client, insert_model):
+        super().__init__(collection_name, collection_client)
+        self.__insert_query = insert_model.to_db_json_insert_query()
 
     def insert_one(self):
+
         try:
+            logger.get_logger().info("For collection %s: executing mongo operation 'insert one' with insert query: %s", self._collection_name, self.__insert_query)
             return self._collection_client.insert_one(self.__insert_query)
-        except Exception:
-            logger.get_logger().error("Failed to insert one with values %s", self.__insert_query)
+
+        except Exception as e:
+            logger.get_logger().error("Failed mongo operation 'insert_one' with insert query: %s. Obtained the following exception: %s", self.__insert_query, e)

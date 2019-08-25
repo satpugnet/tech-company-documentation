@@ -24,7 +24,7 @@ def webhook_handler():
     """
 
     data = json.loads(request.data.decode("utf-8"))
-    logger.get_logger().info("Webhook has been called for %s with action %s", request.headers['x-github-event'],
+    logger.get_logger().warning("Webhook has been called for %s with action %s", request.headers['x-github-event'],
                              data[GithubApiFields.ACTION] if GithubApiFields.ACTION in data else "")
 
     if not __signature_valid():

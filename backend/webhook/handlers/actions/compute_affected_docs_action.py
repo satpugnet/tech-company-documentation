@@ -1,4 +1,5 @@
 from mongo.collection_clients.clients.db_doc_client import DbDocClient
+from tools import logger
 from webhook.handlers.actions.abstract_webhook_action import AbstractWebhookAction
 
 
@@ -22,16 +23,18 @@ class ComputeAffectedDocsAction(AbstractWebhookAction):
         def commit_file(self):
             return self.__commit_file
 
-    def __init__(self, github_account_login, repo, commit_files):
-        self.__github_account_login = github_account_login
+    def __init__(self, repo, commit_files):
         self.__repo = repo
         self.__commit_files = commit_files
 
     def perform(self):
+        logger.get_logger().info("For repo %s/%s computing the list of affected documents and the list of reference and commit file pair with commit files %s",
+                                 self.__repo.github_account_login, self.__repo.name, str(self.__commit_files))
+
         affected_docs = []
         ref_commit_file_pairs = []
 
-        for doc in DbDocClient().find(self.__github_account_login):
+        for doc in DbDocClient().find(self.__repo.github_account_login):
             is_current_doc_affected = False
 
             for ref in doc.refs:
@@ -43,6 +46,8 @@ class ComputeAffectedDocsAction(AbstractWebhookAction):
 
             if is_current_doc_affected:
                 affected_docs.append(doc)
+
+        logger.get_logger().info("Found the affected documents are %s. The reference and commit pairs are %s", str(affected_docs), str(ref_commit_file_pairs))
 
         return affected_docs, ref_commit_file_pairs
 

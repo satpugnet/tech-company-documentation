@@ -3,6 +3,7 @@ from flask_restful import abort
 
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
 from mongo.collection_clients.clients.db_user_client import DbUserClient
+from tools import logger
 from utils.secret_constant import SecretConstant
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
@@ -20,6 +21,7 @@ class AuthGithubCallbackEndpoint(AbstractEndpoint):
         state = request.args[self.STATE_FIELD]
 
         if state != SecretConstant.SECRET_PASSWORD_FORGERY:
+            logger.get_logger().error("The secret password for forgery is not valid.")
             abort(401, message="Unauthenticated request")
 
         user_token = GithubAuthorisationInterface.request_user_token(SecretConstant.CLIENT_ID, SecretConstant.CLIENT_SECRET,
