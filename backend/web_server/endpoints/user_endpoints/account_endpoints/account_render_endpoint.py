@@ -42,8 +42,6 @@ class AccountRenderEndpoint(AbstractAccountEndpoint):
             content = '\n'.join(lines_from_file_content)
             formatted_code = CodeFormatter().format(ref.path, content, ref.start_line)
 
-            # TODO: create a function on object sent to the frontend to populate all the non sensitive information that it
-            #  contains (to send to the frontend) so that we don't do it manually
             ref_json = ref.to_json()
             ref_json[ModelFields.CODE] = formatted_code
             refs.append(ref_json)  # only id and code are used

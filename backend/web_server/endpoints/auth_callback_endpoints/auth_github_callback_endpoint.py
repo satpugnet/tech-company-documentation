@@ -29,7 +29,7 @@ class AuthGithubCallbackEndpoint(AbstractEndpoint):
 
         session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD] = GithubAuthorisationInterface.request_user_login(user_token)
 
-        # TODO: remove the upsert one line once the upsert one is changed into an insert and done in the webhook
+        # TODO: remove the upsert one line once the upsert one is changed into an insert and performed in the webhook
         DbUserClient().upsert_one_user_token(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD], user_token)
 
         return self._create_empty_response()

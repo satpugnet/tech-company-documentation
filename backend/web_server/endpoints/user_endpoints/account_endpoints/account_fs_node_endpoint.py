@@ -40,7 +40,6 @@ class AccountFSNodeEndpoint(AbstractAccountEndpoint):
             session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]
         ).request_repo(github_account_login, repo_name)
 
-        # TODO: fix this so we don't have to deepcopy
         fs_node = repo_interface.get_fs_node_at_path(path)
 
         # Syntax highlighting for file
@@ -48,5 +47,4 @@ class AccountFSNodeEndpoint(AbstractAccountEndpoint):
             fs_node.content = CodeFormatter().format(path, fs_node.content)
 
         # Return the response
-        # TODO: return only the necessary fields, not the entire repo object
         return self._create_validated_response(fs_node)

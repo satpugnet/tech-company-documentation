@@ -15,7 +15,8 @@ class InstallationDeletedHandler(AbstractRequestHandler):
         super().__init__()
         self.__github_account_login = data[GithubApiFields.INSTALLATION][GithubApiFields.ACCOUNT][GithubApiFields.LOGIN]
 
-    # TODO: add a flag in documents reference stating when an installation has been deleted and therefore no access to the ref
+    # TODO: add a flag in documents reference stating when an installation has been deleted and therefore
+    #  user should not have access to the ref
     def enact(self):
         logger.get_logger().info("Handling the installation deleted event for %s", self.__github_account_login)
 

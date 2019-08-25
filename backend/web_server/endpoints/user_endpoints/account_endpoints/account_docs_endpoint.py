@@ -5,7 +5,7 @@ from mongo.constants.model_fields import ModelFields
 from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account_endpoint import AbstractAccountEndpoint
 
 
-# TODO: add the required and other options when necessary and add the input validating
+# TODO: Add input validation and input sanitising
 class AccountDocsEndpoint(AbstractAccountEndpoint):
 
     def __init__(self):

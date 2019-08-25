@@ -2,9 +2,7 @@ from mongo.collection_clients.abstract_db_collection_client import AbstractDbCol
 from mongo.constants.db_update_actions import DbUpdateActions
 from mongo.models.db_doc_model import DbDocModel
 
-# TODO: we should add a get_reader, get_updater, get_deleter and get_creater after all dbClient
-#  (i.e. DbDocumentClient().get_reader().find(github_account_login) so that we know exactly which
-#  Operations are being done so that the GET, POST, PATCH... are used properly.
+
 class DbDocClient(AbstractDbCollectionClient):
     """
     A client for the database document collection.

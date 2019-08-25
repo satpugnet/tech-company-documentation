@@ -13,7 +13,6 @@ class AccountSaveEndpoint(AbstractAccountEndpoint):
     Endpoint for handling the saving of docs.
     """
 
-    # TODO: Need to verify what data we get as an input (sanitize the data)
     def post(self, github_account_login):
         if DbDocClient().find_one(github_account_login, request.get_json()[ModelFields.NAME]):
             logger.get_logger().error("The document name %s already exist", request.get_json()[ModelFields.NAME])

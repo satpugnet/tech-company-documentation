@@ -2,7 +2,8 @@ from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-# TODO: those could be simplify much further using marshmallow library or the **kwargs and a dictionary to create a generic function
+# TODO: The to_json and from_json could be simplified much further using **kwargs and marshmallow to create a
+#  generic function as shown in the branch experiment-to-remove-json-in-models in github (pushed as an example)
 from tools.json.jsonable import Jsonable
 
 

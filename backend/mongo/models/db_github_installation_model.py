@@ -2,7 +2,6 @@ from mongo.constants.model_fields import ModelFields
 from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 
-# TODO create a parent class for all wrappers to avoid DRY
 class DbGithubInstallationModel(AbstractDbCollectionModel):
     """
     Represents a github account installation with its associated token.

@@ -6,7 +6,6 @@ from mongo.constants.db_update_actions import DbUpdateActions
 from mongo.models.db_github_installation_model import DbGithubInstallationModel
 
 
-# TODO: remove the logic for the expire token from this class
 class DbGithubInstallationClient(AbstractDbCollectionClient):
     """
     A client for the database github installation collection.
