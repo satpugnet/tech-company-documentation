@@ -8,6 +8,9 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 
 class AuthGithubCallbackEndpoint(AbstractEndpoint):
+    """
+    Endpoint for handling the auth github callback.
+    """
 
     CODE_FIELD = "code"
     STATE_FIELD = "state"

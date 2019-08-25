@@ -10,6 +10,9 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 
 class AccountFSNodeEndpoint(AbstractAccountEndpoint):
+    """
+    Endpoint for handling the github file system node.
+    """
 
     def __init__(self):
         super().__init__()

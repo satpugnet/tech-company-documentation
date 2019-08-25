@@ -3,6 +3,9 @@ from tools import logger
 
 
 class DbUpdateOperation(AbstractDbOperation):
+    """
+    A class representing all the database update operations.
+    """
 
     def __init__(self, collection_client, filter_model, update_model, update_action):
         super().__init__(collection_client)

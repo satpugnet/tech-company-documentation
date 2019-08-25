@@ -6,6 +6,9 @@ from mongo.models.db_counter_model import DbCounterModel
 
 
 class DbCounterClient(AbstractDbCollectionClient):
+    """
+    A client for the database counter collection.
+    """
 
     # Id value
     COUNTER_ACCOUNT_INSTALLATION_ID_FIELD = "installation_id_counter"
@@ -14,6 +17,10 @@ class DbCounterClient(AbstractDbCollectionClient):
         super().__init__('counter', DbCounterModel)
 
     def init(self):
+        """
+        Initialise the counter in the databsae.
+        """
+
         if len(self._find_all()) == 0:
             self._insert_one(
                 DbCounterModel(
@@ -23,6 +30,10 @@ class DbCounterClient(AbstractDbCollectionClient):
             )
 
     def get_next_account_installation_id(self):
+        """
+        Increment the account installation id.
+        """
+
         db_counter = self._find_one_and_update(
             DbCounterModel(
                 id=DbCounterClient.COUNTER_ACCOUNT_INSTALLATION_ID_FIELD

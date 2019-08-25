@@ -11,6 +11,9 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 
 class AccountLinesEndpoint(AbstractAccountEndpoint):
+    """
+    Endpoint for handling the code lines.
+    """
 
     def __init__(self):
         super().__init__()

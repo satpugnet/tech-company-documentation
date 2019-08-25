@@ -3,6 +3,9 @@ from tools import logger
 
 
 class DbReadOperation(AbstractDbOperation):
+    """
+    A class representing all the database read operations.
+    """
 
     def __init__(self, collection_client, filter_model):
         super().__init__(collection_client)

@@ -6,6 +6,10 @@ from utils.secret_constant import SecretConstant
 
 
 class GithubAuthorisationInterface:
+    """
+    A class to handle all the github authorisation and authentification requests.
+    """
+
     @staticmethod
     def request_user_token(client_id, client_secret, code, redirect_uri):
         logger.get_logger().info("Requesting the user token")

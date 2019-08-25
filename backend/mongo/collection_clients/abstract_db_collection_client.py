@@ -8,6 +8,9 @@ from mongo.mongo_client_connection import DB
 
 
 class AbstractDbCollectionClient(ABC):
+    """
+    Abstract class for a collection client.
+    """
 
     def __init__(self, collection_name, model_class):
         self.__client = DB[collection_name]

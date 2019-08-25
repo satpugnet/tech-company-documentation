@@ -6,7 +6,7 @@ import time
 
 from github import Github, GithubIntegration, BadCredentialsException
 
-from git_parser.git_diff_parser import GitDiffParser
+from git_parser.git_patch_parser import GitPatchParser
 from mongo.models.db_github_file_model import DbGithubFileModel
 from mongo.models.db_user_model import DbUserModel
 
@@ -96,7 +96,7 @@ raw_patch = "@@ -1,4 +1,5 @@\n" \
 " hello world\n" \
 " hello world\n" \
 "+hello world"
-parser = GitDiffParser(raw_patch)
+parser = GitPatchParser(raw_patch)
 print(parser.calculate_updated_line_range(1, 6))
 
 

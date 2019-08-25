@@ -5,7 +5,7 @@ from mongo.models.db_user_model import DbUserModel
 
 class DbUserClient(AbstractDbCollectionClient):
     """
-    Represents a user
+    A client for the database user collection.
     """
 
     def __init__(self):

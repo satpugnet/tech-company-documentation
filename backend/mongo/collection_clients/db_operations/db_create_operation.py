@@ -3,6 +3,10 @@ from tools import logger
 
 
 class DbCreateOperation(AbstractDbOperation):
+    """
+    A class representing all the database create operations.
+    """
+
     def __init__(self, collection_client, update_model):
         super().__init__(collection_client)
         self.__insert_query = update_model.to_db_json_insert_query()

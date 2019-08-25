@@ -4,7 +4,7 @@ from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 class DbGithubFileModel(AbstractDbCollectionModel):
     """
-    Represents a file in github
+    Represents a file in github.
     """
 
     GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN

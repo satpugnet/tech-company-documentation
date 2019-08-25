@@ -5,7 +5,7 @@ from mongo.models.db_github_file_model import DbGithubFileModel
 
 class DbGithubFileClient(AbstractDbCollectionClient):
     """
-    Represents a file in github
+    A client for the github file counter collection.
     """
 
     def __init__(self):

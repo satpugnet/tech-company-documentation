@@ -3,25 +3,43 @@ import re
 from git_parser.processor.git_diff_hunk_processor import GitDiffHunk
 
 
-class GitDiffParser:
-    def __init__(self, commit_file):
-        self.__hunks = self.__extract_hunks(commit_file.patch)
+class GitPatchParser:
+    """
+    A parser for a patch which can computes useful information from it.
+    """
+
+    def __init__(self, patch):
+        """
+        Hunks are the sub parts of a patch which represent a single change in the patch.
+        """
+        self.__hunks = self.__extract_hunks(patch)
 
     def calculate_updated_line_range(self, start_line, end_line):
+        """
+        Given an initial start line and end line, this function will calculate how those have changed for the file in
+        response to the patch.
+        """
+
         updated_start_line = start_line
         updated_end_line = end_line
 
         for hunk in self.__hunks:
+
             if self.__is_hunk_before_line(hunk, start_line):
                 updated_start_line += hunk.new_length - hunk.old_length
                 updated_end_line += hunk.new_length - hunk.old_length
+
             elif self.__is_hunk_after_line(hunk, end_line):
                 pass
+
             else:
+
                 if self.__is_hunk_inside_line_range(hunk, start_line, end_line):
                     updated_end_line += hunk.new_length - hunk.old_length
+
                 elif self.__is_hunk_overlapping_end(hunk, start_line, end_line):
                     updated_end_line += hunk.count_line_changed_before_inclusive(end_line)
+
                 elif self.__is_hunk_overlapping_start(hunk, start_line, end_line):
                     updated_start_line += hunk.count_line_changed_before_inclusive(start_line)
                     updated_end_line += hunk.count_line_changed_after_exclusive(start_line) + \
@@ -33,6 +51,10 @@ class GitDiffParser:
         }
 
     def has_line_range_changed(self, start_line, end_line):
+        """
+        Whether the line range provided has been affected by the patch
+        """
+
         updated_line_range = self.calculate_updated_line_range(start_line, end_line)
         return not(updated_line_range["updated_start_line"] == start_line and updated_line_range["updated_end_line"] == end_line)
 

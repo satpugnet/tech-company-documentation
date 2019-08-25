@@ -2,6 +2,9 @@ from webhook.handlers.actions.abstract_webhook_action import AbstractWebhookActi
 
 
 class PostCommentToGithubAction(AbstractWebhookAction):
+    """
+    Post a comment as a Github App in a github pull request or a github push.
+    """
 
     PUSH_COMMENT_MESSAGE = "This commit has affected the following documentation files:"
     PR_COMMENT_MESSAGE = "This pull request has affected the following documentation files:"

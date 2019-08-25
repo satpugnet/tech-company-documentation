@@ -4,6 +4,9 @@ from tools.json.jsonable import Jsonable
 
 
 class GithubInstallationModel(Jsonable):
+    """
+    Represent a github installation.
+    """
 
     ID_FIELD = ModelFields.ID
     GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN

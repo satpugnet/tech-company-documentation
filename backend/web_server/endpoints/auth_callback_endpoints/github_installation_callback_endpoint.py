@@ -7,6 +7,9 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 
 class GithubInstallationCallbackEndpoint(AbstractEndpoint):
+    """
+    Endpoint for handling the github installation callback.
+    """
 
     INSTALLATION_ID_FIELD = "installation_id"
     SETUP_ACTION_FIELD = "setup_action"

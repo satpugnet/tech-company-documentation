@@ -3,6 +3,9 @@ from flask_restful import Resource
 
 
 class AbstractEndpoint(Resource):
+    """
+    Abstract endpoint for a endpoint for the web server. It inherits from Ressource so that it can use flask restful.
+    """
 
     COOKIE_USER_LOGIN_FIELD = 'user_login'
 
@@ -14,6 +17,10 @@ class AbstractEndpoint(Resource):
         self._delete_output_schema_instance = None
 
     def _create_validated_response(self, json_or_object):
+        """
+        :return: Generate a validated response using the marshmallow library and the format it using the flask jsonify function.
+        """
+
         response = {}
 
         if self._get_output_schema_instance and request.method == "GET":

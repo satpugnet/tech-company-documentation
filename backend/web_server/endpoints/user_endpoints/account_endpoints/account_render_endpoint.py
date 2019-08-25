@@ -2,7 +2,7 @@ from flask import request, session
 from marshmallow import Schema, fields
 
 from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
-from mongo.collection_clients.clients.db_document_client import DbDocumentClient
+from mongo.collection_clients.clients.db_doc_client import DbDocClient
 from mongo.constants.model_fields import ModelFields
 from utils.code_formatter import CodeFormatter
 from web_server.endpoints.abstract_endpoint import AbstractEndpoint
@@ -10,6 +10,9 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 
 class AccountRenderEndpoint(AbstractAccountEndpoint):
+    """
+    Endpoint for handling the rendering of the doc.
+    """
 
     def __init__(self):
         super().__init__()
@@ -26,7 +29,7 @@ class AccountRenderEndpoint(AbstractAccountEndpoint):
         doc_name = request.args[ModelFields.DOC_NAME]
 
         # Get the documentation doc
-        doc = DbDocumentClient().find_one(github_account_login, doc_name)
+        doc = DbDocClient().find_one(github_account_login, doc_name)
 
         refs = []
         for ref in doc.refs:

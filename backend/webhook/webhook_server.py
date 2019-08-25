@@ -17,9 +17,12 @@ from webhook.handlers.push_handler import PushHandler
 webhook_server = Blueprint('webhook_server', __name__)
 
 
-# TODO: create an interface for each different options that the class inherits and then add an enact to execute it
 @webhook_server.route("/webhook_handler", methods=['POST'])
 def webhook_handler():
+    """
+    Handle all the incoming github webhook request and delegate to the right handler.
+    """
+
     data = json.loads(request.data.decode("utf-8"))
     logger.get_logger().info("Webhook has been called for %s with action %s", request.headers['x-github-event'],
                              data[GithubApiFields.ACTION] if GithubApiFields.ACTION in data else "")
@@ -45,6 +48,10 @@ def webhook_handler():
 
 
 def manually_update_db(github_account_login, repo_name):
+    """
+    Used to manually update the database without sending a push event. Used for development.
+    """
+
     data = {}
     data[GithubApiFields.REPOSITORY][GithubApiFields.OWNER][GithubApiFields.LOGIN] = github_account_login
     data[GithubApiFields.REPOSITORY][GithubApiFields.NAME] = repo_name

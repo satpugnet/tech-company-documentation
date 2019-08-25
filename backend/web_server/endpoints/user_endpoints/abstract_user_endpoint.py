@@ -8,6 +8,9 @@ from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 
 
 class AbstractUserEndpoint(AbstractEndpoint):
+    """
+    Abstract endpoint for handling user endpoints. It verifies that the user is authenticated.
+    """
 
     def __init__(self):
         super(AbstractUserEndpoint, self).__init__()

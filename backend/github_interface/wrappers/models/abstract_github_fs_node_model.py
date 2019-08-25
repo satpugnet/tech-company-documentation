@@ -6,6 +6,9 @@ from utils.path_manipulator import PathManipulator
 
 
 class AbstractGithubFSNode(Jsonable, ABC):
+    """
+    An abstract file system node.
+    """
 
     DIRECTORY_TYPE = "dir"
     FILE_TYPE = "file"

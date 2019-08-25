@@ -7,6 +7,9 @@ from web_server.endpoints.user_endpoints.abstract_user_endpoint import AbstractU
 
 
 class UserEndpoint(AbstractUserEndpoint):
+    """
+    Endpoint for handling the user information.
+    """
 
     def __init__(self):
         super().__init__()
@@ -19,3 +22,9 @@ class UserEndpoint(AbstractUserEndpoint):
         return self._create_validated_response({
             ModelFields.USER_LOGIN: session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]
         })
+
+    def delete(self):
+
+        session.pop(AbstractEndpoint.COOKIE_USER_LOGIN_FIELD)
+
+        return self._create_empty_response()

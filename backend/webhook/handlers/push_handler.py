@@ -10,6 +10,9 @@ from webhook.handlers.actions.update_docs_refs_action import UpdateDocsRefsActio
 
 
 class PushHandler(AbstractRequestHandler):
+    """
+    A handler for push event.
+    """
 
     def __init__(self, data):
         super().__init__()
@@ -27,12 +30,10 @@ class PushHandler(AbstractRequestHandler):
         # TODO: action must be more agnostic of all variables and only contain the required ones
         for commit in self.__retrieve_all_missed_commits():
 
-            self.__upsert_one_sha_last_update(commit.sha)
-
             self.__update_db_github_files(commit.files)
 
             affected_docs, ref_commit_file_pairs = ComputeAffectedDocsAction(
-                self.__github_account_login, 
+                self.__github_account_login,
                 self.__repo_interface.repo,
                 commit.files
             ).perform()
@@ -44,13 +45,19 @@ class PushHandler(AbstractRequestHandler):
             ).perform()
 
             PostCommentToGithubAction(
-                self.__repo_interface, 
+                self.__repo_interface,
                 affected_docs,
                 False,
                 commit.sha
             ).perform()
 
+            self.__upsert_one_sha_last_update(commit.sha)
+
     def __upsert_one_sha_last_update(self, commit_sha):
+        """
+        Upsert the sha for teh last received commit in the database.
+        """
+
         DbRepoClient().upsert_one_sha_last_update(
             self.__github_account_login,
             self.__repo_interface.repo.name,
@@ -58,6 +65,10 @@ class PushHandler(AbstractRequestHandler):
         )
 
     def __update_db_github_files(self, commit_files):
+        """
+        Update all of the affected mirrored github files in the database.
+        """
+
         for commit_file_path in [commit_file.path for commit_file in commit_files]:
             up_to_date_file = self.__repo_interface.get_fs_node_at_path(commit_file_path)
 
@@ -71,6 +82,10 @@ class PushHandler(AbstractRequestHandler):
             )
 
     def __retrieve_all_missed_commits(self):
+        """
+        :return: Returns all of the commits since the last received commmit.
+        """
+
         db_repo = DbRepoClient().find_one(
             self.__repo_interface.repo.name
         )

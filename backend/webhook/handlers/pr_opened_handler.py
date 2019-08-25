@@ -6,6 +6,9 @@ from webhook.handlers.actions.post_comment_to_github_action import PostCommentTo
 
 
 class PROpenedHandler(AbstractRequestHandler):
+    """
+    A handler for pull request opened event.
+    """
 
     def __init__(self, data):
         super().__init__()

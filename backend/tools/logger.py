@@ -7,7 +7,9 @@ from flask import request, g
 
 
 class CustomFormatter(logging.Formatter):
-    """Logging Formatter to add colors"""
+    """
+    Logging Formatter to add colors
+    """
 
     BASE_FORMAT = "[%(asctime)s] {} [%(module)s]: %(message)s"
     MAX_SPACE = 10
@@ -64,6 +66,9 @@ def get_logger():
 
 
 def init(app):
+    """
+    Initialise the logging
+    """
 
     # Http logging improved
     @app.before_request

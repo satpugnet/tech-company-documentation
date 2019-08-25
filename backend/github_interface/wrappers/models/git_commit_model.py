@@ -1,4 +1,8 @@
 class GithubCommitModel:
+    """
+    Represent a github commit.
+    """
+
     def __init__(self, files, sha):
         self.__files = files
         self.__sha = sha

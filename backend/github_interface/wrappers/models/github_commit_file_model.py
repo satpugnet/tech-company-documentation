@@ -1,4 +1,8 @@
 class GithubCommitFileModel:
+    """
+    Represent a github commit file.
+    """
+
     def __init__(self, path, previous_path, patch, is_deleted):
         self.__path = path
         self.__has_path_changed = not (previous_path is None)

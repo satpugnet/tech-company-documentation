@@ -8,6 +8,9 @@ from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account
 
 
 class AccountReposEndpoint(AbstractAccountEndpoint):
+    """
+    Endpoint for handling the repos.
+    """
 
     def __init__(self):
         super().__init__()

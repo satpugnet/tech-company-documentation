@@ -1,10 +1,14 @@
 import re
 
 from git_parser.constants.git_diff_code_line_states import GitDiffCodeLineStates
-from git_parser.models.git_diff_code_line import GitDiffCodeLine
+from git_parser.models.git_patch_code_line_model import GitPatchCodeLineModel
 
 
 class GitDiffHunk:
+    """
+    Represent a single hunk in a git patch, and computes useful properties about this hunk. It contains the original
+    start and length as well as the new start and length of the hunk.
+    """
     HUNK_HEADING_REGEX = "@@ -(\d+),(\d+) \\+(\d+),(\d+) @@"
 
     def __init__(self, raw_hunk):
@@ -49,6 +53,9 @@ class GitDiffHunk:
     # TODO: check what happen if the end (or beginning) is replaced and whether after a REMOVED on the line_number,
     #  we should keep looking for addition after
     def __count_line_changed_helper(self, line_number, is_count_before_line):
+        """
+        Count the number of lines changed by the hunk.
+        """
         current_old_line_number = int(self.old_start_line) - 1
         total_line_changed = 0
         counter_reseted = False
@@ -56,9 +63,11 @@ class GitDiffHunk:
         for code_line in self.code_lines:
             if code_line.state == GitDiffCodeLineStates.UNCHANGED:
                 current_old_line_number += 1
+
             elif code_line.state == GitDiffCodeLineStates.REMOVED:
                 current_old_line_number += 1
                 total_line_changed -= 1
+
             elif code_line.state == GitDiffCodeLineStates.ADDED:
                 total_line_changed += 1
 
@@ -72,13 +81,18 @@ class GitDiffHunk:
         return total_line_changed
 
     def __convert_to_code_line(self, raw_hunk_line):
+        """
+        Computes the state of each code line in the given hunk and returns a GitDiffCodeLine object
+        """
         code_line_state = GitDiffCodeLineStates.UNCHANGED
+
         if raw_hunk_line[0] == '-':
             code_line_state = GitDiffCodeLineStates.REMOVED
+
         elif raw_hunk_line[0] == '+':
             code_line_state = GitDiffCodeLineStates.ADDED
 
-        return GitDiffCodeLine(raw_hunk_line[1:], code_line_state)
+        return GitPatchCodeLineModel(raw_hunk_line[1:], code_line_state)
 
 
 

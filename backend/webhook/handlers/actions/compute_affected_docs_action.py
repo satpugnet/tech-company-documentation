@@ -1,9 +1,12 @@
-from mongo.collection_clients.clients.db_document_client import DbDocumentClient
-from mongo.models.db_doc_model import DbDocModel
+from mongo.collection_clients.clients.db_doc_client import DbDocClient
 from webhook.handlers.actions.abstract_webhook_action import AbstractWebhookAction
 
 
 class ComputeAffectedDocsAction(AbstractWebhookAction):
+    """
+    Using a list of commits files, it computes the list of affected documents, as well as, the reference and commit
+    file pairs. This pre processing is used later on for other operations.
+    """
 
     class RefGithubFilePair:
 
@@ -28,7 +31,7 @@ class ComputeAffectedDocsAction(AbstractWebhookAction):
         affected_docs = []
         ref_commit_file_pairs = []
 
-        for doc in DbDocumentClient().find(self.__github_account_login):
+        for doc in DbDocClient().find(self.__github_account_login):
             is_current_doc_affected = False
 
             for ref in doc.refs:
@@ -49,5 +52,5 @@ class ComputeAffectedDocsAction(AbstractWebhookAction):
             return
 
         for commit_file in commit_files:
-             if ref.path in commit_file.previous_path:
-                 return commit_file
+            if ref.path in commit_file.previous_path:
+                return commit_file

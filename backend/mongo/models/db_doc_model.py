@@ -8,12 +8,12 @@ from tools.json.jsonable import Jsonable
 
 class DbDocModel(AbstractDbCollectionModel):
     """
-    Represents a file of documentation, which will contain reference to code lines
+    Represents a file of documentation, which will contain reference to code lines.
     """
 
     class DbRefModel(Jsonable):
         """
-        A FileReferenceModel is part of a Document, and references lines of code in repositories
+        A FileReferenceModel is part of a Document, and references lines of code in repositories.
         """
 
         ID_FIELD = ModelFields.ID

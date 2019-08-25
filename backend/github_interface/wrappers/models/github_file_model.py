@@ -5,6 +5,9 @@ from tools.json.jsonable import Jsonable
 
 
 class GithubFileModel(AbstractGithubFSNode, Jsonable):
+    """
+    Represent a github file.
+    """
 
     CONTENT_FIELD = ModelFields.CONTENT
 

@@ -4,10 +4,10 @@ from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 class DbCounterModel(AbstractDbCollectionModel):
     """
-    Represents counters for various collections
+    Represents counters for various collections.
 
     Counters allow us to track unique ids, for example for account_installations, where we want a unique id per
-    installation. See for ref https://docs.mongodb.com/v3.0/tutorial/create-an-auto-incrementing-field/
+    installation. See for ref https://docs.mongodb.com/v3.0/tutorial/create-an-auto-incrementing-field/.
 
     You can add multiple counters using this collection. Simply define an ID field.
     """

@@ -6,6 +6,9 @@ from webhook.handlers.abstract_request_handler import AbstractRequestHandler
 
 
 class InstallationDeletedHandler(AbstractRequestHandler):
+    """
+    A handler for installation deleted event.
+    """
 
     def __init__(self, data):
         super().__init__()
@@ -18,16 +21,28 @@ class InstallationDeletedHandler(AbstractRequestHandler):
         self.__clear_db_github_file()
 
     def __clear_db_github_installation(self):
+        """
+        Clear the github installation fron the database.
+        """
+
         DbGithubInstallationClient().remove(
             self.__github_account_login
         )
 
     def __clear_db_repo(self):
+        """
+        Clear the repo from the database.
+        """
+
         DbRepoClient().remove(
             self.__github_account_login
         )
 
     def __clear_db_github_file(self):
+        """
+        Clear all of the github repos cached file from the database.
+        """
+
         DbGithubFileClient().remove(
             self.__github_account_login
         )

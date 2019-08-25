@@ -1,4 +1,9 @@
 class ModelFields:
+    """
+    All the fields used for the various models in the server and the database, this class is used to ensure coherence
+    in naming accross all of the backend.
+    """
+
     GITHUB_ACCOUNT_LOGIN = "github_account_login"
     REPO_NAME = "repo_name"
     DIR_PATH = "dir_path"

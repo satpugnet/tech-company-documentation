@@ -9,6 +9,9 @@ from webhook.handlers.abstract_request_handler import AbstractRequestHandler
 
 
 class InstallationCreatedHandler(AbstractRequestHandler):
+    """
+    A handler for installation created event.
+    """
 
     def __init__(self, data):
         super().__init__()
@@ -22,6 +25,10 @@ class InstallationCreatedHandler(AbstractRequestHandler):
         self.__insert_db_github_files()
 
     def __insert_db_installation_token(self):
+        """
+        Insert the installation token in the databse.
+        """
+
         installation_token, expires_at = GithubAuthorisationInterface.request_installation_token(
             self.__installation_id,
             FileSystemInterface.load_private_key()
@@ -35,6 +42,10 @@ class InstallationCreatedHandler(AbstractRequestHandler):
         )
 
     def __insert_db_repos(self):
+        """
+        Insert the repos from the installation in the database.
+        """
+
         for repo_name in self.__repos_name:
             DbRepoClient().upsert_one(
                 self.__github_account_login,
@@ -42,6 +53,11 @@ class InstallationCreatedHandler(AbstractRequestHandler):
             )
 
     def __insert_db_github_files(self):
+        """
+        Insert all of the repos github files in the database for quicker access in the future.
+        We are mirroring the github repo state in our db.
+        """
+
         for repo_name in self.__repos_name:
             installation_repo = WebhookGithubInterface(self.__github_account_login).request_repo(repo_name)
             flat_files = installation_repo.get_all_files_flat()

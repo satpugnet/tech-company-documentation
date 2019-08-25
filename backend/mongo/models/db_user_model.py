@@ -4,7 +4,7 @@ from mongo.models.abstract_db_collection_model import AbstractDbCollectionModel
 
 class DbUserModel(AbstractDbCollectionModel):
     """
-    Represents a user
+    Represents a user.
     """
 
     LOGIN_FIELD = ModelFields.LOGIN

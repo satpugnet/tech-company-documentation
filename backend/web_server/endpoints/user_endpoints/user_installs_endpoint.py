@@ -8,6 +8,9 @@ from web_server.endpoints.user_endpoints.abstract_user_endpoint import AbstractU
 
 
 class UserInstallsEndpoint(AbstractUserEndpoint):
+    """
+    Endpoint for handling the user installations.
+    """
 
     def __init__(self):
         super().__init__()

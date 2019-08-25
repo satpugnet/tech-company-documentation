@@ -4,6 +4,9 @@ from tools.json.jsonable import Jsonable
 
 
 class GithubRepoModel(Jsonable):
+    """
+    Represent a github repository
+    """
 
     GITHUB_ACCOUNT_LOGIN_FIELD = ModelFields.GITHUB_ACCOUNT_LOGIN
     NAME_FIELD = ModelFields.NAME

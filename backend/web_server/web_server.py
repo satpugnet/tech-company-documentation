@@ -12,8 +12,9 @@ from web_server.endpoints.user_endpoints.account_endpoints.account_repos_endpoin
 from web_server.endpoints.user_endpoints.account_endpoints.account_save_endpoint import AccountSaveEndpoint
 from web_server.endpoints.user_endpoints.user_endpoint import UserEndpoint
 from web_server.endpoints.user_endpoints.user_installs_endpoint import UserInstallsEndpoint
-from web_server.endpoints.user_endpoints.user_logout_endpoint import UserLogoutEndpoint
 
+
+# Routing for the webserver using the Flask restful library
 
 web_server = Blueprint('web_server', __name__)
 api = Api(web_server)
@@ -21,8 +22,7 @@ api = Api(web_server)
 api.add_resource(AuthGithubCallbackEndpoint, "/auth/github/callback")
 api.add_resource(GithubInstallationCallbackEndpoint, "/github_app_installation_callback")
 
-api.add_resource(UserEndpoint, "/user")
-api.add_resource(UserLogoutEndpoint, "/logout")
+api.add_resource(UserEndpoint, "/user", "logout")
 api.add_resource(UserInstallsEndpoint, "/installs")
 
 api.add_resource(AccountReposEndpoint, "/<string:github_account_login>/repos")

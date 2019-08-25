@@ -4,7 +4,10 @@ from mongo.constants.model_fields import ModelFields
 from tools.json.jsonable import Jsonable
 
 
-class GithubDirectoryModel(AbstractGithubFSNode, Jsonable):
+class GithubDirModel(AbstractGithubFSNode, Jsonable):
+    """
+    Represent a github directory.
+    """
 
     SUB_FS_NODES_FIELD = ModelFields.SUB_FS_NODES
 
@@ -27,7 +30,7 @@ class GithubDirectoryModel(AbstractGithubFSNode, Jsonable):
         new_json = {}
         if self.is_initialised:
             new_json = {
-                GithubDirectoryModel.SUB_FS_NODES_FIELD: self.sub_fs_nodes
+                GithubDirModel.SUB_FS_NODES_FIELD: self.sub_fs_nodes
             }
 
         return {**super().to_json(), **new_json}

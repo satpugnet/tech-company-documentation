@@ -4,6 +4,10 @@ from mongo.models.db_repo_model import DbRepoModel
 
 
 class DbRepoClient(AbstractDbCollectionClient):
+    """
+    A client for the database repo collection.
+    """
+
     def __init__(self):
         super().__init__('repo', DbRepoModel)
 

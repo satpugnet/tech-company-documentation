@@ -1,4 +1,8 @@
 class GithubApiFields:
+    """
+    All the fields that we use in the github api returned request.
+    """
+
     ACCOUNT = "account"
     TYPE = "type"
     LOGIN = "login"

@@ -1,4 +1,8 @@
-class GitDiffCodeLine:
+class GitPatchCodeLineModel:
+    """
+    Represents a single code line in a patch.
+    """
+
     def __init__(self, code_line, state):
         self.__code_line = code_line
         self.__state = state
