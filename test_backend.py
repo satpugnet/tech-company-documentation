@@ -1,3 +1,4 @@
+import collections
 import datetime
 import json
 import sys
@@ -5,8 +6,61 @@ import time
 
 from github import Github, GithubIntegration, BadCredentialsException
 
-from github_interface.git.git_diff_parser import GitDiffParser
-from utils.json.custom_json_encoder import CustomJsonEncoder
+from git_parser.git_patch_parser import GitPatchParser
+from mongo.models.db_github_file_model import DbGithubFileModel
+from mongo.models.db_user_model import DbUserModel
+
+
+
+def action():
+    print("working")
+
+
+def exec_action(actions):
+    for action in actions:
+        action()
+
+exec_action([action])
+
+print(isinstance(action, collections.Callable))
+
+
+class Test:
+
+    def __init__(self, github_account_login=None, repo_name=None):
+        self.github_account_login = github_account_login
+        self.repo_name = repo_name
+
+
+    @staticmethod
+    def from_json(dictionary):
+        return Test(**dictionary)
+
+print(DbGithubFileModel.from_json(
+    {
+        "github_account_login": "test1",
+        "repo_name": "test2",
+        "dir_path": "test3",
+        "filename": "test4",
+        "type": "test5",
+        "content": "test6"
+    }
+).content)
+
+
+
+
+
+
+x = DbUserModel
+
+def test(classname):
+    print(classname.COLLECTION)
+
+test(x)
+
+
+
 
 # User.upsert_installation("saturnin13", "12342", "445sf475", "6")
 
@@ -42,7 +96,7 @@ raw_patch = "@@ -1,4 +1,5 @@\n" \
 " hello world\n" \
 " hello world\n" \
 "+hello world"
-parser = GitDiffParser(raw_patch)
+parser = GitPatchParser(raw_patch)
 print(parser.calculate_updated_line_range(1, 6))
 
 
@@ -85,7 +139,7 @@ g2 = GithubInterface(access_token=access_token, is_user_access_token=False)
 # root_directory.subfiles["backend"].load_subfiles()
 # print(root_directory.subfiles["backend"].subfiles["web_server.py"].content)
 print("laaaaaaaaaaaaaaaaaaaaaa")
-for repo in g2.get_repos():
+for repo in g2.request_repos():
         print(repo.full_name)
 print(g2.get_installation(INSTALLATION_ID))
 print()
@@ -99,7 +153,7 @@ repo_name = "louisblin/LondonHousingForecast-Backend"
 # repo_name = "paulvidal/1-week-1-tool"
 
 g = GithubInterface(access_token="v1.3de1f74b2ac2a858a7da17cb17f6bdddc457de94", is_user_access_token=True)
-repo = g.get_repo(repo_name)
+repo = g.request_repo(repo_name)
 repo_root = repo.root_directory
 
 print("laaaaa")

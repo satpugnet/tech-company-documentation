@@ -69,7 +69,7 @@
       return {
         title: '',
         content: '',
-        refs: {},
+        refs: [],
         currentReference: {}
       }
     },
@@ -84,21 +84,20 @@
         $('.modal').modal('hide');
 
         if (this.currentReference.startLine && this.currentReference.endLine) {
-          let url = this._generate_url(this.currentReference);
+
+          let url = this._generateUrl(this.currentReference);
+
           this.$http.get(url).then(response => {
-            const r = response.body;
+            const r = this.keysToCamel(response.body);
+
+            this.currentReference.id = r.id;
+            this.currentReference.code = r.code;
 
             // Save the reference and the content
-            this.refs[r.ref_id] = {
-              code: r.code,
-              repo: r.repo,
-              path: r.path,
-              startLine: r.startLine,
-              endLine: r.endLine,
-            };
+            this.refs.push(this.currentReference);
 
             // Add the reference in the markdown
-            this._addAtCursor(r.ref_id);
+            this._addAtCursor(this.currentReference.id);
 
           }, error => {
             this.$bvToast.toast("An error has occurred while fetching github lines", {
@@ -125,15 +124,14 @@
 
         let references = [];
 
-        for (let refId in this.refs) {
-          const content = this.refs[refId];
-
+        for (const ref of this.refs) {
           references.push({
-            'ref_id': refId,
-            'repo': content.repo,
-            'path': content.path,
-            'start_line': content.startLine,
-            'end_line': content.endLine,
+            'id': ref.id,
+            'github_account_login': ref.githubAccountLogin,
+            'repo_name': ref.repoName,
+            'path': ref.path,
+            'start_line': ref.startLine,
+            'end_line': ref.endLine,
             'is_deleted': false
           })
         }
@@ -144,13 +142,12 @@
           'refs': references
         };
 
-        this.$http.post('/api/' + this.$route.params.appAccount + '/save', body).then(response => {
+        this.$http.post('/api/' + this.$route.params.githubAccountLogin + '/save', body).then(response => {
           this.$bvToast.toast("File saved successfully", {
             title: 'Success',
             autoHideDelay: 2000,
             variant: 'success',
           });
-
         }, error => {
           this.$bvToast.toast("An error has occurred while saving", {
             title: 'Error',
@@ -165,21 +162,21 @@
 
         const before = this.content.substring(0, cursorPosition);
         const after = this.content.substring(cursorPosition, this.content.length);
-        const ref = this._generate_reference(referenceId);
+        const ref = this._generateRef(referenceId);
 
         this.content = before + ref + after;
       },
 
-      _generate_reference(referenceId) {
+      _generateRef(referenceId) {
         return `[code-reference:${referenceId}]`;
       },
 
-      _generate_url(reference) {
-        return '/api/' + this.$route.params.appAccount + '/lines?'
-          + 'repo=' + encodeURIComponent(reference.repo)
+      _generateUrl(reference) {
+        return '/api/' + this.$route.params.githubAccountLogin + '/lines?'
+          + '&repo_name=' + encodeURIComponent(reference.repoName)
           + '&path=' + encodeURIComponent(reference.path)
-          + '&startLine=' + encodeURIComponent(reference.startLine)
-          + '&endLine=' + encodeURIComponent(reference.endLine);
+          + '&start_line=' + encodeURIComponent(reference.startLine)
+          + '&end_line=' + encodeURIComponent(reference.endLine);
       }
     }
   }

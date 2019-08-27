@@ -3,7 +3,7 @@
     <MarkdownFile
       :name="''"
       :content="fileContent"
-      :refs="{}"
+      :refs="[]"
       @click.native="selectLines"
       @mouseover.native="selectLinesPreviews">
     </MarkdownFile>

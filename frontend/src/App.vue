@@ -10,7 +10,7 @@
                   <button class="col-12 border border-dark nav-link" style="outline: none" id="dropdownMenuButton" data-toggle="dropdown">
                     <h2 class="text-left mb-0 d-flex align-items-center">
                       <img src="https://imgix.datadoghq.com/img/dd_logo_70x75.png" class="mr-2" style="width: 30px;height: 30px">
-                      {{ currentInstallation }}
+                      {{ currentGithubAccountLogin }}
                     </h2>
 
                     <div class="text-right">
@@ -24,10 +24,10 @@
 
                       <!-- All possible installations -->
                       <a v-for="installation in installations"
-                         @click="redirectInstallation(installation.account.login)"
+                         @click="redirectInstallation(installation.githubAccountLogin)"
                          class="dropdown-item"
-                         :class="{'active': isCurrentInstallation(installation.account.login)}">
-                        {{ installation.account.login }}
+                         :class="{'active': iscurrentGithubAccountLogin(installation.githubAccountLogin)}">
+                        {{ installation.githubAccountLogin }}
                       </a>
                       <div class="dropdown-divider"></div>
                       <a @click="redirectGithubNewInstallation()" class="dropdown-item">
@@ -74,7 +74,7 @@
           <div class="col-3">
             <div class="row">
               <div class="col-6 pr-0">
-                <router-link :to="'/app/' + currentInstallation + '/markdown'">
+                <router-link :to="'/app/' + currentGithubAccountLogin + '/markdown'">
                   <button class="btn btn-success w-100">
                     <font-awesome-icon icon="plus-circle" size="sm" class="mr-1" />
                     Create
@@ -82,7 +82,7 @@
                 </router-link>
               </div>
               <div class="col-6 pr-0">
-                <router-link :to="'/app/' + currentInstallation + '/docs'">
+                <router-link :to="'/app/' + currentGithubAccountLogin + '/docs'">
                   <button class="btn btn-primary w-100">
                     <font-awesome-icon icon="book" size="sm" class="mr-1" />
                     List
@@ -110,9 +110,9 @@
     components: {},
 
     computed: {
-      currentInstallation () {
+      currentGithubAccountLogin () {
         // TODO: remove placeholder when we have authentication ready
-        return this.$route.params.appAccount || 'Datadog';
+        return this.$route.params.githubAccountLogin || 'Datadog';
       },
 
       installations () {
@@ -120,14 +120,14 @@
       },
 
       userLogin () {
-        return this.$store.state.user.user_login;
+        return this.$store.state.user.userLogin;
       }
     },
 
     // TODO: copy pasted, to refactor
     created() {
-      this.$http.post('/api/installs', "").then(response => {
-        const installations = response.body.installations;
+      this.$http.get('/api/installs', "").then(response => {
+        const installations = this.keysToCamel(response.body);
         this.$store.commit('user/setInstallations', installations);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the installations.", {
@@ -138,8 +138,9 @@
       });
 
       this.$http.get('/api/user', "").then(response => {
-        const user_login = response.body.user_login;
-        this.$store.commit('user/setUser', user_login);
+        const r = this.keysToCamel(response.body);
+        const userLogin = r.userLogin;
+        this.$store.commit('user/setUser', userLogin);
       }, error => {
         this.$bvToast.toast("An error has occurred while fetching the user infromation.", {
           title: 'Error',
@@ -150,13 +151,13 @@
     },
 
     methods: {
-      isCurrentInstallation (installationName) {
-        return this.$route.params.appAccount === installationName;
+      iscurrentGithubAccountLogin (GithubAccountLogin) {
+        return this.$route.params.githubAccountLogin === GithubAccountLogin;
       },
 
       // TODO: copy pasted, to refactor
-      redirectInstallation(appAccount) {
-        this.$router.push({ path: "/app/" + appAccount });
+      redirectInstallation(githubAccountLogin) {
+        this.$router.push({ path: "/app/" + githubAccountLogin });
         location.reload(); // refresh completely the browser as it is a new installation
       },
 

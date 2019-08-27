@@ -15,7 +15,7 @@
       @select="selectRepo($event.repo)"/>
 
     <DirectoryBrowserDisplay
-      :files="subfiles"
+      :fsNodes="subFsNodes"
       v-if="!loading && repo && isDirectory()"
       @select="selectPath($event.path)"/>
 
@@ -49,8 +49,8 @@
     },
 
     created() {
-      this.$http.get('/api/' + this.$route.params.appAccount + '/repos').then(response => {
-        this.repos = response.body;
+      this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/repos').then(response => {
+        this.repos = this.keysToCamel(response.body);
         this.loading = false;
 
       }, error => {
@@ -69,7 +69,7 @@
         repos: [],
         currentPath: [],
         contentType: '',
-        subfiles: [],
+        subFsNodes: [],
         fileContent: "",
         loading: true,
       }
@@ -81,11 +81,11 @@
         this.getContentForPath();
       },
 
-      selectPath(path) {
-        if (Object.keys(this.subfiles).includes(path)) {
+      selectPath(fsNodeName) {
+        if (this.subFsNodes.some(subFsNode => subFsNode.name === fsNodeName)) {
           // check that we can move forward in the repo browsing
           // if we select a path that is not currently shown, something is off so we just reload the content for the path
-          this.currentPath.push(path);
+          this.currentPath.push(fsNodeName);
         }
         this.getContentForPath(true);
       },
@@ -93,11 +93,13 @@
       getContentForPath(newPath=false) {
         this.loading = true;
         let filePath = this.currentPath.join('/');
-        let url = '/api/' + this.$route.params.appAccount + '/file?repo=' + encodeURIComponent(this.repo) + '&path=' + encodeURIComponent(filePath);
+        let url = '/api/' + this.$route.params.githubAccountLogin + '/fs_nodes?repo_name=' + encodeURIComponent(this.repo.name) +
+            '&path=' + encodeURIComponent(filePath);
         this.$http.get(url).then(response => {
-          this.contentType = response.body.type;
-          this.subfiles = response.body.subfiles;
-          this.fileContent = response.body.content;
+          const r = this.keysToCamel(response.body);
+          this.contentType = r.type;
+          this.subFsNodes = r.subFsNodes;
+          this.fileContent = r.content;
           this.loading = false;
         }, error => {
           this.loading = false;
@@ -132,7 +134,8 @@
 
       sendFileReference(lineReference) {
         let fileReference = {
-          repo: this.repo,
+          githubAccountLogin: this.repo.githubAccountLogin,
+          repoName: this.repo.name,
           path: this.currentPath.join('/'),
           startLine: lineReference.startLine,
           endLine: lineReference.endLine
