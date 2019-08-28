@@ -1,15 +1,16 @@
-from flask import session, request
+from flask import request
 from flask_restful import abort
 from marshmallow import fields, Schema
 
-from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.constants.model_fields import ModelFields
 from tools import logger
 from utils.code_formatter import CodeFormatter
-from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account_endpoint import AbstractAccountEndpoint
 
 
+# TODO: currently the authorisation to access a specific repo in an organisation is not checked, by default, if a user
+#  has access to an installation, it has access to all repos
 class AccountFSNodeEndpoint(AbstractAccountEndpoint):
     """
     Endpoint for handling the github file system node.
@@ -36,15 +37,19 @@ class AccountFSNodeEndpoint(AbstractAccountEndpoint):
             logger.get_logger().error("The repo name has not been specified.")
             return abort(400, message="A repo should be specified")
 
-        repo_interface = WebServerGithubInterface(
-            session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]
-        ).request_repo(github_account_login, repo_name)
+        github_fs_node = DbGithubFSNodeClient().find_one(github_account_login, repo_name, path)
 
-        fs_node = repo_interface.get_fs_node_at_path(path)
+        # TODO: This if statement is due to the fact that it is not possible to assign a value of the Schema to several
+        #  fields types, maybe creating 2 different schema would be a good idea and returning only content in both cases
+        github_fs_node_json = github_fs_node.to_json()
+        if github_fs_node.type == 'file':
+            github_fs_node_json[ModelFields.CONTENT] = CodeFormatter().format(path, github_fs_node.content)  # Syntax highlighting for file
 
-        # Syntax highlighting for file
-        if fs_node.type == 'file':
-            fs_node.content = CodeFormatter().format(path, fs_node.content)
+        else:
+            github_fs_node_json[ModelFields.SUB_FS_NODES] = [
+                {ModelFields.NAME: fs_node} for fs_node in github_fs_node_json[ModelFields.CONTENT]
+            ]
+            github_fs_node_json[ModelFields.CONTENT] = None
 
         # Return the response
-        return self._create_validated_response(fs_node)
+        return self._create_validated_response(github_fs_node_json)

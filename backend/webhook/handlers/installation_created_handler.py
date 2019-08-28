@@ -1,7 +1,5 @@
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.interfaces.github_authorisation_interface import GithubAuthorisationInterface
-from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
-from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
 from tools import logger
@@ -54,7 +52,7 @@ class InstallationCreatedHandler(AbstractRequestHandler):
         logger.get_logger().info("Inserting the repos from the installation %s in the database", self.__github_account_login)
 
         for repo_name in self.__repos_name:
-            DbRepoClient().upsert_one(
+            DbRepoClient().insert_one(
                 self.__github_account_login,
                 repo_name
             )

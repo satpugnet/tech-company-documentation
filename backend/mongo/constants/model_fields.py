@@ -7,7 +7,6 @@ class ModelFields:
     GITHUB_ACCOUNT_LOGIN = "github_account_login"
     REPO_NAME = "repo_name"
     DIR_PATH = "dir_path"
-    FILENAME = "filename"
     TYPE = "type"
     CONTENT = "content"
     MONGO_ID = "_id"
@@ -30,3 +29,4 @@ class ModelFields:
     CODE = "code"
     DOC_NAME = "doc_name"
     USER_LOGIN = "user_login"
+    FS_NODE_NAME = "fs_node_name"

@@ -1,5 +1,5 @@
 from github_interface.constants.github_api_fields import GithubApiFields
-from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
 from tools import logger
@@ -50,6 +50,6 @@ class InstallationDeletedHandler(AbstractRequestHandler):
         """
         logger.get_logger().info("Clearing the github repos cached file collection for %s", self.__github_account_login)
 
-        DbGithubFileClient().remove(
+        DbGithubFSNodeClient().remove(
             self.__github_account_login
         )

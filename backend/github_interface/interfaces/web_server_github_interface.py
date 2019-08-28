@@ -63,13 +63,13 @@ class WebServerGithubInterface:
         """
         logger.get_logger().info("Requesting user installations for %s", self.__user_login)
 
-        response = self.__raw_user_github_facade.get_user_installations()
+        raw_response = self.__raw_user_github_facade.get_user_installations()
 
-        filtered_user_installations = self.__filter_user_installations(response.json()[GithubApiFields.INSTALLATIONS])
+        raw_filtered_user_installations = self.__filter_user_installations(raw_response.json()[GithubApiFields.INSTALLATIONS])
 
         return [
-            GithubInstallationModel(installation[GithubApiFields.ID], installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
-            for installation in filtered_user_installations
+            GithubInstallationModel(raw_installation[GithubApiFields.ID], raw_installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN])
+            for raw_installation in raw_filtered_user_installations
         ]
 
     def __get_user_authorised_repo(self, repo_full_name):
@@ -129,18 +129,18 @@ class WebServerGithubInterface:
         its own personal account.
         """
 
-        returned_user_installations = []
+        returned_raw_user_installations = []
 
         for raw_user_installation in raw_user_installations:
 
             if self.__is_current_user_account(raw_user_installation) or self.__is_organisation(raw_user_installation):
-                returned_user_installations.append(raw_user_installation)
+                returned_raw_user_installations.append(raw_user_installation)
 
             else:
                 logger.get_logger().info("The installation %s has been filtered out for the user %s",
                                          raw_user_installation[GithubApiFields.ACCOUNT][GithubApiFields.LOGIN], self.__user_login)
 
-        return returned_user_installations
+        return returned_raw_user_installations
 
     def __get_repo_in_common(self, repo_interfaces1, repo_interfaces2):
         repo_interfaces = self.__get_repos_in_common(

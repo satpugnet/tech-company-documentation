@@ -1,11 +1,11 @@
-from flask import request, session
+from flask import request
 from marshmallow import Schema, fields
 
-from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
 from mongo.collection_clients.clients.db_doc_client import DbDocClient
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.constants.model_fields import ModelFields
 from utils.code_formatter import CodeFormatter
-from web_server.endpoints.abstract_endpoint import AbstractEndpoint
+from utils.path_manipulator import PathManipulator
 from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account_endpoint import AbstractAccountEndpoint
 
 
@@ -33,18 +33,14 @@ class AccountRenderEndpoint(AbstractAccountEndpoint):
 
         refs = []
         for ref in doc.refs:
-            repo_interface = WebServerGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD])\
-                .request_repo(ref.github_account_login,ref.repo_name)
 
-            lines_from_file_content = repo_interface.get_fs_node_at_path(ref.path).content.splitlines()[
-                                      ref.start_line - 1: ref.end_line]
+            github_fs_node = DbGithubFSNodeClient().find_one(ref.github_account_login, ref.repo_name, ref.path)
 
-            content = '\n'.join(lines_from_file_content)
-            formatted_code = CodeFormatter().format(ref.path, content, ref.start_line)
+            code = CodeFormatter().format(ref.path, github_fs_node.content, ref.start_line, ref.end_line)
 
             ref_json = ref.to_json()
-            ref_json[ModelFields.CODE] = formatted_code
-            refs.append(ref_json)  # only id and code are used
+            ref_json[ModelFields.CODE] = code
+            refs.append(ref_json)
 
         return self._create_validated_response({
             ModelFields.CONTENT: doc.content,

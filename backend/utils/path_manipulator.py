@@ -9,7 +9,7 @@ class PathManipulator:
         (i.e. 'path/to/the/file.py -> 'path/to/the/' + file.py).
         """
 
-        dir_path = path[:path.rfind('/') + 1] if path.rfind('/') != -1 else "/"
+        dir_path = path[:path.rfind('/') + 1] if path.rfind('/') != -1 else ""
         fs_node_name = path[path.rfind('/') + 1:] if path.rfind('/') != -1 else path
 
         return PathManipulator.SplitPath(dir_path, fs_node_name)

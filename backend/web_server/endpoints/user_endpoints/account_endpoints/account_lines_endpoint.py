@@ -1,12 +1,11 @@
 import uuid
 
-from flask import request, session
+from flask import request
 from marshmallow import Schema, fields
 
-from github_interface.interfaces.web_server_github_interface import WebServerGithubInterface
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.constants.model_fields import ModelFields
 from utils.code_formatter import CodeFormatter
-from web_server.endpoints.abstract_endpoint import AbstractEndpoint
 from web_server.endpoints.user_endpoints.account_endpoints.abstract_user_account_endpoint import AbstractAccountEndpoint
 
 
@@ -29,12 +28,9 @@ class AccountLinesEndpoint(AbstractAccountEndpoint):
         start_line = int(request.args[ModelFields.START_LINE])
         end_line = int(request.args[ModelFields.END_LINE])
 
-        repo_interface = WebServerGithubInterface(session[AbstractEndpoint.COOKIE_USER_LOGIN_FIELD]).request_repo(github_account_login, repo_name)
+        github_fs_node = DbGithubFSNodeClient().find_one(github_account_login, repo_name, path)
 
-        fs_node = repo_interface.get_fs_node_at_path(path)
-        content = ''.join(fs_node.content.splitlines(keepends=True)[start_line - 1: end_line])
-
-        code = CodeFormatter().format(path, content, start_line)
+        code = CodeFormatter().format(path, github_fs_node.content, start_line, end_line)
 
         return self._create_validated_response({
             ModelFields.ID: str(uuid.uuid1()),  # generate a unique id for the reference

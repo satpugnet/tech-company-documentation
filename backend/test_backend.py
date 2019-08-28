@@ -7,11 +7,9 @@ import time
 from github import Github, GithubIntegration, BadCredentialsException
 
 from git_parser.git_patch_parser import GitPatchParser
-from mongo.models.db_github_file_model import DbGithubFileModel
+from mongo.models.db_github_fs_node_model import DbGithubFSNodeModel
 from mongo.models.db_user_model import DbUserModel
 
-
-from git import Repo
 
 # Repo.clone_from("git@github.com:saturnin13/world-hardest-game-genetic-algorithm-AI.git", "test-clone")
 
@@ -40,7 +38,7 @@ class Test:
     def from_json(dictionary):
         return Test(**dictionary)
 
-print(DbGithubFileModel.from_json(
+print(DbGithubFSNodeModel.from_json(
     {
         "github_account_login": "test1",
         "repo_name": "test2",

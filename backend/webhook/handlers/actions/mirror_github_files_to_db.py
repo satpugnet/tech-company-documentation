@@ -5,7 +5,7 @@ import shutil
 from git import Repo
 
 from github_interface.wrappers.models.abstract_github_fs_node_model import AbstractGithubFSNode
-from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.collection_clients.clients.db_github_installation_client import DbGithubInstallationClient
 from tools import logger
 from utils.path_manipulator import PathManipulator
@@ -45,8 +45,7 @@ class MirrorGithubFilesToDb(AbstractWebhookAction):
         logger.get_logger().info("Walking and inserting to db for the repo %s/%s at path %s", github_account_login, repo_name, cloned_repo_path)
 
         for fs_node_path in glob.iglob(cloned_repo_path + '**/**', recursive=True):
-            print(fs_node_path)
-            content = None
+            content = ""
 
             if os.path.isfile(fs_node_path):
                 type = AbstractGithubFSNode.FILE_TYPE
@@ -59,13 +58,18 @@ class MirrorGithubFilesToDb(AbstractWebhookAction):
                     logger.get_logger().warning("UnicodeDecodeError: Could not read %s", fs_node_path)
 
             else:
+                content = []
+                for _, _, sub_fs_node_names in os.walk(fs_node_path):
+                    for sub_fs_node_name in sub_fs_node_names:
+                        content.append(sub_fs_node_name)
+                    break  # prevent descending into subfolders
                 type = AbstractGithubFSNode.DIRECTORY_TYPE
 
             split_path = PathManipulator().dissociate_dir_path_from_fs_node_name(fs_node_path)
             fs_node_name = split_path.fs_node_name
-            dir_path = split_path.dir_path[len(cloned_repo_path):]
+            dir_path = split_path.dir_path[len(cloned_repo_path) + 1:]
 
-            DbGithubFileClient().insert_one(
+            DbGithubFSNodeClient().insert_one(
                 github_account_login,
                 repo_name,
                 dir_path,
