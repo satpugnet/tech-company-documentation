@@ -11,6 +11,10 @@ from mongo.models.db_github_file_model import DbGithubFileModel
 from mongo.models.db_user_model import DbUserModel
 
 
+from git import Repo
+
+# Repo.clone_from("git@github.com:saturnin13/world-hardest-game-genetic-algorithm-AI.git", "test-clone")
+
 
 def action():
     print("working")
