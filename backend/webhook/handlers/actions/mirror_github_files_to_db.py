@@ -44,7 +44,7 @@ class MirrorGithubFilesToDb(AbstractWebhookAction):
         """
         logger.get_logger().info("Walking and inserting to db for the repo %s/%s at path %s", github_account_login, repo_name, cloned_repo_path)
 
-        for fs_node_path in glob.iglob(cloned_repo_path + '**/**', recursive=True):
+        for fs_node_path in glob.iglob(cloned_repo_path + '/**', recursive=True):
             content = ""
 
             if os.path.isfile(fs_node_path):
