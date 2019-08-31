@@ -11,3 +11,4 @@ class SecretConstant:
     REDIRECT_URL_LOGIN = "http://localhost:8080/auth/github/callback"
     GITHUB_WEBHOOK_SECRET = "SatPaulDocumentation"
     FLASK_APP_SECRET_KEY = b'`\xefM\x11\xfd\xef\x1d"\x06\x9ek\xb3r\xb0\xcc\x17\xeb\x85u\xf8$\xc1\x94\xce'
+    SENTRY_URL = "https://f9519830c36540a8becac7e3b19d1359@sentry.io/1547558"
