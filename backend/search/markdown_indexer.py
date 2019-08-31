@@ -4,6 +4,8 @@ import mistune
 import re
 
 from search import client
+from tools import logger
+from utils.exceptions.search_exceptions import IndexingException
 
 
 class CustomRenderer(mistune.Renderer):
@@ -169,4 +171,13 @@ class CustomRenderer(mistune.Renderer):
 def insert_markdown_doc(source, title, content):
     renderer = CustomRenderer(title, source)
     markdown = mistune.Markdown(renderer=renderer)
-    markdown(content)
+
+    success = True
+
+    try:
+        markdown(content)
+    except IndexingException:
+        logger.get_logger().exception("Failed to index markdown document %s", title)
+        success = False
+
+    return success

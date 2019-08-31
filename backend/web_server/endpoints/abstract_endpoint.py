@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from flask_restful import Resource
+from flask_restful import Resource, abort
 
 
 class AbstractEndpoint(Resource):
@@ -42,3 +42,6 @@ class AbstractEndpoint(Resource):
 
     def _create_empty_response(self):
         return jsonify({})
+
+    def _create_error_response(self, code, msg):
+        return abort(code, message=msg)
