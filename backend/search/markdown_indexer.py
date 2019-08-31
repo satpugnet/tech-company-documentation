@@ -19,46 +19,22 @@ class CustomRenderer(mistune.Renderer):
         self.lists = []
 
         # Insert the document title
-        self._insert_content([], None, type='title')
+        self._insert_document([], None, type='title')
 
     def header(self, text, level, raw=None):
-        self._insert_header(text, level)
-        self._insert_content(self.current_header, None, type='header')
+        self._add_header(text, level)
+        self._insert_document(self.current_header, None, type='header')
 
         return super().header(text, level, raw)
 
     def paragraph(self, text):
         # Insert only if not an image or a link alone
         if not re.compile('^<(img|a).*>$').search(text):
-            self._insert_content(self.current_header, text, type='paragraph')
+            self._insert_document(self.current_header, text, type='paragraph')
 
         return super().paragraph(text)
 
-    def _insert_content(self, headers, content, type):
-        doc = {
-            'source': self.source,
-            'type': type,
-            'title': self.title,
-            'link': self.title + ("#" + str(headers[0]['h']) if headers else ''),
-            'importance': len(headers) + (1 if content else 0)
-        }
-
-        for header in headers:
-            level = header['level']
-            h = header['h']
-
-            doc['h' + str(level)] = h
-
-        if content:
-            doc['content'] = content
-
-        # We hash the content of the file so we are sure not to index 2 times the same file
-        file_string = self.title + ''.join([h['h'] for h in headers]) + (content if content else '')
-        doc['objectID'] = hashlib.md5(file_string.encode("utf-8")).hexdigest()
-
-        client.insert_doc(doc)
-
-    def _insert_header(self, text, level):
+    def _add_header(self, text, level):
         if self.current_header:
             if self.current_header[-1].get('level') == level:
                 self.current_header.pop()
@@ -69,7 +45,7 @@ class CustomRenderer(mistune.Renderer):
 
             elif self.current_header[-1].get('level') > level:
                 self.current_header.pop()
-                self._insert_header(text, level)
+                self._add_header(text, level)
 
             elif self.current_header[-1].get('level') < level:
                 self.current_header.append({
@@ -82,6 +58,69 @@ class CustomRenderer(mistune.Renderer):
                 'h': text,
                 'level': level
             })
+
+    #
+    # Inserters into the documents
+    #
+
+    def _insert_document(self, headers, content, type):
+        """
+        Main method inserting all the field into using the search client
+        """
+        doc = {
+            'title': self.title,
+            'source': self.source,
+            'type': type,
+        }
+
+        self._insert_headers(doc, headers)
+        self._insert_content(doc, content)
+        self._insert_link(doc, headers)
+        self._insert_importance(doc, headers, content)
+        self._insert_document_hash(doc, headers, content)
+
+        client.insert_doc(doc)
+
+    def _insert_headers(self, doc, headers):
+        """
+        We insert headers based on their level of depth
+        """
+
+        for header in headers:
+            level = header['level']
+            h = header['h']
+
+            doc['h' + str(level)] = h
+
+    def _insert_content(self, doc, content):
+        """
+        We insert content only when it exists (it is not present for titles)
+        """
+        if content:
+            doc['content'] = content
+
+    def _insert_link(self, doc, headers):
+        """
+        We generate a link to the first header of the document
+        FIXME: we can go the a second or third layer of depth when linking to a document part
+        """
+        doc['link'] = self.title + ("#" + str(headers[0]['h']) if headers else ''),
+
+    def _insert_importance(self, doc, headers, content):
+        """
+        The importance is defined as a number between 0 and 7, where 0 is for document title and 7 is for a paragraph
+        inside 5 layers of titles. The lowest the importance is, the higher the result will be shown for the same result
+        (see algolia tie-breaking algorithm)
+        """
+        doc['importance'] = len(headers) + (1 if content else 0)
+
+    def _insert_document_hash(self, doc, headers, content):
+        """
+         We hash the content of the file so we are sure not to index 2 times the same file
+        """
+        file_string = self.title + ''.join([h['h'] for h in headers]) + (content if content else '')
+        doc['objectID'] = hashlib.md5(file_string.encode("utf-8")).hexdigest()
+
 
     #
     # NOT NEEDED
