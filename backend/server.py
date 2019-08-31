@@ -14,6 +14,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 # Initialise Flask
 app = Flask(__name__)
+DEBUG = app.debug
 
 # Initialise the logger
 logger.init(app)
@@ -23,7 +24,8 @@ logger.get_logger().info("Flask initialised")
 logger.get_logger().info("Initialising Sentry")
 sentry_sdk.init(
     dsn=SecretConstant.SENTRY_URL,
-    integrations=[FlaskIntegration()]
+    integrations=[FlaskIntegration()],
+    environment='dev' if DEBUG else 'prod'
 )
 
 # Initialise Flask's configurations
