@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smee
+  template:
+    metadata:
+      labels:
+        app: smee
+    spec:
+      hostNetwork: true
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: web-server-frontend
+        image: docker.io/node
+        command: ["/bin/bash", "-c",
+                  "npm install -g smee-client && smee --target http://host.docker.internal:5000/api/webhook_handler --url https://smee.io/UUkxjK9NwrD3pnTH"]
