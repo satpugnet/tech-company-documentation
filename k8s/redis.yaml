@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    name: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+  clusterIP: None
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+ name: redis
+spec:
+ serviceName: redis
+ replicas: 1
+ selector:
+   matchLabels:
+     app: redis
+ template:
+   metadata:
+     labels:
+       app: redis
+   spec:
+     terminationGracePeriodSeconds: 0
+     containers:
+       - name: redis
+         image: redis
+         command: ["/bin/sh", "-c", "redis-server --appendonly yes --requirepass password"]
+         ports:
+           - containerPort: 6379
+         volumeMounts:
+           - name: redis-claim
+             mountPath: /data
+     volumes:
+       - name: redis-claim
+         persistentVolumeClaim:
+           claimName: redis-claim
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-claim
+spec:
+  storageClassName: redis-volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-volume
+  labels:
+    type: local
+spec:
+  storageClassName: redis-volume
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/codersdoc/redis" # we will write to this folder on our local machine
