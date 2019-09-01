@@ -36,7 +36,7 @@
       this.$http.get('/api/' + this.$route.params.githubAccountLogin + '/docs').then(response => {
         this.documents = this.keysToCamel(response.body);
         this.loading = false;
-      }, error => {
+      }, ignoreErr => {
         this.loading = false;
         this.$bvToast.toast("An error has occurred while fetching documents", {
           title: 'Error',

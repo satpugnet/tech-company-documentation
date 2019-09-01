@@ -9,7 +9,8 @@
 
         <li class="breadcrumb-item"
             v-for="(file, index) in path"
-            v-bind:class="{ active: (index === path.length -1) }">
+            v-bind:class="{ active: (index === path.length -1) }"
+            v-bind:key="file">
 
           <template v-if="index !== path.length -1">
             <a v-on:click="back(index)">{{ file }}</a>
