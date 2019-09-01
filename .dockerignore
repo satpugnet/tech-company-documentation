@@ -1,0 +1,10 @@
+.idea
+.git
+venv
+venv/
+__pycache__/
+node_modules
+.idea
+*.lock
+*.pyc
+*.DS_Store

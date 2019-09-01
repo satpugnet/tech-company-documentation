@@ -56,6 +56,7 @@
 </template>
 
 <script>
+  import { $ } from 'jquery';
   import Browser from "./elements/browser/Browser";
   import MarkdownFile from "./elements/MarkdownFile";
 

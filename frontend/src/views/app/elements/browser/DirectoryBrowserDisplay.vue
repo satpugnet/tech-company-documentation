@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <li v-for="fsNode in fsNodes">
+    <li v-for="fsNode in fsNodes" v-bind:key="fsNode.name">
       <a v-on:click="select(fsNode.name)">{{ fsNode.name }}</a>
     </li>
   </ul>

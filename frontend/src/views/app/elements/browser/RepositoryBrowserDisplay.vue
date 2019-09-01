@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <li v-for="repo in repos">
+    <li v-for="repo in repos" v-bind:key="repo.name">
       <a v-on:click="select(repo)">{{ repo.githubAccountLogin }}/{{ repo.name }}</a>
     </li>
   </ul>

@@ -1,0 +1,23 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+build:
+#  tagPolicy:
+#    sha256: {}
+  artifacts:
+  - image: web-server
+    sync:
+      manual:
+        - src: 'backend/**/*'
+          dest: /usr/src/backend
+          strip: 'backend/'
+        - src: 'frontend/**/*'
+          dest: /usr/src/frontend
+          strip: 'frontend/'
+  local:
+    useDockerCLI: false
+    useBuildkit: true  # speeds up builds
+
+deploy:
+  kubectl:
+    manifests:
+    - "k8s/*.yaml"
