@@ -1,6 +1,7 @@
 aniso8601==7.0.0
 ansicolors==1.1.8
 asn1crypto==0.24.0
+blinker==1.4
 certifi==2019.3.9
 cffi==1.12.3
 chardet==3.0.4
