@@ -12,8 +12,11 @@ class CodeFormatter:
     Formatting of code using a lexer.
     """
 
-    def format(self, path, code, start_line=1):
-        logger.get_logger().info("Format of the code %s for the path %s at the start line %s", code, path, start_line)
+    def format(self, path, code, start_line=1, end_line=-1):
+        logger.get_logger().info("Format of the code %s for the path %s at the start line %s and end line %s", code, path, start_line, end_line)
+
+        if end_line != -1:
+            code = ''.join(code.splitlines(keepends=True)[start_line - 1: end_line])
 
         try:
             lexer = get_lexer_for_filename(path)

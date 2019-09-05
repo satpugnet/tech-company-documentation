@@ -16,7 +16,7 @@ class AccountReposEndpoint(AbstractAccountEndpoint):
         super().__init__()
         self._get_output_schema_instance = Schema.from_dict({
             ModelFields.GITHUB_ACCOUNT_LOGIN: fields.Str(required=True),
-            ModelFields.NAME: fields.Email(required=True)
+            ModelFields.NAME: fields.Str(required=True)
         })(many=True)
 
     def get(self, github_account_login):

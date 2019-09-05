@@ -1,6 +1,6 @@
 from github_interface.constants.github_api_fields import GithubApiFields
 from github_interface.interfaces.webhook_github_interface import WebhookGithubInterface
-from mongo.collection_clients.clients.db_github_file_client import DbGithubFileClient
+from mongo.collection_clients.clients.db_github_fs_node_client import DbGithubFSNodeClient
 from mongo.collection_clients.clients.db_repo_client import DbRepoClient
 from tools import logger
 from utils.path_manipulator import PathManipulator
@@ -75,7 +75,7 @@ class PushHandler(AbstractRequestHandler):
         for commit_file_path in [commit_file.path for commit_file in commit_files]:
             up_to_date_file = self.__repo_interface.get_fs_node_at_path(commit_file_path)
 
-            DbGithubFileClient().update_one(
+            DbGithubFSNodeClient().update_one(
                 self.__github_account_login,
                 self.__repo_interface.repo.name,
                 up_to_date_file.dir_path,

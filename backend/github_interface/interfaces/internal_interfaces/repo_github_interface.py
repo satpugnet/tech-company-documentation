@@ -49,6 +49,7 @@ class RepoGithubInterface:
         contents = self.__raw_installation_github_facade.get_contents(path)
         return GithubFSNodeFactory().create_from_github_get_contents(contents)
 
+    # TODO: use the get_commits data rather than doing a get_commit again on each for loop iteration
     @GithubExceptionHandler.github_exception_handler
     def get_commits_since_sha_exclusive(self, sha, branch_name="master"):
         """
