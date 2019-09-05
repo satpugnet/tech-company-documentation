@@ -1,0 +1,56 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+
+deploy:
+  kubectl:
+    manifests:
+    - "k8s/smee.yaml"
+    - "k8s/mongo.yaml"
+    - "k8s/redis.yaml"
+
+# Profiles and overrides
+# (see https://skaffold.dev/docs/how-tos/profiles/)
+
+profiles:
+
+###################################
+####  APP_RESOURCES_ONLY mode #####
+###################################
+
+# APP_RESOURCES_ONLY mode runs everything except the frontend and the backend
+- name: app-resources-only-mode
+  activation:
+    - env: MODE=APP_RESOURCES_ONLY
+
+###################################
+########     ALL mode     #########
+###################################
+
+# ALL mode runs everything inside k8s - frontend, backend, dbs
+- name: all-mode
+
+  activation:
+    - env: MODE=ALL
+
+  build:
+    artifacts:
+      - image: web-server
+        sync:
+          manual:
+            - src: 'backend/**/*'
+              dest: /usr/src/backend
+              strip: 'backend/'
+            - src: 'frontend/**/*'
+              dest: /usr/src/frontend
+              strip: 'frontend/'
+    local:
+      useDockerCLI: false
+      useBuildkit: true  # speeds up builds
+
+  deploy:
+    kubectl:
+      manifests:
+        - "k8s/mongo.yaml"
+        - "k8s/smee.yaml"
+        - "k8s/web-server.yaml"
+        - "k8s/redis.yaml"

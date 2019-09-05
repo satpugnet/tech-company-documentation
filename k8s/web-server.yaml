@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-server
+spec:
+  clusterIP: None
+  selector:
+    app: web-server
+  ports:
+  - name: frontend
+    port: 8080
+    targetPort: 8080
+  - name: backend
+    port: 5000
+    targetPort: 5000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  labels:
+    app: web-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: web-server-frontend
+        image: web-server
+        command: ["/bin/sh", "-c", "yarn --cwd frontend run serve"]
+        ports:
+        - containerPort: 8080
+      - name: web-server-backend
+        image: web-server
+        command: ["/bin/sh", "-c", "FLASK_DEBUG=1 python3 backend/server.py"]
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MONGO_URL
+          value: "mongodb://mongo.default.svc.cluster.local:27017/"
+
+      initContainers:
+      - name: web-server-init
+        image: busybox:1.28
+        command: ['/bin/sh', '-c',
+                  'echo "Initialising..."; sleep 10;
+                  until nc -z mongo.default.svc.cluster.local 27017; do echo "Waiting for Mongo..."; sleep 5; done']
